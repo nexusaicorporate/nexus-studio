@@ -1,0 +1,37 @@
+name: pages
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # GitHub has not shipped Node 24 builds of the Pages actions yet, so allow
+    # their Node 20 runtime until they do. Remove this once they publish updates.
+    env:
+      ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: 20, cache: npm }
+      - run: npm ci || npm install
+      - name: Build static site (project base path)
+        env:
+          PAGES_BASE_PATH: "/${{ github.event.repository.name }}"
+        run: npm run build:static
+      - run: touch out/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: out }
+      - id: deploy
+        uses: actions/deploy-pages@v4

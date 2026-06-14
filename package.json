@@ -1,0 +1,36 @@
+{
+  "name": "nexus-ai-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nexus AI Studio — multi-provider prompt assistant, prompt/environment/ingredient/recipe libraries, and a generative Studio (character, image, video).",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "build:static": "cross-env BUILD_STATIC=1 next build",
+    "serve:static": "npx serve out -l 3000",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "idb-keyval": "^6.2.1",
+    "lucide-react": "^0.453.0",
+    "next": "14.2.15",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "cross-env": "^7.0.3",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.5.4"
+  }
+}
