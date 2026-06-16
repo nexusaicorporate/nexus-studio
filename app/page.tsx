@@ -26,9 +26,27 @@ export default function ChatPage() {
     const model = provider.selectedModel || provider.models[0] || "openai";
     const placeholder: ChatMessage = { id: newId(), role: "assistant", content: "", model };
     setMessages([...next, placeholder]);
-    try { const out = await chat({ provider, model, system: taskSystem, uncensored: settings.uncensored, messages: next }); setMessages((m) => m.map((x) => (x.id === placeholder.id ? { ...x, content: out || "(empty response)" } : x))); }
-    catch (e: any) { setMessages((m) => m.map((x) => (x.id === placeholder.id ? { ...x, content: "⚠️ " + e.message } : x))); }
-    setBusy(false); setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
+    
+    let responseText = "";
+    try {
+      await chat({
+        provider,
+        model,
+        system: taskSystem,
+        uncensored: settings.uncensored,
+        messages: next,
+        onChunk: (chunk) => {
+          responseText += chunk;
+          setMessages((m) => m.map((x) => (x.id === placeholder.id ? { ...x, content: responseText } : x)));
+          endRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
+      });
+    }
+    catch (e: any) {
+      setMessages((m) => m.map((x) => (x.id === placeholder.id ? { ...x, content: responseText + (responseText ? "\n\n" : "") + "⚠️ " + e.message } : x)));
+    }
+    setBusy(false);
+    setTimeout(() => endRef.current?.scrollIntoView({ behavior: "smooth" }), 50);
   }
   if (!mounted) return null;
   return (

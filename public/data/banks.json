@@ -1,0 +1,3901 @@
+[
+  {
+    "id": "role",
+    "name": "Role",
+    "category": "character",
+    "options": [
+      "Master of Game and Anime Concept Art",
+      "Senior Film Character Concept Artist",
+      "Cyberpunk Style Designer",
+      "Dark Fantasy Style Illustrator",
+      "Fine-art photography blended with film-style realism"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "subject",
+    "name": "Subject",
+    "category": "character",
+    "options": [
+      "Female Character",
+      "Male Character",
+      "Mecha Girl",
+      "Monster Anthropomorphism",
+      "Fantasy Race (Elf/Demon)",
+      "Female, around 20 years old",
+      "Young Korean female K-pop idol"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "hair_style",
+    "name": "Hair Style",
+    "category": "character",
+    "options": [
+      "Short, softly tousled dark hair",
+      "Dark wavy long hair",
+      "Black straight hair, falling over shoulders",
+      "Light blonde curly hair",
+      "High ponytail"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "character_companion",
+    "name": "Companion",
+    "category": "character",
+    "options": [
+      "Deadpool",
+      "Superman",
+      "Einstein",
+      "Wonder Woman",
+      "Iron Man",
+      "Pikachu",
+      "Godzilla",
+      "Hatsune Miku"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "layout_focus",
+    "name": "Layout Focus",
+    "category": "visual",
+    "options": [
+      "Full-body Portrait",
+      "Half-body Portrait",
+      "Dynamic Action Pose",
+      "Back View Looking Back"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "grid_pose",
+    "name": "Grid Pose",
+    "category": "action",
+    "options": [
+      "Out-of-focus fingers in foreground",
+      "Eyes locked on camera",
+      "Monochrome hand on chin",
+      "Shooting through blurred shoulder straps",
+      "Frontal close-up with shadows",
+      "Angled shot",
+      "Hands on collarbones",
+      "Seated half-body profile",
+      "Side macro with water drops",
+      "Eyes closed looking up in enjoyment",
+      "Shading eyes from sun with hand",
+      "Looking back with a smile",
+      "Close-up blowing bubble gum",
+      "Staring straight at the camera, calm expression, clear eyes",
+      "Staring at the camera, slight smile, showing confidence",
+      "Looking intently at the camera, soft expression, gentle eyes",
+      "Side view looking back, gentle eyes, smiling",
+      "Turning back, flowing hair, natural smile",
+      "Hand gently on chin, elegant expression, soft eyes",
+      "Supporting chin with one hand, natural expression, focused eyes",
+      "Using shoulder straps for depth of field, focus on eyes",
+      "Blowing bubble gum, cute expression, focused eyes",
+      "Side macro close-up, highlighting facial contours and details"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "camera_angle",
+    "name": "Camera Angle",
+    "category": "visual",
+    "options": [
+      "Cheek and neck close-up",
+      "Eyes locked on camera",
+      "Monochrome hand on chin portrait",
+      "Shooting through blurred shoulder straps",
+      "Frontal close-up, interlocking facial shadows",
+      "Raw portrait from an angle",
+      "Close-up with hands near collarbones",
+      "Seated half-body profile shot",
+      "Side macro shot",
+      "upper-body close-up",
+      "eye-level, slightly hidden intimate medium shot",
+      "Waist-up fine-art portrait"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "connectors",
+    "name": "Connectors",
+    "category": "visual",
+    "options": [
+      "Hand-drawn arrows or guide lines",
+      "Dashed line connections",
+      "Colored light beams",
+      "Translucent data cables"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825989
+  },
+  {
+    "id": "underwear_style",
+    "name": "Innerwear Style",
+    "category": "item",
+    "options": [
+      "Simple and comfortable cotton innerwear",
+      "Athletic style breathable innerwear",
+      "Minimalist seamless innerwear",
+      "Fashionable cut inner layers",
+      "'pure-aesthetic' outfit style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "clothing",
+    "name": "Clothing",
+    "category": "item",
+    "options": [
+      "Charcoal grey sleeveless dress",
+      "White silk shirt",
+      "Black slim-fit suit",
+      "Tactical techwear jacket",
+      "Vintage floral print dress",
+      "Slightly mature 'onee-san' fashion style",
+      "Muted teal floral dress with subtle vintage patterns"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "accessory_glasses",
+    "name": "Glasses",
+    "category": "item",
+    "options": [
+      "wearing glasses with mild lens reflections",
+      "wearing stylish sunglasses",
+      "wearing black-rimmed glasses",
+      "no glasses"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "clothing_male",
+    "name": "Male Clothing",
+    "category": "item",
+    "options": [
+      "Tailored deep blue suit",
+      "Vintage brown leather jacket",
+      "Tactical vest and cargo pants",
+      "Loose grey hoodie",
+      "White linen shirt",
+      "Black turtleneck sweater"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "clothing_female",
+    "name": "Female Clothing",
+    "category": "item",
+    "options": [
+      "Charcoal grey sleeveless dress",
+      "Silk slip evening gown",
+      "Biker leather jacket and short skirt",
+      "White lace blouse",
+      "Black tight bodysuit",
+      "Elegant Chanel-style suit",
+      "half-removed oversized grey hoodie, revealing white camisole"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "expressions",
+    "name": "Expressions",
+    "category": "character",
+    "options": [
+      "Crazy, Yandere, Ecstatic",
+      "Shy, Evasive, Blushing",
+      "Indifferent, Contemptuous, Proud",
+      "Painful, Enduring, Biting lip"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "character_originality",
+    "name": "Character Originality",
+    "category": "character",
+    "options": [
+      "Create an original character",
+      "Use character in attachment, ensure consistency",
+      "Re-create a well-known character"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "character_groups",
+    "name": "Character Groups",
+    "category": "character",
+    "options": [
+      "Ancient Chinese Founding Emperors",
+      "Marvel Characters",
+      "Jin Yong & Gu Long Wuxia Characters",
+      "Famous Three Kingdoms Figures",
+      "Famous Military Strategists (Napoleon, Caesar, Cao Cao, etc.)",
+      "World-famous Athletes",
+      "Famous Detectives (Bao Zheng, Di Renjie, Sherlock Holmes, Conan, etc.)",
+      "Anime & Game Characters",
+      "Historical Celebrities",
+      "Stars & Celebrities"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "social_media",
+    "name": "Social Media",
+    "category": "location",
+    "options": [
+      "WeChat Moments",
+      "Weibo",
+      "Twitter(X)",
+      "Little Red Book (Xiaohongshu)",
+      "Instagram",
+      "Facebook",
+      "Douyin",
+      "TikTok"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "texture_zoom",
+    "name": "Texture Zoom",
+    "category": "visual",
+    "options": [
+      "Silkiness",
+      "Fine skin texture",
+      "Snagged details on silk stockings",
+      "Luster and wear on leather"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "action_detail",
+    "name": "Action Detail",
+    "category": "action",
+    "options": [
+      "Elegant walking posture",
+      "Confident standing",
+      "Laughing out loud",
+      "Focused gaze"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "special_view",
+    "name": "Special View",
+    "category": "visual",
+    "options": [
+      "Low-angle view from being stepped on",
+      "Perspective of peeking through a door crack",
+      "Back view reflected in a mirror",
+      "Top-down view from a security camera"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "bag_content",
+    "name": "Bag Content",
+    "category": "item",
+    "options": [
+      "Daily commuter bag or clutch",
+      "Tactical leg bag",
+      "Cute plush backpack",
+      "Ita-bag made of transparent material"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "cosmetics",
+    "name": "Cosmetics",
+    "category": "item",
+    "options": [
+      "Commonly used cosmetics combo",
+      "Scattered lipsticks and compact powder",
+      "Portable makeup mirror",
+      "Perfume samples and hand cream"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "private_items",
+    "name": "Quality Life Items",
+    "category": "item",
+    "options": [
+      "Aroma Diffuser",
+      "Noise-cancelling Headphones",
+      "Vintage Vinyl Player",
+      "Smart Sports Watch"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825990
+  },
+  {
+    "id": "city_name",
+    "name": "City/Country",
+    "category": "location",
+    "options": [
+      "Guangzhou",
+      "Shanghai",
+      "Beijing",
+      "Shenzhen",
+      "Hangzhou",
+      "Chengdu",
+      "Xi'an",
+      "Chongqing",
+      "Nanjing",
+      "Suzhou",
+      "Kyoto",
+      "Barcelona",
+      "Mexico City",
+      "St. Petersburg",
+      "Paris",
+      "London",
+      "New York",
+      "Tokyo"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "art_tool",
+    "name": "Art Tool",
+    "category": "item",
+    "options": [
+      "Ink Brush",
+      "Paintbrush",
+      "Palette Knife",
+      "Stylus",
+      "Traditional Washi Brush"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "art_style",
+    "name": "Art Style",
+    "category": "visual",
+    "options": [
+      "Ukiyo-e",
+      "Cubism",
+      "Surrealism",
+      "Realism",
+      "High-quality 2D illustration style",
+      "Realistic impasto style",
+      "Cyberpunk neon style",
+      "Watercolor hand-drawn style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "background_style",
+    "name": "Background Style",
+    "category": "visual",
+    "options": [
+      "Manga grid notebook",
+      "Blueprint design paper",
+      "Industrial metal background",
+      "Minimalist solid color background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "classic_scene",
+    "name": "Classic Scene",
+    "category": "location",
+    "options": [
+      "The Matrix",
+      "Spirited Away",
+      "Zootopia",
+      "The Big Bang Theory",
+      "Hogwarts School of Witchcraft and Wizardry",
+      "Jurassic Park Jungle Entrance",
+      "Star Wars Tatooine Market",
+      "The Lord of the Rings - The Shire",
+      "Game of Thrones - King's Landing Walls",
+      "Inception - Folding City",
+      "Cyberpunk Neon Night Market",
+      "Future City Spaceport Hub"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "position",
+    "name": "Text Position",
+    "category": "location",
+    "options": [
+      "Top Center",
+      "Bottom Center",
+      "Top Left biased center",
+      "Top Right biased center",
+      "Floating in top middle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "render_style",
+    "name": "Render Style",
+    "category": "visual",
+    "options": [
+      "Octane Render and Cinema 4D",
+      "LEGO Block Style",
+      "Unreal Engine 5 Realistic Ray Tracing",
+      "Pixar Cartoon Rendering",
+      "Claymation Texture",
+      "Figurine-level Physical Rendering",
+      "3D Pixel Art Style",
+      "Hand-knitted Yarn Style",
+      "Knitted Yarn",
+      "Felt and Clay",
+      "Cardboard"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "show_name",
+    "name": "Show Name",
+    "category": "other",
+    "options": [
+      "Titanic",
+      "My Neighbor Totoro",
+      "Harry Potter",
+      "Interstellar",
+      "Spirited Away",
+      "The Avengers"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "character_name",
+    "name": "Character Name",
+    "category": "character",
+    "options": [
+      "Jack and Rose",
+      "Totoro",
+      "Harry Potter",
+      "Cooper",
+      "Chihiro",
+      "Hulk",
+      "Thanos",
+      "Iron Man"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "art_type",
+    "name": "Art Type",
+    "category": "other",
+    "options": [
+      "Fine Arts",
+      "Fashion Studies",
+      "Architecture",
+      "Photography",
+      "Sculpture Art",
+      "Industrial Design"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "company",
+    "name": "Company",
+    "category": "location",
+    "options": [
+      "Apple",
+      "Nintendo",
+      "SONY",
+      "IKEA"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "dominant_colors",
+    "name": "Dominant Colors",
+    "category": "visual",
+    "options": [
+      "Traditional Kyoto red and antique ink black",
+      "Mediterranean blue and sunny gold",
+      "Vibrant cactus green and deep red",
+      "Cool aurora blue and snow white",
+      "Morandi tones",
+      "High-end gray and minimalist white"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "background_color_clean",
+    "name": "Background Color",
+    "category": "visual",
+    "options": [
+      "Pure White",
+      "Bright Sky Blue",
+      "Sunny Light Yellow",
+      "Refreshing Mint Green",
+      "Cream Color"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "city_glimpse_subtitle",
+    "name": "Subtitle Content",
+    "category": "other",
+    "options": [
+      "The thousand-year-old ancient capital",
+      "Gaudí's city of fantastic architecture",
+      "Vibrant soul of art",
+      "Venice of the North, the temple of art"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "ratio",
+    "name": "Aspect Ratio",
+    "category": "visual",
+    "options": [
+      "3:4 Vertical",
+      "9:16 Vertical",
+      "1:1 Square",
+      "4:3 Horizontal",
+      "16:9 Horizontal",
+      "Circular Aspect Ratio",
+      "2:3 Vertical"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "fashion_deconstruct",
+    "name": "Fashion Deconstruct",
+    "category": "item",
+    "options": [
+      "Neatly folded coat and exquisite high heels",
+      "Scattered accessories and bags",
+      "Hanging shirt and pleated skirt",
+      "Stacked metal accessories and belts"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825991
+  },
+  {
+    "id": "toy_companion",
+    "name": "Toy Companion",
+    "category": "item",
+    "options": [
+      "Labubu Art Toy",
+      "Bearbrick",
+      "Pop Mart Molly",
+      "Vintage Teddy Bear",
+      "Cyberpunk Robo-Dog"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "lens_param",
+    "name": "Lens Parameter",
+    "category": "visual",
+    "options": [
+      "85mm, f/1.8",
+      "85mm, f/2.0",
+      "50mm, f/2.2",
+      "50mm, f/2.5",
+      "50mm, f/3.2",
+      "35mm, f/4.5",
+      "85mm, f/1.9",
+      "50mm, f/1.8",
+      "85mm, f/2.2",
+      "50mm, f/2.0"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "lighting",
+    "name": "Lighting",
+    "category": "visual",
+    "options": [
+      "Large overhead softbox, slight side reflection",
+      "Natural window light",
+      "Rembrandt lighting",
+      "Cyberpunk neon lighting",
+      "Studio hard light",
+      "Casual portrait photography with a daily snapshot vibe",
+      "Hidden camera style, Portra 400 film grain aesthetic",
+      "Soft natural light under overcast sky"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "sticker_core",
+    "name": "Sticker Core",
+    "category": "item",
+    "options": [
+      "shot of user in a sweet date outfit",
+      "Vintage rock band T-shirt outfit",
+      "Japanese JK uniform outfit",
+      "Minimalist office commuter outfit"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "sticker_decor",
+    "name": "Sticker Decor",
+    "category": "item",
+    "options": [
+      "Hand-drawn hearts, sparkle symbols",
+      "Star and moon stickers",
+      "Vintage stamps and bills",
+      "Cyberpunk glitch elements"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "action_pose",
+    "name": "Action Pose",
+    "category": "action",
+    "options": [
+      "Using fingers to Render 'bunny ears' behind the man's head",
+      "Arm around shoulder making V sign",
+      "Pointing at each other and laughing",
+      "Cool back-to-back standing pose"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "background_scene",
+    "name": "Background Scene",
+    "category": "location",
+    "options": [
+      "Rooftop of Avengers Tower overlooking New York City",
+      "Abandoned industrial warehouse",
+      "Bustling Times Square",
+      "Inside a space-age spaceship",
+      "Dark, ordinary room with a plain wall behind the subject",
+      "dimly lit, cozy backstage dressing room or private dorm room",
+      "Lush garden in full bloom"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "video_color_tone",
+    "name": "film-style Color Tone",
+    "category": "visual",
+    "options": [
+      "Cool blue tones, teal shadows (Blade Runner 2049 style)",
+      "Warm orange tones, golden hour feel (Mad Max: Fury Road style)",
+      "High-contrast teal and orange color grading",
+      "Desaturated olive-green tones, film grain (Saving Private Ryan style)",
+      "Neon purple-pink, high-saturation cyberpunk feel",
+      "High-contrast black and white, Film Noir style",
+      "Morandi muted pastel tones",
+      "Japanese overexposed warm pastel tones"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "video_art_style",
+    "name": "film-style Style",
+    "category": "visual",
+    "options": [
+      "Hollywood blockbuster film-style quality",
+      "Indie film documentary style (handheld, natural lighting)",
+      "Japanese anime film style (Makoto Shinkai)",
+      "Hong Kong golden era (dark, neon, fast-paced)",
+      "Korean drama film-style style (premium, desaturated)",
+      "Retro VHS tape aesthetic",
+      "Music video style (fast cuts, visual impact)",
+      "Game CG cutscene style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "scene_type",
+    "name": "Scene Type",
+    "category": "location",
+    "options": [
+      "Ancient tavern interior, candlelight flickering",
+      "Futuristic neon-lit urban alley",
+      "Snow-capped mountain peak, sea of clouds",
+      "Abandoned space station corridor, red lights flashing",
+      "Rainy Japanese street at night",
+      "Battlefield ruins, smoke-filled",
+      "Deep tropical rainforest, cascading waterfall",
+      "Cyberpunk underground bar"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "lens_type",
+    "name": "Lens Type",
+    "category": "visual",
+    "options": [
+      "Standard Lens",
+      "Wide-angle Lens",
+      "Telephoto Lens",
+      "Extreme Fisheye Lens",
+      "Tilt-shift Lens",
+      "Macro Lens"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "school_uniform",
+    "name": "School Uniform",
+    "category": "item",
+    "options": [
+      "Traditional Sailor Uniform",
+      "Grey cardigan and plaid skirt uniform",
+      "British style pleated skirt uniform",
+      "Japanese JK Uniform",
+      "Tracksuit School Uniform",
+      "Winter coat school uniform"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "urban_location",
+    "name": "Urban Location",
+    "category": "location",
+    "options": [
+      "Shibuya Crossing",
+      "Under Tokyo Tower",
+      "Times Square",
+      "By the Eiffel Tower",
+      "Central Park",
+      "Beijing Wangfujing",
+      "Shanghai Bund",
+      "Hong Kong Victoria Harbour"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825992
+  },
+  {
+    "id": "dynamic_action",
+    "name": "Dynamic Action",
+    "category": "action",
+    "options": [
+      "One hand exaggeratedly reaching towards the foreground",
+      "Arms open wide embracing the sky",
+      "Spinning and jumping",
+      "Running forward",
+      "Squatting down to pick up",
+      "Waving greeting",
+      "Dance pose",
+      "Heart gesture"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "action_status",
+    "name": "Action Status",
+    "category": "action",
+    "options": [
+      "playing PS5",
+      "playing the guitar",
+      "coding in front of a computer",
+      "painting with a banana",
+      "putting on diving fins",
+      "mixing a cocktail",
+      "reading a thick old book",
+      "trimming a giant indoor plant",
+      "reading a book",
+      "looking confidently into the lens while adjusting collar",
+      "Looking gently toward the camera, with a touch of melancholy"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "draw_style",
+    "name": "Drawing Style",
+    "category": "visual",
+    "options": [
+      "Hand-drawn Manga Style",
+      "Disney Hand-drawn Sketch Style",
+      "Ghibli Hand-drawn Style",
+      "American Comic Style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "fingernail_detail",
+    "name": "Fingernail Detail",
+    "category": "visual",
+    "options": [
+      "Fingernails clearly visible",
+      "Coated with bright nail polish",
+      "Natural nude nails",
+      "Decorated with diamond nails",
+      "Gradient nails",
+      "Artistic pattern nails"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "building_cluster",
+    "name": "Building Cluster",
+    "category": "location",
+    "options": [
+      "Distorted Shibuya 109 building and other forest of buildings",
+      "New York skyscraper cluster",
+      "Parisian classical architecture",
+      "Shanghai modern high-rise buildings",
+      "Mix of traditional Tokyo temples and modern architecture",
+      "City of London high-rises"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "monster_element",
+    "name": "Monster Element",
+    "category": "character",
+    "options": [
+      "Giant pink and blue gradient cartoon monster",
+      "Mecha robot monster",
+      "Legendary dragon",
+      "Alien creature",
+      "Deep sea behemoth",
+      "Forest elf"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "monster_feature",
+    "name": "Monster Feature",
+    "category": "character",
+    "options": [
+      "Giant tentacles and horns",
+      "Sharp claws and teeth",
+      "Colorful wings",
+      "Glowing eyes",
+      "Metal shell",
+      "Vining plants"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "distorted_city",
+    "name": "Distorted City",
+    "category": "location",
+    "options": [
+      "Distorted urban landscape",
+      "Specularly reflected city",
+      "City inside dream bubbles",
+      "Pixelated city",
+      "Ink-wash style city",
+      "Future sci-fi city"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "lighting_atmosphere",
+    "name": "Lighting Atmosphere",
+    "category": "visual",
+    "options": [
+      "Sunny",
+      "Bright moonlight",
+      "Flickering neon lights",
+      "Flickering candlelight",
+      "Stage spotlights",
+      "Natural morning light",
+      "Sunset afterglow",
+      "Indoor warm light"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "shadow_contrast",
+    "name": "Shadow Contrast",
+    "category": "visual",
+    "options": [
+      "Strong light-shadow contrast",
+      "Soft shadows",
+      "Dramatic shadows",
+      "No-shadow flat lighting",
+      "Rim lighting",
+      "Backlit silhouette"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "travel_location",
+    "name": "Travel Location",
+    "category": "location",
+    "options": [
+      "Potala Palace, Lhasa, Tibet",
+      "Forest Village in Hunan",
+      "Snow Village in Northeast China",
+      "Old Beijing Hutongs",
+      "Erhai Lake, Dali, Yunnan",
+      "Kanas Lake, Xinjiang",
+      "Jiuzhaigou, Sichuan",
+      "Li River, Guilin",
+      "Tianmen Mountain, Zhangjiajie",
+      "Mogao Grottoes, Dunhuang",
+      "Hulunbuir Grassland, Inner Mongolia",
+      "Sun Moon Lake, Taiwan"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825993
+  },
+  {
+    "id": "comic_scene",
+    "name": "Comic Scene",
+    "category": "location",
+    "options": [
+      "stunning bedroom",
+      "Busy street",
+      "Cozy classroom",
+      "Modern cafe",
+      "Park bench",
+      "Library corner",
+      "Art studio",
+      "Rooftop",
+      "Railway platform",
+      "Bookstore corner"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "designer",
+    "name": "Designer",
+    "category": "character",
+    "options": [
+      "Antoni Gaudí",
+      "Jonathan Ive",
+      "Gio Ponti",
+      "Dieter Rams",
+      "Philippe Starck",
+      "Kenya Hara",
+      "Naoto Fukasawa",
+      "Zaha Hadid",
+      "Marc Newson",
+      "Tom Dixon",
+      "Jasper Morrison",
+      "Konstantin Grcic"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "design_item",
+    "name": "Design Item",
+    "category": "item",
+    "options": [
+      "Drone",
+      "Pool table",
+      "Tractor",
+      "Mechanical keyboard",
+      "Vintage typewriter",
+      "DSLR camera",
+      "Robot vacuum",
+      "Coffee machine",
+      "Desk lamp",
+      "Chair",
+      "Sound system",
+      "Watch",
+      "Bicycle",
+      "Electric scooter",
+      "Bluetooth headphones",
+      "Smart speaker",
+      "Razor",
+      "Electric fan",
+      "Kettle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "rain_shape",
+    "name": "Rain Shape",
+    "category": "visual",
+    "options": [
+      "Ballerina",
+      "Flying butterfly",
+      "Running steed",
+      "Blooming lotus",
+      "Light feather",
+      "Lively musical note"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "fruit",
+    "name": "Fruit",
+    "category": "item",
+    "options": [
+      "Kiwi",
+      "Orange",
+      "Apple",
+      "Strawberry",
+      "Lemon",
+      "Grape",
+      "Mango",
+      "Coconut"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "xmas_theme",
+    "name": "Christmas Theme",
+    "category": "other",
+    "options": [
+      "an abstract Christmas Tree",
+      "Christmas snowflake",
+      "Reindeer and forest",
+      "Christmas ornaments",
+      "Christmas gingerbread house"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "jewelry_style",
+    "name": "Jewelry Style",
+    "category": "item",
+    "options": [
+      "Fine gold back necklace",
+      "Minimalist silver chain",
+      "Pearl body chain",
+      "Diamond back drop necklace",
+      "Emerald pendant back necklace"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "flower_type",
+    "name": "Flower Type",
+    "category": "item",
+    "options": [
+      "A bouquet of deep red roses",
+      "Elegant white calla lilies",
+      "Pale pink peonies",
+      "Exotic dark orchids",
+      "Dried eucalyptus leaves",
+      "Vibrant sunflowers",
+      "White and pale peach flower petals drifting through the air"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "character_type_pixar",
+    "name": "Character Mode",
+    "category": "character",
+    "options": [
+      "Single: Focus on personal lifestyle",
+      "Couple: 18 items each, heart connectors, contrast",
+      "Pregnant: Includes pregnancy items, baby icons, ultrasound",
+      "Family: Includes adult and child items, family warmth"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "theme_pixar",
+    "name": "Theme & Color",
+    "category": "visual",
+    "options": [
+      "Female/Fashion: Champagne Gold, Rose Gold, Cream, Cherry Pink",
+      "Male/Tech: Steel Blue, Dark Grey, Electric Blue, Silver",
+      "Formal/Luxury: Pure Black, 24K Gold, Deep Red, Ivory White",
+      "Couple/Contrast: Contrast of warm and cool tones"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "item_layout_pixar",
+    "name": "Item Layout",
+    "category": "visual",
+    "options": [
+      "90-degree Knolling layout",
+      "Radial composition",
+      "Step-like staggered layout",
+      "Grid symmetrical layout"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "fashion_parts",
+    "name": "Fashion Deconstruction",
+    "category": "item",
+    "options": [
+      "Trench coat: Lapel, epaulets, belt, cuffs, main body",
+      "Suit: Lapel, pockets, lining, cufflinks, shoulder pads",
+      "Sneakers: Sole, upper, laces, air cushion, insole",
+      "Dress: Lace trim, zipper, waist cut, hem, neckline",
+      "Bag: Metal lock, strap, inner pocket, stitching, handle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "beauty_items",
+    "name": "Beauty Deconstruction",
+    "category": "item",
+    "options": [
+      "Makeup: Lipstick (cut), eyeshadow palette, compact, blush brush",
+      "Skincare: Serum bottle, cream jar, beauty device, mask",
+      "Fragrance: Perfume bottle (refraction), scented candle, diffuser",
+      "Cleansing: Cleanser, toner, cleansing oil, facial device"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "digital_items",
+    "name": "Digital Deconstruction",
+    "category": "item",
+    "options": [
+      "Phone: Case, screen content, camera module, motherboard",
+      "Camera: Lens set, body, flash, memory card, strap",
+      "Audio: Wireless headphones, smartwatch, tablet, speaker",
+      "Office: Laptop, keyboard switches, mouse, drawing tablet"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "underwater_color",
+    "name": "Underwater Color",
+    "category": "location",
+    "options": [
+      "deep teal transparent underwater",
+      "crystal clear light blue",
+      "mysterious deep sea blue",
+      "dreamy emerald green"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "creatures",
+    "name": "Creatures",
+    "category": "character",
+    "options": [
+      "many small silver fish",
+      "glowing jellyfish",
+      "colorful tropical fish",
+      "a giant blue whale in the background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "luxury_hobby_items",
+    "name": "Hobby & Luxury",
+    "category": "item",
+    "options": [
+      "Jewelry: Necklace, earrings, ring (gemstone dispersion)",
+      "Art: Brushes, palette, sketchbook, paint tubes",
+      "Life: Coffee machine, grinder, high-end figure parts, limited books",
+      "Sports: Tennis racket, skateboard, ski goggles, action cam, bottle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825994
+  },
+  {
+    "id": "clothing_style_chinese",
+    "name": "Chinese Clothing Style",
+    "category": "item",
+    "options": [
+      "Traditional dark red Chinese robe",
+      "Classical red Hanfu",
+      "Traditional golden dragon robe",
+      "Deep purple Tang suit",
+      "Sapphire blue Qipao",
+      "Dark green traditional long gown",
+      "Vermilion general's battle robe",
+      "Purple-gold brocade noble attire"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "clothing_color_traditional",
+    "name": "Traditional Clothing Color",
+    "category": "visual",
+    "options": [
+      "Dark Red",
+      "Vermilion",
+      "Sapphire Blue",
+      "Golden Yellow",
+      "Purple Gold",
+      "Dark Green",
+      "Deep Purple",
+      "Mystic Black"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "year_number",
+    "name": "Year",
+    "category": "other",
+    "options": [
+      "2025",
+      "2026",
+      "2027",
+      "2028",
+      "2029",
+      "2030"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "greeting_new_year",
+    "name": "New Year Greeting",
+    "category": "other",
+    "options": [
+      "Immediate Success",
+      "Vigorous Spirit",
+      "Unremitting Efforts",
+      "Take the Lead",
+      "Dragon Soaring and Tiger Leaping",
+      "Happy New Year",
+      "May All Go Well",
+      "Wishing You Prosperity"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "background_color_festive",
+    "name": "Festive Background Color",
+    "category": "visual",
+    "options": [
+      "Red background",
+      "Gold background",
+      "Red-gold gradient background",
+      "Deep red background",
+      "Vermilion background",
+      "Warm orange-red background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "social_bg_color",
+    "name": "Social Media Background Color",
+    "category": "visual",
+    "options": [
+      "pink and burgundy",
+      "mint green and coral",
+      "lavender and lilac",
+      "sky blue and white",
+      "gold and cream",
+      "black and neon pink",
+      "orange and cyan gradient",
+      "green and yellow combo",
+      "blue and purple mix",
+      "red and gold combo"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "social_profile_name",
+    "name": "Social Media Profile Name",
+    "category": "other",
+    "options": [
+      "@RealMe+",
+      "@Nexus Studio",
+      "@CreativeAI",
+      "@ArtLover",
+      "@DesignPro",
+      "@VisualArtist",
+      "@PhotoMaster",
+      "@StudioX",
+      "@CreativeMind",
+      "@DigitalCreator"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "character_type",
+    "name": "Character Type",
+    "category": "character",
+    "options": [
+      "woman",
+      "man",
+      "girl",
+      "boy",
+      "teenage girl",
+      "teenage boy",
+      "child",
+      "baby",
+      "elderly person",
+      "young person"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "costume_material",
+    "name": "Costume Material",
+    "category": "item",
+    "options": [
+      "wool",
+      "plush",
+      "cotton",
+      "silk",
+      "velvet",
+      "faux fur",
+      "satin",
+      "denim",
+      "knit fabric",
+      "linen"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "subway_costume",
+    "name": "Subway Costume Type",
+    "category": "character",
+    "options": [
+      "Pink wool rabbit costume",
+      "Yellow chick costume",
+      "Brown teddy bear costume",
+      "White panda costume",
+      "Orange fox costume",
+      "Grey cat costume",
+      "Blue hippo costume",
+      "Green dinosaur costume",
+      "Purple unicorn costume",
+      "Rainbow pony costume"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "location",
+    "name": "Carriage Type",
+    "category": "location",
+    "options": [
+      "Japanese subway",
+      "Korean subway",
+      "Beijing subway",
+      "Shanghai subway",
+      "London Underground",
+      "New York subway",
+      "Paris Metro",
+      "Light rail carriage",
+      "High-speed rail carriage",
+      "Regular train carriage"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825995
+  },
+  {
+    "id": "accessory",
+    "name": "Head Accessory",
+    "category": "item",
+    "options": [
+      "pink flower hair clip",
+      "blue butterfly bow",
+      "red hair band",
+      "small crown",
+      "cat ears",
+      "rabbit ears",
+      "headband",
+      "baseball cap",
+      "beanie hat",
+      "headphones"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "character_heroic",
+    "name": "Character Type",
+    "category": "character",
+    "options": [
+      "Young Student",
+      "Urban Professional",
+      "Artistic Youth",
+      "Office Worker",
+      "Mighty General",
+      "Brave Warrior",
+      "Legendary Hero",
+      "Martial Arts Master"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "room_style_cute",
+    "name": "Cute Room Style",
+    "category": "location",
+    "options": [
+      "Cute pink room, pastel pink bed and walls, original cute animal plushies, fairy lights, cute posters, fluffy rug",
+      "Minimalist white room, white furniture, plants, natural light, wooden floor",
+      "Vintage pink room, vintage furniture, velvet curtains, classic decor, warm atmosphere",
+      "Dreamy purple room, purple sheets, star lights, dreamy wallpaper, soft carpet",
+      "Fresh blue room, blue bedding, ocean decor, shell elements, refreshing feel",
+      "Warm orange room, orange furniture, abundant sunlight, energetic decor, cozy rug",
+      "Nordic style room, grey bedding, minimalist design, natural materials, gentle lighting",
+      "Japanese style room, tatami, paper lanterns, bamboo decor, zen atmosphere"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "cute_outfit",
+    "name": "Cute Outfit",
+    "category": "item",
+    "options": [
+      "Black tight camisole dress, hip-length, sleeveless, thin straps",
+      "White lace dress, knee-length, short sleeves, elegant design",
+      "Pink school uniform, pleated skirt, bow tie, long-sleeved shirt",
+      "Blue spaghetti strap dress, A-line, knee-length, summer style",
+      "Red tight dress, high neck, long sleeves, slim-fit design",
+      "Yellow overall dress, cute style, short length, casual design",
+      "Purple nightgown, silk material, spaghetti straps, comfortable style",
+      "Plaid dress, British style, knee-length, long sleeves"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "product_category",
+    "name": "Product Category",
+    "category": "item",
+    "options": [
+      "Modern Chair",
+      "Smart Watch",
+      "Premium Headphones",
+      "Designer Lamp",
+      "Ceramic Ware",
+      "Glass Vase",
+      "Leather Bag",
+      "Portable Speaker"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "drink_product",
+    "name": "Drink Product",
+    "category": "item",
+    "options": [
+      "Fanta softdrink can",
+      "Coca-Cola can",
+      "Pepsi cola can",
+      "Sprite soda can",
+      "Red Bull energy drink can",
+      "Beer can",
+      "Orange juice bottle",
+      "Sports drink bottle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "drink_action",
+    "name": "Drink Action",
+    "category": "action",
+    "options": [
+      "exploding with oranges bursting from the can",
+      "splashing with water droplets flying everywhere",
+      "overflowing with liquid pouring from the rim",
+      "spinning creating a swirling vortex effect",
+      "stationary with condensation droplets on surface",
+      "being opened with tab flying off",
+      "being crushed and deformed",
+      "floating in air surrounded by bubbles"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "drink_background",
+    "name": "Drink Photography Background",
+    "category": "visual",
+    "options": [
+      "orange background",
+      "blue background",
+      "red background",
+      "gradient orange background",
+      "gradient teal background",
+      "pure white background",
+      "pure black background",
+      "blurred city background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "drink_camera_angle",
+    "name": "Drink Camera Angle",
+    "category": "visual",
+    "options": [
+      "high angle overhead shot capturing the swirling arc of orange juice",
+      "low angle heroic shot",
+      "eye-level front shot",
+      "45-degree side angle shot",
+      "macro close-up shot",
+      "bird's eye overhead shot"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "skincare_product",
+    "name": "Skincare Product",
+    "category": "item",
+    "options": [
+      "serum dropper bottle",
+      "cream jar",
+      "toner bottle",
+      "ampoule",
+      "essence bottle",
+      "eye cream jar",
+      "sunscreen bottle",
+      "body lotion bottle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "skincare_color",
+    "name": "Skincare Product Color",
+    "category": "visual",
+    "options": [
+      "pink-peach colored",
+      "light pink colored",
+      "transparent golden colored",
+      "light lavender colored",
+      "mint green colored",
+      "clear transparent colored",
+      "rose pink colored",
+      "amber colored"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "fantasy_character_pose",
+    "name": "Fantasy Character Pose",
+    "category": "action",
+    "options": [
+      "sitting on the bottle cap",
+      "floating beside the bottle",
+      "leaning against the bottle",
+      "standing on the edge of the cap",
+      "lying on top of the bottle",
+      "dancing around the bottle",
+      "sitting on floating fruits",
+      "hovering above the bottle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825996
+  },
+  {
+    "id": "fantasy_floating_elements",
+    "name": "Fantasy Floating Elements",
+    "category": "item",
+    "options": [
+      "ripe peaches and peach slices",
+      "rose petals and buds",
+      "sparkling bubbles and stars",
+      "feathers and silk ribbons",
+      "fruit slices and berries",
+      "water droplets and ice crystals",
+      "glowing light dots and sparkles",
+      "clouds and rainbow fragments"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "fantasy_sky_background",
+    "name": "Fantasy Sky Background",
+    "category": "location",
+    "options": [
+      "bright clear blue sky",
+      "soft pink sunset sky",
+      "dreamy purple starry sky",
+      "warm golden sunrise sky",
+      "soft cloudy sky",
+      "gradient orange-pink sky",
+      "misty morning sky",
+      "colorful aurora sky"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "pastel_color_palette",
+    "name": "Pastel Color Palette",
+    "category": "visual",
+    "options": [
+      "pastel peach and sky blue",
+      "lavender and pink",
+      "mint green and yellow",
+      "rose and gold",
+      "sky blue and white",
+      "coral and teal",
+      "lavender and cream",
+      "pink and grey"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "fantasy_dress_style",
+    "name": "Fantasy Dress Style",
+    "category": "item",
+    "options": [
+      "elegant flowing dress",
+      "tulle fairy dress",
+      "silk evening gown",
+      "chiffon long dress",
+      "lace dress",
+      "petal dress",
+      "sparkling sequin dress",
+      "feather-trimmed dress"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "environment_style",
+    "name": "Environment Style",
+    "category": "location",
+    "options": [
+      "Minimal Architectural Interior",
+      "Modern Industrial Space",
+      "Nordic Style Room",
+      "Modern Gallery",
+      "Premium Studio",
+      "Minimalist Residence",
+      "Architectural Studio",
+      "Design Showcase"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "primary_material",
+    "name": "Primary Material",
+    "category": "item",
+    "options": [
+      "Wood",
+      "Metal",
+      "Leather",
+      "Glass",
+      "Plastic",
+      "Fabric",
+      "Ceramic",
+      "Stone"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "drawing_style",
+    "name": "Drawing Style",
+    "category": "visual",
+    "options": [
+      "Architectural Line Drawing Style",
+      "Technical Orthographic Drawing",
+      "Engineering Drawing Style",
+      "Industrial Design Sketch",
+      "Architectural Section Drawing",
+      "Product Technical Drawing"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "character_subject",
+    "name": "Character Subject",
+    "category": "character",
+    "options": [
+      "Young woman with long hair, smiling",
+      "Mature man with short hair, serious expression",
+      "Teenager, lively and cheerful",
+      "Child, innocent and cute",
+      "Elderly person, kind and gentle",
+      "Fashionable woman with exquisite makeup",
+      "Business man in suit and tie",
+      "Athletic person, full of energy"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "portrait_view",
+    "name": "Portrait View",
+    "category": "visual",
+    "options": [
+      "Front portrait",
+      "Side profile portrait",
+      "Half-body shot",
+      "Full-body shot",
+      "Three-quarter view",
+      "Low-angle shot",
+      "High-angle shot",
+      "Close-up headshot"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825997
+  },
+  {
+    "id": "line_art_style",
+    "name": "Line Art Style",
+    "category": "visual",
+    "options": [
+      "Pen and ink style",
+      "Pencil sketch style",
+      "Charcoal bold style",
+      "Ink pen drawing style",
+      "Manga line style",
+      "Pen and wash style",
+      "Etching print style",
+      "Pen sketch style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "shading_technique",
+    "name": "Shading Technique",
+    "category": "visual",
+    "options": [
+      "Minimalist cross-hatching",
+      "Stippling shading",
+      "Flat shading",
+      "Detailed cross-hatching",
+      "Bold line shading",
+      "Gradient shading",
+      "No shading, outline only",
+      "Comic style shading"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "background_treatment",
+    "name": "Background Treatment",
+    "category": "location",
+    "options": [
+      "White background",
+      "Light gray background",
+      "Simple geometric background",
+      "Abstract line background",
+      "Manga speed lines",
+      "Dotted texture background",
+      "No background, transparent",
+      "Dark background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "classic_game",
+    "name": "Classic Game",
+    "category": "other",
+    "options": [
+      "Donkey Kong (1981 vintage arcade game)",
+      "Super Mario Bros (1985)",
+      "The Legend of Zelda (1986)",
+      "Pac-Man (1980 arcade game)",
+      "Space Invaders (1978)",
+      "Tetris (1984)",
+      "Contra (1987)",
+      "Street Fighter II (1991)",
+      "Sonic the Hedgehog (1991)",
+      "Castlevania (1986)",
+      "Mega Man (1987)",
+      "Mario Kart (1992)",
+      "Pokémon Red/Blue (1996)",
+      "Kirby's Dream Land (1992)",
+      "Chrono Trigger (1995)",
+      "Final Fantasy VI (1994)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "scientific_discovery",
+    "name": "Scientific Discovery",
+    "category": "other",
+    "options": [
+      "The Structure of DNA",
+      "The Theory of Relativity",
+      "The Germ Theory",
+      "Heliocentrism",
+      "The Theory of Evolution",
+      "The Law of Universal Gravitation",
+      "Electromagnetic Theory",
+      "The Periodic Table of Elements",
+      "Quantum Mechanics",
+      "The Atomic Structure",
+      "The Wave Theory of Light",
+      "Continental Drift",
+      "Vaccination",
+      "Blood Circulation",
+      "The Structure of Benzene",
+      "The Double Helix Discovery"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "cute_pose_dynamic",
+    "name": "Cute Dynamic Pose",
+    "category": "action",
+    "options": [
+      "Walking forward while looking back, confidently and playfully looking down from directly above, charming smile",
+      "Sitting on bed edge, legs crossed, playing with hair, gentle smile",
+      "Standing pose, hands on hips, confidently looking at camera",
+      "Lying on bed, propping head with hand, playful expression",
+      "Kneeling pose, hands on knees, innocent expression",
+      "Leaning against wall, one foot raised, cool expression",
+      "Sitting on floor, legs extended, reading book, focused expression",
+      "Jumping pose, hands raised, happy smile, dynamic feel"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "fitness_location",
+    "name": "Fitness Location",
+    "category": "location",
+    "options": [
+      "Busy gym with mirrors and equipment visible",
+      "Modern gym with cardio and weight areas",
+      "Yoga studio with wooden floor and mirrors",
+      "Home workout area, clean and organized",
+      "Outdoor treadmill platform with city skyline"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "fitness_pose",
+    "name": "Fitness Pose",
+    "category": "action",
+    "options": [
+      "Half-squat pose, turned sideways to mirror",
+      "Standing stretch with arms raised",
+      "Plank pose, side view to camera",
+      "Lunge pose, muscles tensed",
+      "Dumbbell press, focused expression",
+      "Yoga tree pose, standing on one leg",
+      "Bottom of squat position, leg muscles engaged",
+      "Kettlebell swing, dynamic pose"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "fitness_clothing",
+    "name": "Fitness Clothing",
+    "category": "item",
+    "options": [
+      "Sports skirt, tight and form-fitting",
+      "Athletic shorts and sports bra",
+      "Tight yoga leggings and athletic top",
+      "Athletic set, comfortable and breathable",
+      "Fitness dress, sporty and stylish",
+      "Cycling shorts and sports bra",
+      "Compression shirt and athletic pants",
+      "Sleeveless sports tank and tight pants"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "selfie_style",
+    "name": "Selfie Style",
+    "category": "visual",
+    "options": [
+      "Raw, authentic mirror selfie",
+      "Candid daily life snapshot",
+      "Natural, unposed shot",
+      "Authentic daily life atmosphere",
+      "Genuine moment captured"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "photo_effect",
+    "name": "Photo Effect",
+    "category": "visual",
+    "options": [
+      "On-camera flash firing",
+      "Motion blur from slow shutter speed",
+      "Noticeable film grain",
+      "Soft natural lighting",
+      "High contrast dramatic lighting",
+      "Slight lens flare",
+      "Shallow depth of field, background blur",
+      "Vignette effect"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "physical_state",
+    "name": "Physical State",
+    "category": "character",
+    "options": [
+      "Healthy athletic build",
+      "Slim and toned physique",
+      "Defined muscle lines",
+      "Natural balanced physique",
+      "Flexible and agile body",
+      "Powerful muscular build"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825998
+  },
+  {
+    "id": "sweat_appearance",
+    "name": "Sweat Appearance",
+    "category": "character",
+    "options": [
+      "Hair disheveled and damp with sweat",
+      "Skin slightly sweaty, glossy look",
+      "Sweat beads on forehead and nose tip",
+      "Back sweat soaking through clothes",
+      "Sweat streaming down cheeks",
+      "Light exercise sweat traces"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "facial_expression",
+    "name": "Facial Expression",
+    "category": "character",
+    "options": [
+      "Cheeks flushed red, dreamy and slightly unfocused eyes",
+      "Focused and serious expression",
+      "Natural and bright smile",
+      "Gritted teeth, determined look",
+      "Calm and relaxed face",
+      "Firm and powerful gaze",
+      "Post-exercise satisfied expression",
+      "Slightly tired but accomplished look"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "miniature_character",
+    "name": "Miniature Character",
+    "category": "character",
+    "options": [
+      "Firefighter",
+      "Sprinter",
+      "Gardener",
+      "Chef",
+      "Construction Worker",
+      "Doctor",
+      "Explorer",
+      "Knight",
+      "Ninja",
+      "Astronaut",
+      "Police Officer",
+      "Painter"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "giant_object",
+    "name": "Giant Everyday Object",
+    "category": "item",
+    "options": [
+      "Burning Matchstick",
+      "CD Disc",
+      "Coffee Mug",
+      "Pencil",
+      "Book",
+      "Stapler",
+      "Paperclip",
+      "Dice",
+      "Desk Lamp",
+      "Alarm Clock",
+      "Toothbrush",
+      "Remote Control",
+      "Eraser",
+      "Tennis Ball",
+      "Egg"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "miniature_action",
+    "name": "Miniature Action",
+    "category": "action",
+    "options": [
+      "Climbing the giant object",
+      "Pushing with great effort",
+      "Lifting overhead",
+      "Jumping to dodge",
+      "Pulling and struggling",
+      "Charging and colliding",
+      "Bracing and resisting",
+      "Sliding down and running",
+      "Leaping over obstacle",
+      "Holding on tight",
+      "Punching",
+      "Crouching defensively"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "plush_expression",
+    "name": "Plush Toy Expression",
+    "category": "character",
+    "options": [
+      "winking with playful expression",
+      "laughing out loud with open mouth",
+      "shocked face",
+      "sleepy face",
+      "grumpy face",
+      "tongue sticking out",
+      "playful smirks",
+      "innocent big eyes",
+      "shy blushing face",
+      "dazed confused expression"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "cute_accessory",
+    "name": "Cute Accessory",
+    "category": "item",
+    "options": [
+      "beanie hats",
+      "headphones",
+      "party cone hats",
+      "traditional Tang dynasty hats",
+      "ski goggles",
+      "funky star-shaped glasses",
+      "thick scarves",
+      "bow ties",
+      "holding small lucky coins",
+      "small crowns",
+      "bow hair clips",
+      "small bell collar"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "festive_archway",
+    "name": "Festive Archway Scene",
+    "category": "location",
+    "options": [
+      "traditional Chinese archway",
+      "Chinese New Year red lantern archway",
+      "golden decorative archway",
+      "cherry blossom archway",
+      "festive light decorated archway",
+      "vintage carved archway",
+      "modern minimalist archway",
+      "fairytale candy archway"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "exhibition_type",
+    "name": "Exhibition Type",
+    "category": "location",
+    "options": [
+      "modern art exhibition",
+      "product design showcase",
+      "museum collection display",
+      "technology innovation exhibition",
+      "fashion jewelry exhibition",
+      "antique artifacts exhibition",
+      "toy collection display",
+      "botanical garden exhibition",
+      "photography portfolio show",
+      "concept design exhibition"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "display_objects",
+    "name": "Display Objects",
+    "category": "item",
+    "options": [
+      "abstract sculptures and installation art",
+      "electronic product prototypes and gadgets",
+      "ancient artifacts and historical relics",
+      "futuristic tech devices and robots",
+      "exquisite jewelry and gemstones",
+      "limited edition toys and figurines",
+      "succulent plants and bonsai",
+      "framed photos and artwork",
+      "concept cars and vehicles",
+      "furniture and home decor"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "pod_structure",
+    "name": "Pod Structure",
+    "category": "location",
+    "options": [
+      "glass cube pod",
+      "open circular platform",
+      "floating display podium",
+      "multi-tiered stepped display",
+      "recessed niche display",
+      "transparent cylindrical showcase",
+      "L-shaped corner podium",
+      "modular interconnected display units",
+      "rotating turntable display",
+      "recessed floor showcase window"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585825999
+  },
+  {
+    "id": "bridal_hair_decoration",
+    "name": "Bridal Hair Decoration",
+    "category": "item",
+    "options": [
+      "red paper-cut flowers and butterflies",
+      "golden phoenix coronet with pearl tassels",
+      "red velvet flower ornaments",
+      "traditional silver hairpins",
+      "jade hairpin with red flowers",
+      "pearl hair net with small crown",
+      "red silk ribbons with bells",
+      "plum blossom paper-cut decorations",
+      "golden buyao swaying hair ornament",
+      "embroidered headband with jade hairpin"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "traditional_bridal_attire",
+    "name": "Traditional Bridal Attire",
+    "category": "item",
+    "options": [
+      "red satin cheongsam",
+      "red embroidered wedding gown",
+      "traditional phoenix coronet and robe",
+      "red Hanfu wedding dress",
+      "gold-embroidered cheongsam",
+      "red dragon-phoenix auspicious gown",
+      "brocade cheongsam with shawl",
+      "traditional grand red wedding attire",
+      "red lace-trimmed cheongsam",
+      "Suzhou embroidery cheongsam gown"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "bridal_jewelry",
+    "name": "Bridal Jewelry",
+    "category": "item",
+    "options": [
+      "white pearl jewelry and small pearl earrings",
+      "gold necklace and earrings set",
+      "jade bracelet and pendant",
+      "ruby necklace and ear ornaments",
+      "traditional silver bracelet and necklace",
+      "pearl necklace and diamond studs",
+      "emerald earrings and necklace",
+      "golden phoenix-shaped brooch",
+      "pearl hair ornaments and necklace set",
+      "red coral bracelet and drop earrings"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "premium_food_subject",
+    "name": "Premium Food Subject",
+    "category": "item",
+    "options": [
+      "handcrafted chocolate truffles",
+      "fresh berry tartlets",
+      "delicate macarons",
+      "Japanese wagashi sweets",
+      "artisanal ice cream scoops",
+      "elegant French pastries",
+      "fresh sushi platter",
+      "handmade pasta bundles",
+      "gourmet cupcakes",
+      "fresh avocado slices",
+      "artisanal cheese balls",
+      "elegant fruit tarts"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "ingredient_bits",
+    "name": "Ingredient Bits",
+    "category": "item",
+    "options": [
+      "cocoa powder and gold flakes",
+      "fresh mint leaves and lemon zest",
+      "toasted nut crumbs and sea salt",
+      "sesame seeds and scallion bits",
+      "matcha powder and red bean bits",
+      "vanilla bean specks and powdered sugar",
+      "chili powder and lime zest",
+      "basil leaves and parmesan crisps",
+      "cinnamon powder and orange zest",
+      "shredded coconut and mango bits",
+      "fresh herbs and olive oil splashes",
+      "edible flowers and pollen"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "imperial_palace_scene",
+    "name": "Imperial Palace Scene",
+    "category": "location",
+    "options": [
+      "Forbidden City snow night with falling snowflakes",
+      "Summer Palace at dusk with golden sunset",
+      "Temple of Heaven at dawn with misty atmosphere",
+      "Forbidden City Meridian Gate with festival lights",
+      "Old Summer Palace ruins under moonlight",
+      "Beihai Park White Pagoda in winter snow",
+      "Tiananmen Gate at dawn break",
+      "Yonghe Temple with incense smoke rising",
+      "Shenyang Imperial Palace with autumn leaves",
+      "Chengde Mountain Resort with summer lotus"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "phoenix_crown",
+    "name": "Phoenix Crown",
+    "category": "item",
+    "options": [
+      "ornate golden phoenix crown",
+      "pearl-embellished phoenix crown",
+      "ruby phoenix hairpin",
+      "jade tassel phoenix crown",
+      "golden dragon playing with pearl hairpiece",
+      "colorful phoenix facing sun headpiece",
+      "gemstone-encrusted phoenix crown",
+      "gold-woven phoenix hairpin",
+      "coral and pearl phoenix crown",
+      "traditional buyao swaying hair ornament"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "flowing_garment",
+    "name": "Flowing Garment",
+    "category": "item",
+    "options": [
+      "flowing red-orange silk robes",
+      "flowing purple silk gauze",
+      "gold-embroidered brocade robes",
+      "red xiapei royal cape",
+      "white Hanfu with ethereal vibe",
+      "blue gradient cloud-pattern robes",
+      "pink cherry blossom themed gown",
+      "green jade-like silk robes",
+      "black dragon-embroidered robes",
+      "colorful feather rainbow gown"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "festive_props",
+    "name": "Festive Props",
+    "category": "item",
+    "options": [
+      "holding red envelope in mouth and unfolded spring festival blessing in hand",
+      "holding lantern with Fu character ornament",
+      "holding spring couplet and firecracker string",
+      "holding gold ingot tray and golden abacus",
+      "carrying flower lantern and plum blossom branch",
+      "holding Fu character plaque and jade ruyi scepter",
+      "holding red envelope bag and Chinese knot",
+      "holding candied hawthorn and dumpling basket",
+      "holding wine cup and plum blossom fan",
+      "holding firecrackers and Fu character paper cutting"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "room_type",
+    "name": "Room Type",
+    "category": "location",
+    "options": [
+      "Living Room",
+      "Bedroom",
+      "Kitchen",
+      "Bathroom",
+      "Study Room",
+      "Dining Room",
+      "Office",
+      "Balcony",
+      "Entertainment Room",
+      "Walk-in Closet"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "interior_design_style",
+    "name": "Interior Design Style",
+    "category": "visual",
+    "options": [
+      "Modern Light Luxury Style",
+      "Nordic Minimalist Style",
+      "Industrial Style",
+      "New Chinese Style",
+      "Modern Minimalist Style",
+      "American Country Style",
+      "European Classical Style",
+      "Japanese Style",
+      "Pop Art Style",
+      "Vintage Retro Style",
+      "Mediterranean Style",
+      "Minimalism Style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826000
+  },
+  {
+    "id": "furniture_set",
+    "name": "Furniture Set",
+    "category": "item",
+    "options": [
+      "Sofa, rug, coffee table, TV",
+      "Double bed, nightstand, lamp, wardrobe",
+      "Dining table, chairs, pendant light, sideboard",
+      "Desk, office chair, bookshelf, desk lamp",
+      "Sofa set, coffee table, TV cabinet, floor lamp",
+      "Bathtub, vanity, toilet, bathroom cabinet",
+      "Stove, cabinets, refrigerator, dining table",
+      "Bean bag, coffee table, floor lamp, bookshelf"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "ceiling_material",
+    "name": "Ceiling Material",
+    "category": "visual",
+    "options": [
+      "White latex flat ceiling",
+      "Gypsum molding decorative ceiling",
+      "Wooden grid ceiling",
+      "Minimalist stepped ceiling",
+      "Metal aluminum ceiling",
+      "Natural wood ceiling",
+      "Artistic paint texture ceiling",
+      "Mirrored glass ceiling",
+      "Fabric upholstered ceiling",
+      "Exposed concrete ceiling"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "wall_material",
+    "name": "Wall Material",
+    "category": "visual",
+    "options": [
+      "White latex paint wall",
+      "Warm white walls with decorative art",
+      "Light gray artistic paint",
+      "Natural wood veneer panel",
+      "Marble texture wall",
+      "Cultural stone decorative wall",
+      "Light wood grain wallpaper",
+      "Light gray diatom mud wall",
+      "White wainscoting panel",
+      "Warm color ceramic tile wall",
+      "Exposed red brick wall"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "floor_material",
+    "name": "Floor Material",
+    "category": "visual",
+    "options": [
+      "Light gray marble tile",
+      "Light gray sintered stone floor",
+      "Warm engineered wood flooring",
+      "Light oak laminate flooring",
+      "Dark gray marble floor",
+      "Natural wood solid floor",
+      "Beige polished tile",
+      "Light gray antique brick tile",
+      "Dark carpet flooring",
+      "Terrazzo flooring",
+      "Polished concrete floor"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "interior_lighting",
+    "name": "Interior Lighting",
+    "category": "visual",
+    "options": [
+      "Natural lighting",
+      "Warm gentle lighting",
+      "Cool bright lighting",
+      "Professional architectural photography lighting",
+      "Side window natural light",
+      "Soft diffused lighting",
+      "Dramatic light and shadow contrast",
+      "Golden hour sunlight",
+      "Overcast gentle lighting",
+      "Cozy evening lighting"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "render_quality",
+    "name": "Render Quality",
+    "category": "other",
+    "options": [
+      "4K Ultra HD resolution",
+      "8K Ultra HD resolution",
+      "hyperrealistic rendering",
+      "film-style rendering quality",
+      "High definition details",
+      "Ultra-fine texture details",
+      "Realistic lighting rendering",
+      "Professional architectural rendering"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "room_condition",
+    "name": "Room Condition",
+    "category": "location",
+    "options": [
+      "Exquisitely decorated, high-end materials with refined details",
+      "Unfinished rough room, exposed concrete surfaces, incomplete state",
+      "Dirty and dilapidated, cluttered layout with worn materials",
+      "Minimalist and tidy, modern urban style",
+      "Luxurious high-end, opulent decoration with exquisite ornaments",
+      "Cozy and comfortable, full of life atmosphere",
+      "Industrial style, exposed pipes and raw materials",
+      "Minimalist, negative space with minimal decoration"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "anatomy_teaching_style",
+    "name": "Anatomy Teaching Style",
+    "category": "visual",
+    "options": [
+      "Proko style (simplified geometry, educational focus, clear construction lines)",
+      "Hampton style (construction lines, form analysis, structural approach)",
+      "Vilppu style (gesture drawing, flowing lines, dynamic feeling)",
+      "Bammes style (German anatomy, precise construction, scientific method)",
+      "Loomis style (classic proportions, standard human figure, structured)",
+      "Bridgman style (mass analysis, architectural feel, heavy volume)",
+      "Hogarth style (dynamic exaggeration, dramatic lines, muscle emphasis)",
+      "Medical anatomy textbook style (precise, scientific, detailed labels)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "construction_line_color",
+    "name": "Construction Line Color",
+    "category": "visual",
+    "options": [
+      "Purple/violet sketch lines (primary construction)",
+      "Cyan/turquoise directional guidelines",
+      "Blue professional construction lines",
+      "Red accent highlight lines",
+      "Orange energetic highlight lines",
+      "Green auxiliary reference lines",
+      "Multi-color combination (purple/cyan/blue mix)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856723,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "fight_style",
+    "name": "Fight Style",
+    "category": "action",
+    "options": [
+      "Wuxia elegant style (light kung fu, sword aura, flowing robes)",
+      "Hardcore realistic combat (hard-hitting, raw impact)",
+      "Stealth assassination style (swift kills, one-hit lethal)",
+      "Hong Kong action style (Jackie Chan-esque, environmental interaction, comedic)",
+      "Japanese chambara style (iaijutsu, single-stroke, contrast of stillness and motion)",
+      "Modern close-quarters combat (MMA, gun-fu hybrid)",
+      "Fantasy combat style (elemental magic, energy shockwaves)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "camera_rhythm",
+    "name": "Camera Rhythm",
+    "category": "visual",
+    "options": [
+      "Rapid montage cutting (multi-angle fast edits)",
+      "Long take single shot (immersive follow-through)",
+      "Slow-motion close-up intercuts (key moment deceleration)",
+      "Orbiting tracking shot (360° rotation around subject)",
+      "Push-pull zoom rhythm (gradually building tension)",
+      "Stabilized tracking mixed with handheld shake (dynamic contrast)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "sci_fi_movie_style",
+    "name": "Sci-Fi Movie Style",
+    "category": "visual",
+    "options": [
+      "Hollywood Sci-Fi Blockbuster",
+      "Cyberpunk Aesthetics",
+      "Post-Apocalyptic Wasteland",
+      "Space Opera Epic",
+      "Dystopian Future",
+      "Hard Sci-Fi Realism",
+      "Japanese Anime Future",
+      "Retro-Futurism"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "futuristic_vehicle",
+    "name": "Futuristic Vehicle",
+    "category": "item",
+    "options": [
+      "Streamlined Anti-gravity Vehicle",
+      "Space Fighter",
+      "Magnetic Levitation Sports Car",
+      "Heavy Cargo Spaceship",
+      "Single-Person Flight Armor",
+      "Hover Motorcycle",
+      "Stealth Reconnaissance Craft",
+      "Quantum Shuttle"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826001
+  },
+  {
+    "id": "cyberpunk_city_scene",
+    "name": "Cyberpunk City Scene",
+    "category": "location",
+    "options": [
+      "Futuristic Megacity Canyon",
+      "Multi-tier Floating City",
+      "Underground Neon Town",
+      "Orbital Space Station City",
+      "Abandoned Industrial Wasteland City",
+      "Underwater Dome City",
+      "Cloud Sky City",
+      "Digital Virtual Matrix City"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "tracking_camera_shot",
+    "name": "Tracking Camera Shot",
+    "category": "visual",
+    "options": [
+      "Wide Angle Tracking Shot with Deep Depth",
+      "Overhead Tracking Shot",
+      "Side Parallel Follow",
+      "Diagonal 45° Tracking",
+      "Spiral Ascent Orbit",
+      "Low Altitude Sweep",
+      "Obstacle Weaving Shot",
+      "Dolly Zoom Tracking"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "action_camera_shot",
+    "name": "Action Camera Shot",
+    "category": "visual",
+    "options": [
+      "Tense Cockpit View",
+      "Tight Action Shot",
+      "First-Person POV",
+      "Action GoPro Mount",
+      "Whip Pan Transition",
+      "Slow-Motion Close-Up",
+      "Dynamic Camera Shake",
+      "Multi-Angle Quick Cut"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "natural_environment",
+    "name": "Natural Environment Type",
+    "category": "location",
+    "options": [
+      "Ancient Rainforest",
+      "Snow Mountain Canyon",
+      "Desert Oasis",
+      "Glacier Canyon",
+      "Volcanic Lava Zone",
+      "Tropical Archipelago",
+      "Grand Canyon",
+      "Arctic Ice Field"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "military_aircraft",
+    "name": "Military Aircraft",
+    "category": "item",
+    "options": [
+      "Fighter Jet",
+      "Stealth Fighter",
+      "Attack Aircraft",
+      "Reconnaissance Plane",
+      "Bomber",
+      "VTOL Aircraft",
+      "UCAV",
+      "Supersonic Interceptor"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "aerial_opening_shot",
+    "name": "Aerial Opening Shot",
+    "category": "visual",
+    "options": [
+      "Epic Ultra Wide Aerial Shot",
+      "Overhead Panoramic View",
+      "Lateral Sweep",
+      "Vertical Dive",
+      "Orbiting Rotation",
+      "Straight Push Forward",
+      "Diagonal Dive",
+      "High Angle Overlook"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "dynamic_tracking_shot",
+    "name": "Dynamic Tracking Shot Style",
+    "category": "visual",
+    "options": [
+      "Third-Person Tight Tracking",
+      "First-Person POV",
+      "Side Follow",
+      "Top-Down Tracking",
+      "45-Degree Rear Tracking",
+      "Dynamic Orbit Tracking",
+      "Split Shot",
+      "Shaky Tracking"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "character_animal",
+    "name": "Animal Character Type",
+    "category": "character",
+    "options": [
+      "Little Bunny",
+      "Little Bear",
+      "Little Kitten",
+      "Little Puppy",
+      "Little Fox",
+      "Little Squirrel",
+      "Little Hedgehog",
+      "Little Bird",
+      "Little Mouse",
+      "Little Dragon"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "fur_color",
+    "name": "Fur Color / Main Color",
+    "category": "character",
+    "options": [
+      "Soft warm pastel yellow",
+      "Pure white",
+      "Light brown",
+      "Creamy white",
+      "Pastel pink",
+      "Pastel blue",
+      "Pastel green",
+      "Light gray",
+      "Orange-yellow",
+      "Light purple"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "body_description",
+    "name": "Body Features",
+    "category": "character",
+    "options": [
+      "Large round head and small oval body",
+      "Round and cute body",
+      "Small and delicate body",
+      "Chubby body",
+      "Slender and elegant body",
+      "Square and sturdy body",
+      "Elongated body",
+      "Compact body"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "character_accessories",
+    "name": "Accessories",
+    "category": "item",
+    "options": [
+      "Small red-orange adventurer scarf and tiny brown satchel",
+      "Small blue bow tie",
+      "Small red neckerchief",
+      "Pink bow",
+      "Small hat",
+      "Small backpack",
+      "Apron",
+      "Small cape",
+      "Glasses",
+      "No accessories"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "character_persona",
+    "name": "Character Persona",
+    "category": "character",
+    "options": [
+      "Cute fantasy explorer",
+      "Little wizard",
+      "Brave little knight",
+      "Curious little explorer",
+      "Gentle little nurse",
+      "Playful little mischief",
+      "Smart little scholar",
+      "Kind little helper",
+      "Little chef",
+      "Little artist"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "design_sheet_type",
+    "name": "Design Sheet Type",
+    "category": "other",
+    "options": [
+      "Character turnaround sheet",
+      "Expression sheet",
+      "Pose sheet",
+      "Full character model sheet",
+      "Action reference sheet",
+      "Color design sheet"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "comic_subject",
+    "name": "Comic Subject",
+    "category": "character",
+    "options": [
+      "two stealthy ninjas",
+      "two samurai warriors",
+      "two thieves",
+      "two assassins",
+      "two swordsmen",
+      "two detectives",
+      "two spies"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "comic_location",
+    "name": "Location",
+    "category": "location",
+    "options": [
+      "ancient Japanese temple",
+      "castle",
+      "palace",
+      "samurai dojo",
+      "ninja village",
+      "forest shrine",
+      "mountain fortress"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "comic_time",
+    "name": "Time of Day",
+    "category": "visual",
+    "options": [
+      "night",
+      "dawn",
+      "dusk",
+      "midnight",
+      "full moon night",
+      "stormy night"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826002
+  },
+  {
+    "id": "comic_art_style",
+    "name": "Comic Art Style",
+    "category": "visual",
+    "options": [
+      "traditional black and white manga style",
+      "modern colored manga style",
+      "ink wash manga style",
+      "American comic book style",
+      "vintage print style",
+      "sketchy hand-drawn style"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "container_type",
+    "name": "Container Type",
+    "category": "item",
+    "options": [
+      "750ml glass wine bottle",
+      "500ml clear glass water bottle",
+      "1 liter glass jar",
+      "glass perfume bottle",
+      "spherical glass vessel",
+      "transparent glass beaker",
+      "vintage glass light bulb",
+      "cylindrical glass vase",
+      "glass test tube",
+      "transparent glass sphere"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "view_type",
+    "name": "View Type",
+    "category": "visual",
+    "options": [
+      "cross-section view",
+      "transparent view",
+      "cutaway view",
+      "side view",
+      "top-down view",
+      "interior view",
+      "see-through section view",
+      "microscopic view"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "landscape_location",
+    "name": "Landscape Location",
+    "category": "location",
+    "options": [
+      "Transylvania vineyard",
+      "Tuscan sunflower field",
+      "Kyoto bamboo forest",
+      "Swiss Alpine village",
+      "Provence lavender field",
+      "Norwegian fjord",
+      "Sahara desert oasis",
+      "Amazon rainforest",
+      "Chinese ink landscape",
+      "Japanese cherry blossom valley"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "landscape_features",
+    "name": "Landscape Features",
+    "category": "location",
+    "options": [
+      "rolling hills, neat vine rows, dirt paths, small farmhouse",
+      "mountain ranges, pine forests, stone paths, mountain cabins",
+      "bamboo paths, stone lanterns, streams, tea house",
+      "golden flower fields, cypress roads, farmhouses, scarecrows",
+      "purple flower fields, stone walls, lavender farmhouses, bees",
+      "waterfalls, cliffs, fishing villages, fishing boats",
+      "palm trees, water pools, palm leaf huts, desert foxes",
+      "rainforest, vines, treehouses, parrots",
+      "mountain peaks, clouds, ancient pines, temple",
+      "cherry blossom trees, shrine, wooden bridge, fox statues"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "lighting_time",
+    "name": "Lighting Time",
+    "category": "visual",
+    "options": [
+      "morning sunlight",
+      "afternoon golden sunlight",
+      "sunset glow",
+      "midday bright sunlight",
+      "dawn soft light",
+      "dusk twilight",
+      "moonlight",
+      "overcast diffused light"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "detail_level",
+    "name": "Detail Level",
+    "category": "visual",
+    "options": [
+      "intricate details",
+      "ultra-fine details",
+      "microscopic details",
+      "refined textures",
+      "realistic details",
+      "minimalist details"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "glass_effect",
+    "name": "Glass Effect",
+    "category": "visual",
+    "options": [
+      "realistic glass reflections",
+      "crystal clear transparency",
+      "glass refraction effects",
+      "iridescent reflections",
+      "frosted glass texture",
+      "thick glass edges",
+      "glass highlights",
+      "transparent glass effects"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "background_type",
+    "name": "Background Type",
+    "category": "visual",
+    "options": [
+      "studio background",
+      "minimalist solid color background",
+      "gradient background",
+      "white background",
+      "dark background",
+      "blurred natural background",
+      "textured background",
+      "seamless background"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "museum_theme",
+    "name": "Museum Theme",
+    "category": "other",
+    "options": [
+      "Ming Dynasty Hanfu",
+      "Tang Dynasty Official Robe",
+      "Song Dynasty Scholar Casual Wear",
+      "Qing Dynasty Court Attire",
+      "Han Dynasty Quju Shenyi Robe",
+      "Ancient Chinese Armor",
+      "Dougong Timber Bracket",
+      "Cloisonné Enamel Craftsmanship",
+      "Song Dynasty Ru Ware Celadon",
+      "Dunhuang Donor Figure Attire",
+      "Traditional Cloud Pattern Brocade",
+      "Qing Dynasty Manchu Women's Qi Attire",
+      "Ancient Jade and Decorative Pattern System",
+      "Ming Style Wooden Furniture Structure"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "ad_regional_style",
+    "name": "Ad Regional Style",
+    "category": "other",
+    "options": [
+      "Chinese advertisements",
+      "Japanese advertisements",
+      "Korean advertisements",
+      "Italian advertisements",
+      "French advertisements",
+      "American advertisements",
+      "Nordic-style advertisements",
+      "Hong Kong retro-style advertisements"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "city_landmarks",
+    "name": "City Landmarks",
+    "category": "location",
+    "options": [
+      "Zhujiang New Town twin towers, Liede Bridge, Baiyun Mountain silhouette, Lingnan arcade buildings",
+      "The Bund, Oriental Pearl Tower, Lujiazui skyline, Shikumen",
+      "Forbidden City corner towers, Guomao CBD, hutong grey tiles, Temple of Heaven silhouette",
+      "Ping An IFC, Shenzhen Bay Bridge, Lianhuashan, coastal skyline",
+      "Leifeng Pagoda, Three Pools Mirroring the Moon, Qianjiang New Town, Southern Song Imperial Street",
+      "Jiuyan Bridge, Taikoo Li, Qingcheng Mountain silhouette, Jinjiang River night",
+      "Giant Wild Goose Pagoda, city wall, Bell Tower, Datang Everbright City",
+      "Hongya Cave, Yangtze River cableway, two rivers merge, mountain city night view",
+      "Zifeng Tower, Nanjing Yangtze River Bridge, Sun Yat-sen Mausoleum, Qinhuai River",
+      "Suzhou classical garden pavilions, Gate of the Orient, ancient canal, Pingjiang Road"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "poster_texture_style",
+    "name": "Texture Style",
+    "category": "visual",
+    "options": [
+      "Generous negative space with light rice-paper grain",
+      "Subtle silk-scroll weave with soft sheen",
+      "Fine mineral pigment grain with handmade paper tactility",
+      "Embossed auspicious clouds and water ripples with gold-foil hot-stamp feel",
+      "Brocade cloud pattern texture with understated luster",
+      "Crackle-glaze pattern with clear layered depth"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826003
+  },
+  {
+    "id": "classical_poem",
+    "name": "Classical Poem",
+    "category": "other",
+    "options": [
+      "A Welcome Rain on a Spring Night",
+      "Quiet Night Thoughts",
+      "On the Stork Tower",
+      "Pity the Farmers (Part One)",
+      "Ode to the Goose",
+      "Gazing at the Waterfall on Mount Lu",
+      "River Snow",
+      "To Wang Lun",
+      "Song of the Wandering Son",
+      "Homecoming",
+      "Song of Chile",
+      "Early Departure from Baidi City",
+      "Mooring at Maple Bridge by Night",
+      "Qingming",
+      "Seeing Meng Haoran Off at Yellow Crane Tower"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "app_icon_category",
+    "name": "App Category",
+    "category": "other",
+    "options": [
+      "Sports app",
+      "Health & medical",
+      "Local services",
+      "Finance & wealth",
+      "Education",
+      "Social & entertainment",
+      "E-commerce",
+      "Travel & navigation"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "collab_theme_a",
+    "name": "Collab Theme A (Story IP)",
+    "category": "other",
+    "options": [
+      "The Little Prince",
+      "My Neighbor Totoro",
+      "Spirited Away",
+      "Harry Potter",
+      "The Lord of the Rings",
+      "Le Petit Prince (original illustration style)",
+      "Alice in Wonderland",
+      "Peter Pan"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "collab_theme_b",
+    "name": "Collab Theme B (Tech / Space / Sci-Fi)",
+    "category": "other",
+    "options": [
+      "SpaceX",
+      "NASA",
+      "China National Space Administration (CNSA)",
+      "European Space Agency (ESA)",
+      "Blue Origin",
+      "Star Trek",
+      "Star Wars",
+      "International Space Station"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "card_game_collection",
+    "name": "Card Collection Theme",
+    "category": "other",
+    "options": [
+      "Ancient Chinese poets",
+      "Water Margin heroes",
+      "Three Kingdoms characters",
+      "Journey to the West characters",
+      "Tang and Song masters",
+      "Wuxia and immortal heroes",
+      "Investiture of the Gods characters"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "ancient_celebrity",
+    "name": "Historical Figure",
+    "category": "character",
+    "options": [
+      "Su Shi",
+      "Li Bai",
+      "Du Fu",
+      "Wang Xizhi",
+      "Li Qingzhao",
+      "Lu You",
+      "Xin Qiji",
+      "Wang Wei",
+      "Bai Juyi",
+      "Ouyang Xiu",
+      "Tao Yuanming"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "heritage_building",
+    "name": "Chinese Heritage Building",
+    "category": "location",
+    "options": [
+      "Temple of Heaven",
+      "Forbidden City",
+      "Summer Palace",
+      "Giant Wild Goose Pagoda",
+      "Potala Palace",
+      "Humble Administrator's Garden",
+      "Yellow Crane Tower",
+      "Yueyang Tower",
+      "Tengwang Pavilion",
+      "Ying County Wooden Pagoda",
+      "Hanging Temple"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "retro_device_theme",
+    "name": "Vintage Device Category",
+    "category": "item",
+    "options": [
+      "vintage electronic devices",
+      "vintage home appliances",
+      "vintage audio and video equipment",
+      "vintage communication devices",
+      "vintage computers and storage media",
+      "1980s–90s digital gadgets"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "utility_app_category",
+    "name": "App Category",
+    "category": "other",
+    "options": [
+      "plant care and maintenance tracker",
+      "workout and fitness check-in",
+      "water intake and meal logging",
+      "sleep and daily routine",
+      "habit tracking",
+      "reading notes and book list",
+      "pet feeding and health log",
+      "household budgeting"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "subject_product",
+    "name": "Subject Product",
+    "category": "item",
+    "options": [
+      "Strawberry Soda",
+      "Durian Ice Cream",
+      "Grapefruit Perfume",
+      "Matcha Latte",
+      "Collagen Face Cream",
+      "Oat Milk",
+      "Blueberry Gum",
+      "Peppermint Balm",
+      "Green Apple Energy Drink",
+      "Lavender Scented Candle",
+      "Longjing Tea"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "apple_style_product",
+    "name": "Apple Style Product",
+    "category": "item",
+    "options": [
+      "3.5-inch Floppy Disk",
+      "Cassette Tape",
+      "Retro Typewriter",
+      "Film Camera",
+      "Gramophone",
+      "Retro Game Console"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "layout_style_bento",
+    "name": "Bento Layout Style",
+    "category": "visual",
+    "options": [
+      "BentoCard",
+      "Modular Layout",
+      "Minimalist Grid",
+      "Tile Design"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "arch_building_name",
+    "name": "Building Name",
+    "category": "location",
+    "options": [
+      "Solomon R. Guggenheim Museum",
+      "Centre Pompidou",
+      "Sydney Opera House",
+      "CCTV Headquarters",
+      "Fallingwater",
+      "Beijing Daxing International Airport",
+      "Shanghai Tower",
+      "Louvre Pyramid",
+      "Sagrada Família",
+      "Beijing National Stadium (Bird's Nest)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "lego_typography_theme",
+    "name": "Poster Theme",
+    "category": "other",
+    "options": [
+      "Toys in the Age of AI",
+      "Algorithms and Childhood",
+      "Cloud Dream Factory",
+      "Modular Curiosity",
+      "Digital Twin Playground",
+      "Creativity Assembly Guide",
+      "Human–Machine Co-Play Futures",
+      "Dialogue of Pixels and Grains",
+      "Gentle Intelligent Agents",
+      "The Creator's Brick Box"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826004
+  },
+  {
+    "id": "sport_luxe_ensemble",
+    "name": "Sport-Luxe Outfit",
+    "category": "item",
+    "options": [
+      "oversized minimalist white hoodie with enormous voluminous sleeves, glossy semi-transparent parachute pants, chunky white-and-orange sneakers",
+      "matte black tech-shell hooded windbreaker, charcoal gray technical cinched pants, silver-gray chunky running shoes",
+      "pearl-white short puffer with reflective stripes, matte navy wide nylon pants, tech sneakers with neon green laces",
+      "icy gray layered sheer long sleeves with sculptural bandeau, metallic silver high-waist sport skirt, black-and-white panda limited sneakers",
+      "oatmeal draped sweatshirt with quilted inflatable-feel vest, champagne parachute pants, cream chunky trainers",
+      "electric lilac cropped windbreaker, obsidian glossy leggings, transparent air-cushion platform sneakers",
+      "terracotta one-shoulder deconstructed sweatshirt, sand-toned sheer layered trousers, distressed off-white retro runners",
+      "cobalt blue seam-taped shell jacket, graphite black wide-leg pants, high-top basketball shoes with neon pink accents"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "beauty_editorial_look",
+    "name": "Hair & Beauty",
+    "category": "character",
+    "options": [
+      "fashionably messy updo bun, bold statement gold earrings, soft natural makeup",
+      "sleek wet-look low ponytail, slim silver ear threads, glass-skin nude base and nude lips",
+      "sharp center-part straight hair, geometric acrylic earrings, matte smoked-brown eye makeup with restrained contour",
+      "lazy half-up topknot, pearl studs, matte peach blush with subtle highlight",
+      "layered pixie crop, hoop metal jewelry, cool-toned rose nude makeup",
+      "full low bun with lifted root volume, crystal drop earrings, healthy luminous skin with soft smoky eyes",
+      "slick tight ponytail, chunky chain ear cuff, crisp brows with classic red lips",
+      "side-parted soft waves, single teardrop crystal earring, warm champagne eyeshadow"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "inflatable_studio_backdrop",
+    "name": "Inflatable Set & Backdrop",
+    "category": "visual",
+    "options": [
+      "large abstract smooth red-pink organic 3D inflatable soft shapes on a smooth neutral beige gradient backdrop",
+      "lavender and electric purple organic inflatable sculptures with a cool fog-gray seamless studio gradient",
+      "mint and jade translucent inflatable tubes interwoven, seafoam-to-cream vertical gradient",
+      "sand-gold dune-like inflatables on a reflective stage, warm white hazy studio background",
+      "stacked charcoal-and-chrome futuristic inflatable blocks, premium gray field with subtle vignette",
+      "coral and blush fragmented inflatable petal clusters, soft rose-blush gradient sky",
+      "semi-opaque latex-like moon-white inflatable rings and arches, ultra-light pearl-gray environment"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "hero_typography_word",
+    "name": "Hero Type Word",
+    "category": "other",
+    "options": [
+      "just",
+      "RUN",
+      "AIR",
+      "FLOW",
+      "VOID",
+      "RISE",
+      "PULSE",
+      "SHIFT"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "campaign_brand_word",
+    "name": "Campaign Brand Word",
+    "category": "other",
+    "options": [
+      "STRIDE",
+      "DRIFT",
+      "APEX",
+      "LUMEN",
+      "FORGE",
+      "PRISM",
+      "ECHO",
+      "VAULT"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "model_styling_outfit",
+    "name": "Model Outfit",
+    "category": "character",
+    "options": [
+      "in an all-white oversized sweatsuit",
+      "in an oatmeal-gray and pure white tonal oversized hoodie and sweatpants set",
+      "in a black minimalist cropped track jacket with matching wide-leg sweatpants",
+      "in a mint cropped windbreaker with cream oversized joggers",
+      "in a navy plush velour sweatshirt with side-stripe athletic pants",
+      "in a pearl-white deconstructed zip sweatshirt with cuffed sweatpants",
+      "in a sand utility hoodie vest layered over a white long-sleeve and wide cargo sweats",
+      "in a lilac matte athletic jumpsuit layered under an oversized crisp white shirt"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "studio_set_floor",
+    "name": "Studio Backdrop & Floor",
+    "category": "visual",
+    "options": [
+      "Light blue studio background with reflective glossy floor",
+      "Ice-gray gradient seamless backdrop, wet-look mirrored floor reflecting the sneaker silhouette",
+      "Soft blush-to-cream gradient, semi-gloss enamel studio floor",
+      "deep charcoal infinite black studio void, polished obsidian-black floor",
+      "cool mint monochrome cyclorama with subtle haze and floor highlights",
+      "warm sand-toned soft light with lightly amber-waxed glossy floorboards",
+      "pure white infinity cyc with lacquered floor, faint cool-blue falloff at edges"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "advert_campaign_tagline",
+    "name": "Campaign Tagline",
+    "category": "other",
+    "options": [
+      "Walk into your next chapter.",
+      "Step outside the timeline.",
+      "Lace up. Level up.",
+      "Momentum is your birthright.",
+      "Soft landing. Loud statement.",
+      "Where comfort meets ambition.",
+      "Your future begins at your feet.",
+      "Render your next step your spotlight."
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "iconic_architecture",
+    "name": "Iconic Architecture",
+    "category": "location",
+    "options": [
+      "Farnsworth House (Mies van der Rohe)",
+      "Villa Savoye (Le Corbusier)",
+      "Fallingwater (Frank Lloyd Wright)",
+      "Sydney Opera House (Jørn Utzon)",
+      "Kimbell Art Museum (Louis Kahn)",
+      "Casa Batlló (Antoni Gaudí)",
+      "Church of the Light (Tadao Ando)",
+      "Solomon R. Guggenheim Museum (Frank Lloyd Wright)",
+      "National Gallery East Building (I. M. Pei)",
+      "Yale Center for British Art (Louis Kahn)",
+      "Guggenheim Museum Bilbao (Frank Gehry)",
+      "Barcelona Pavilion (Mies van der Rohe)",
+      "Notre Dame du Haut Chapel, Ronchamp (Le Corbusier)",
+      "Bank of China Tower Hong Kong (I. M. Pei)",
+      "Lloyd's Building, London (Richard Rogers)"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "poster_art_style",
+    "name": "Poster Aesthetic",
+    "category": "visual",
+    "options": [
+      "minimalist",
+      "constructivist-leaning",
+      "Neo-objective rational layout",
+      "brutalist-poetic",
+      "Mono-ha-inspired restraint",
+      "International Style purism",
+      "contemporary exhibition catalogue",
+      "museum-grade archival sheet aesthetic",
+      "Bauhaus workshop poster temperament",
+      "late-modern solemn typography"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "casual_mirror_outfit",
+    "name": "Mirror Outfit & Accessories",
+    "category": "character",
+    "options": [
+      "wearing an all-black relaxed casual outfit with a crossbody bag and sunglasses perched on her head",
+      "wearing an oatmeal knit co-ord set with a tonal baseball cap and a mini chain-strap shoulder bag",
+      "charcoal utility jacket over black bike shorts with a neon nylon crossbody and cat-eye sunglasses on her head",
+      "billowy white shirt half-tucked into high-waist jeans with a woven tote slung overhead and wired headphones draped around her shoulders",
+      "cropped puffer layered over hoodie with cinched joggers and earth-tone trainers",
+      "matching velour tracksuit with a bucket hat and crystal-clear framed glasses resting on top of her head",
+      "lilac cropped cardigan with pleated mini skirt, saddle crossbody, and satin bow clips",
+      "black faux-leather aviator jacket over a white tee, wide-leg denim, and chunky Chelsea boots"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826005
+  },
+  {
+    "id": "chibi_clone_manner",
+    "name": "Chibi Clone Behavior",
+    "category": "character",
+    "options": [
+      "striking playful poses (jumping, sitting, peace sign, sipping bubble tea) with bright sparkling eyes and a soft cartoon look",
+      "some snapping selfies, others hugging cushions mid-roll, one toasting tiny coffee cups toward the viewer",
+      "hand-in-hand spins, forming heart hands, cheeky cartwheels—eyes glazed like candy-coated highlights",
+      "queued up making silly faces, saluting, throwing finger hearts—hair tufts sculpted like pastel cotton candy",
+      "perched on shoulders like sprites pointing directions and holding handwritten Today Mood signs",
+      "mini tai-chi gestures, masking together, stretching on tiptoes to hang frames as if staging the apartment",
+      "balancing along sofa edges balancing like beams, hauling tiny dessert tiers, giggling upwards with open mouths",
+      "lining up in mirrored micro-sunglasses in a V formation like a idol group key visual"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826006
+  },
+  {
+    "id": "cozy_mirror_room",
+    "name": "Mirror Room Set",
+    "category": "location",
+    "options": [
+      "The background includes a potted plant, a wooden table, neutral-toned décor, and framed artwork",
+      "Floor-length mirror framed by wicker shelving, oatmeal rug, and dried pampas in a ceramic vase",
+      "floating oak shelving, brushed brass sconces beside abstract lithographs, and a compact fiddle-leaf fig",
+      "plaster objet on plinths, matte grey walls with sheer linen curtain diffusing daylight",
+      "window reading nook with stacked magazines, iced coffee sweating in a ribbed glass, and a knit throw",
+      "pegboard with headphones clipped beside mini succulents, desk scented candle and charcoal sketch pads",
+      "dark metal mirror frame beside char-stained wood side table with monochrome photographic prints",
+      "soft clay vases, dunes-toned micro-ceiling walls, recessed LED ribbons washing the alcove evenly"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826006
+  },
+  {
+    "id": "selfie_render_blend",
+    "name": "Light & Hybrid Style",
+    "category": "visual",
+    "options": [
+      "Soft natural light, cozy lifestyle aesthetic, white doodled sparkles and hearts, hybrid of photorealism and cute 3D cartoon, intricately detailed",
+      "hazy southern window morning light with visible dust motes layered under hand-painted star decals in foreground",
+      "fine film grain with warm high-key exposure, neon-pink handwritten doodles constrained to chibi sprites only",
+      "golden-hour side rays carving crisp contours, chalk-textured hearts fluttering along the mirror frame edges",
+      "soft top light plus faint ring-fill keeping skin immaculate while chibi forms read enamel-gloss highlighted",
+      "flat overcast diffuser lighting with watercolor-bleeded sparkle motes drifting mid-air",
+      "low-contrast balanced cool-warm grading, shallow DOF favoring lens center mirror with sticker moons drifting in corners"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826006
+  },
+  {
+    "id": "street_film_photography",
+    "name": "Photography Style",
+    "category": "visual",
+    "options": [
+      "1990s classic street-snap feel with Fujifilm texture—fine grain, gentle fade, soft contrast, diffused overcast daylight",
+      "Fujifilm Superia / 400 color negative—slight magenta lift with milky midtones, candid snapshot framing",
+      "Kodak Gold 200 warmth with grain, soft highlights, subtle green shadows misty London mood",
+      "Ilford HP5 black-and-white street: bold grain, wide latitude, accentuating structure and wet asphalt sheen",
+      "1990s slide-film look: slightly blown skies, natural vignetting, crisp specular edges on chrome and glass",
+      "Contax T* soft highlight bloom with mild longitudinal CA, like a travel frame from a photo album",
+      "Editorial 135 color negative—neutral gray field, desaturated ambience yet LEGO primaries pop, mild motion blur on traffic",
+      "golden-hour side backlight with long shadows, film-style teal-orange split while retaining analog grain"
+    ],
+    "nsfw": false,
+    "createdAt": 1781571856724,
+    "updatedAt": 1781585826006
+  }
+]

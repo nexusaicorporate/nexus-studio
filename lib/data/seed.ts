@@ -125,9 +125,9 @@ export const SYSTEM_PROMPTS: PromptItem[] = [
   sys("Image Generation", "FLUX Prompt Pro", "Expand the idea into a rich Flux prompt with scene, subject detail, lighting, camera and mood.", ["T2I", "I2I"]),
   sys("Image Generation", "Z-Image", "Write a Z-Image prompt focused on clean composition and subject clarity.", ["T2I"]),
   sys("Image Generation", "PonyXL Image", "Write a PonyXL prompt with score tags, subject, style and quality descriptors.", ["I2I"]),
-  sys("Nano Banana", "Nano Banana Prompt Enhancer", "Rewrite into a detailed Nano Banana generation prompt. Output only the prompt.", ["T2I", "I2I", "IT2I"]),
+  sys("Nexus AI", "Nexus AI Prompt Enhancer", "Rewrite into a detailed Nexus AI generation prompt. Output only the prompt.", ["T2I", "I2I", "IT2I"]),
   sys("ChatGPT", "ChatGPT Image Prompt Enhancer", "Rewrite into a clear, vivid image prompt suitable for GPT image models. Output only the prompt.", ["T2I", "IT2I"]),
-  sys("Nano Banana JSON", "NB JSON Prompt Generator", "Convert the idea into a structured Nano Banana JSON spec. Output only JSON.", ["T2I", "I2I", "IT2I"]),
+  sys("Nexus AI JSON", "Nexus JSON Prompt Generator", "Convert the idea into a structured Nexus AI JSON spec. Output only JSON.", ["T2I", "I2I", "IT2I"]),
   sys("VEO JSON", "VEO JSON Prompt Generator", "Convert the idea into a structured Veo JSON video spec (subject, camera_movement, lighting, pacing, audio, master_prompt). Output only JSON.", ["T2V", "IT2V", "VT2T"]),
   sys("Prompt Enhancement", "Flux Prompt Enhance", "Enhance the user's prompt into a vivid Flux image prompt. Output only the prompt.", ["T2I"]),
   sys("Prompt Enhancement", "SDXL Prompt Enhance", "Enhance into a detailed SDXL prompt with quality tags.", ["T2I", "I2I"]),
@@ -151,7 +151,7 @@ export const SYSTEM_PROMPTS: PromptItem[] = [
 ];
 
 
-// ===== PromptFill: Banks (variables) & Templates =====
+// ===== Nexus Studio: Banks (variables) & Templates =====
 function bank(id: string, name: string, category: string, options: string[], nsfw = false): Bank {
   return { id, name, category, options, nsfw, createdAt: now, updatedAt: now };
 }
@@ -176,14 +176,14 @@ function tmpl(name: string, mediaType: Template["mediaType"], content: string, t
 export const SEED_TEMPLATES: Template[] = [
   tmpl("Editorial Portrait", "image",
     "A {{art_style}} photo of {{subject}}, with {{hair_style}}, showing {{expressions}}, shot on {{lens_parameter}}, professional lighting, highly detailed.",
-    ["character", "photography"], { art_style: "Realism" }, false, "Nano Banana Pro"),
+    ["character", "photography"], { art_style: "Realism" }, false, "Nexus AI Studio"),
   tmpl("Product Drink Shot", "image",
     "Professional photo of a {{drink_product}}. On a {{drink_photography_background}}. The {{drink_product}} is {{drink_effect: exploding with oranges and splashes}}. The liquid is swirling around the can, with highlights and shadows on the backdrop. {{camera_angle: high angle overhead shot}}, taken with a DSLR {{lens_parameter}}.",
-    ["product", "photography"], { drink_product: "Fanta softdrink can", drink_photography_background: "orange background" }, false, "Nano Banana Pro"),
+    ["product", "photography"], { drink_product: "Fanta softdrink can", drink_photography_background: "orange background" }, false, "Nexus AI Studio"),
   tmpl("Character Design Sheet", "image",
     "Character design sheet for a {{character_animal: fox}} named {{character_name: June}}, toddler-friendly storybook character, multiple poses and expressions, front view, side view, back view, clean animation model-sheet layout, {{art_style}}, {{line_art_style}}, {{shading_technique}}, white background, professional {{design_sheet_type}}.",
-    ["character", "cartoon"], {}, false, "Nano Banana Pro"),
+    ["character", "cartoon"], {}, false, "Nexus AI Studio"),
   tmpl("Dynamic Comic Page", "image",
     "single dynamic comic book page, {{comic_subject: two stealthy ninjas}} infiltrating {{comic_location: ancient Japanese temple}} at {{comic_time: night}}, multi-panel layout, bold black panel borders, dramatic high-contrast lighting, thick ink lines, halftone shading, {{comic_art_style: traditional black and white manga style}}.",
-    ["creative", "cartoon"], {}, false, "Nano Banana Pro"),
+    ["creative", "cartoon"], {}, false, "Nexus AI Studio"),
 ];

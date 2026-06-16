@@ -7,7 +7,7 @@ import { useSettings } from "@/lib/store/settings";
 import { useLibrary } from "@/lib/store/library";
 const NAV = [
   { group: "Workspace", items: [{ href: "/", label: "Chat & Analyze", icon: MessageSquare }, { href: "/bulk", label: "Bulk Analyze", icon: Images }] },
-  { group: "Studio", items: [{ href: "/studio/character", label: "Character Creator", icon: User }, { href: "/studio/image", label: "Image Studio", icon: ImageIcon }, { href: "/studio/video", label: "Video Studio", icon: Clapperboard }] },
+  { group: "Studio", items: [{ href: "/studio/character", label: "Character Creator", icon: User }, { href: "/studio/image", label: "Image Studio", icon: ImageIcon }, { href: "/studio/video", label: "Video Studio", icon: Clapperboard }, { href: "/studio/workflow", label: "Workflow Studio", icon: Layers }, { href: "/studio/comfy", label: "Comfy Hub", icon: Sparkles }] },
   { group: "Libraries", items: [{ href: "/library/prompts", label: "Prompt Library", icon: BookOpen }, { href: "/library/environments", label: "Environment Library", icon: Mountain }, { href: "/library/ingredients", label: "Ingredient Library", icon: Boxes }, { href: "/library/recipes", label: "Recipe Library", icon: ChefHat }] },
   { group: "System", items: [{ href: "/settings", label: "Settings / Control Panel", icon: Settings }] },
 ];

@@ -1,0 +1,1826 @@
+[
+  {
+    "id": "tpl_photo_grid",
+    "name": "3x3 Photo Grid",
+    "content": "### Photo Grid Composition\n\n**Scene:** 3x3 grid layout, using a seamless cool grey background. The character (facial features exactly as in the uploaded image) is wearing {{clothing}}, ensuring character consistency across all photos.\n\n**Lighting:** {{lighting}}, creating a unified and layered lighting effect.\n\n**Grid Details:**\n1. {{grid_pose}}, unified style, lens parameter: {{lens_param}};\n2. {{grid_pose}}, lens parameter: {{lens_param}}, showing different angles and expressions;\n3. {{grid_pose}}, lens parameter: {{lens_param}}, capturing subtle emotional expressions;\n4. {{grid_pose}}, lens parameter: {{lens_param}}, using depth of field to create layers;\n5. {{grid_pose}}, lens parameter: {{lens_param}}, highlighting the vividness of dynamic moments;\n6. {{grid_pose}}, lens parameter: {{lens_param}}, enhancing visual focus through foreground blur;\n7. {{grid_pose}}, lens parameter: {{lens_param}}, showing elegant posture and relaxed state;\n8. {{grid_pose}}, lens parameter: {{lens_param}}, capturing facial changes under natural light;\n9. {{grid_pose}}, lens parameter: {{lens_param}}, macro close-up showing facial details and texture.\n\n**Post-processing:** Maintain the realism of the original material, smooth contrast, apply moderate softening effects, ensuring uniform overall tone and high-quality texture.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/08/5302794e63fa130b.jpg",
+    "selections": {
+      "clothing": "Charcoal grey sleeveless dress",
+      "grid_pose-0": "Out-of-focus fingers in foreground",
+      "grid_pose-1": "Eyes locked on camera",
+      "grid_pose-2": "Monochrome hand on chin",
+      "grid_pose-3": "Frontal close-up with shadows",
+      "grid_pose-4": "Angled shot",
+      "grid_pose-5": "Hands on collarbones",
+      "grid_pose-6": "Seated half-body profile",
+      "grid_pose-7": "Side macro with water drops",
+      "grid_pose-8": "Looking back with a smile",
+      "lens_param-0": "85mm, f/1.8",
+      "lens_param-1": "85mm, f/2.0",
+      "lens_param-2": "50mm, f/2.2",
+      "lens_param-3": "50mm, f/2.5",
+      "lens_param-4": "50mm, f/3.2",
+      "lens_param-5": "35mm, f/4.5",
+      "lens_param-6": "85mm, f/1.9",
+      "lens_param-7": "50mm, f/1.8",
+      "lens_param-8": "85mm, f/2.2"
+    },
+    "tags": [
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825971
+  },
+  {
+    "id": "tpl_fashion",
+    "name": "Fashion Moodboard",
+    "content": "### Fashion Illustration Moodboard\nA high-end 9:16 vertical fashion illustration moodboard, simulating a tablet scan effect.\n\n**Background:** Hand-painted cream-colored watercolor stained paper with a faint pink grid.\n**Visual Core:** Several glossy vinyl stickers with distinct white die-cut borders and soft shadows.\n\n**Sticker Contents:**\n- **Center:** {{sticker_core}}, with bright lighting.\n- **Left Side:** {{fashion_deconstruct}}.\n- **Bottom Right:** Key hidden layer sticker: a set of neatly folded underwear, showing fine texture.\n- **Interactive Element:** A {{toy_companion}} wearing pink tones that match the user's outfit is leaning on a hand-drawn speech bubble.\n\n**Decorative Details:** Surrounded by crayon-textured {{sticker_decor}} and scribbled calligraphy OOTD annotations.\n**Note:** Absolutely no hands, pens, or physical desk backgrounds in the frame; pure flat art illustration.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/08/4d9f92ccb4113fdd.jpg",
+    "selections": {},
+    "tags": [
+      "character",
+      "creative",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825971
+  },
+  {
+    "id": "tpl_character_selfie",
+    "name": "Character Selfie",
+    "content": "### Character Selfie\nHave {{character_companion}} stand next to the man, {{action_pose}}, while making a playful expression at the camera.\n\n**Background:** Set against the backdrop of {{background_scene}}.\n\n**Requirements:** Maintain the selfie composition, integrating both characters naturally into the frame with unified lighting and natural interaction.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/08/c2312d24d0f2c38e.jpeg",
+    "selections": {},
+    "tags": [
+      "character",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825971
+  },
+  {
+    "id": "tpl_classic_scene",
+    "name": "Classic Scene Miniature",
+    "content": "### Classic Scene Miniature Restoration\nShowcase an exquisite, miniature 3D cartoon-style {{classic_scene}} scene, using a clear 45° isometric view.\n\n**Core Composition:** Place the most classic image of the subject prominently in the center. Automatically pair it with appropriately scaled key element icons, symbolic items, charming little characters, and props that interpret the subject's story. The overall layout should be playful and tightly clustered, like a high-end toy blind box set.\n\n**Rendering & Materials:** Render in {{render_style}} style. Modeling must be fine, rounded, smooth, and rich in texture. Use realistic PBR materials: a mix of soft matte clay for organic forms, glossy resin for water/glass elements, and smooth PVC for structural components. Focus on tactile, \"looks good to touch\" texture details.\n\n**Lighting & Atmosphere:** Use soft, realistic studio lighting with Global Illumination. Utilize soft shadows to create a warm, cozy, and magical atmosphere.\n\n**Layout:** Maintain a clean, minimalist layout with a solid color background that coordinates with the subject's color scheme.\n\n**Text:** At {{position}}, prominently display the subject's name in giant, rounded 3D font, making it slightly float above the scene.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/10/1eac697f5a438542.jpg",
+    "selections": {
+      "classic_scene": "Spirited Away",
+      "render_style": "Octane Render and Cinema 4D",
+      "position": "Top Center"
+    },
+    "tags": [
+      "cartoon",
+      "creative",
+      "game"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825971
+  },
+  {
+    "id": "tpl_corporate_growth",
+    "name": "Corporate Evolution Path",
+    "content": "### Visualized Corporate Growth Path\n**Role Definition**\nYou are a Corporate Evolution Architect. Your goal is to create an ultra-high-density, vertically stacked isometric 3D rendered visualization showing the technological and product history of {{company}}. Showcase a corporate timeline: the base is the humble startup story, rising vertically through product iterations to the modern or future peak.\n\n**Core Competency | Key Visual Strategy (Frameless Tech-Lapse):**\n- **Eradicate Containers:** Strictly forbid base plates, borders, or cross-section views. The bottom edge is the startup base (garage/lab/small office), extending infinitely.\n- **Vertical Timeline:** A \"Zig-Zag Ascent\" through the innovation journey.\n  - Bottom (Foreground): Startup years + the first prototype.\n  - Middle (Ascending): Rapid growth / global expansion / iconic mid-term products.\n  - Top (Background): Current headquarters / ecosystem / future R&D.\n- **Integrated 3D Title:** The corporate logo must be rendered as a giant, film-style 3D font, standing in the foreground, using the company's signature font/material.\n\n**Retrieval & Organization:**\n- Extract several stages of corporate history.\n- List \"classic products\" defining each era.\n- Workforce Evolution: Visualize changes in employees and equipment.\n\n**Composition & Lighting:**\nFrameless, borderless, no cross-sections. A vertical zig-zag timeline stacking product generations from the startup phase at the bottom to the future at the top. Lighting transitions from warm near-modern light (early startup) to clean white/blue LED light (modern tech). The environment and company's classic products evolve with height. Multiple classic products are presented as \"megaliths.\"\nTilt-shift photography with {{render_style}}, aspect ratio {{ratio}}.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/10/a7e87e49c6144fdc.jpg",
+    "selections": {
+      "company": "Nintendo",
+      "render_style": "3D Pixel Art Style",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@langzihan",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_fisheye_urban",
+    "name": "Fisheye Urban Wonder",
+    "content": "### Extreme Fisheye Urban Spectacle\n{{character_originality}}, a photo taken with {{lens_type}}, the subject is a {{subject}} wearing {{school_uniform}}, jumping excitedly in {{urban_location}}, {{dynamic_action}}.\n\n**Visual Focus:**\n- **Foreground Detail:** {{fingernail_detail}}.\n- **Background Landscape:** {{building_cluster}}, streets packed with pedestrians and vehicles.\n- **Surreal Elements:** {{monster_element}} floating above the city, with {{monster_feature}} surrounding the distorted urban landscape.\n\n**Overall Tone:**\nCreate an urban spectacle blending reality and fantasy. The distortion of the fisheye lens contrasted with the appearance of cartoon monsters creates a dreamy and vibrant visual impact.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/14/b21165a2afefaf4d.jpg",
+    "selections": {
+      "lens_type": "Extreme Fisheye Lens",
+      "role": "Young woman",
+      "character_originality": "Use character in attachment, ensure consistency",
+      "school_uniform": "Grey cardigan and plaid skirt uniform",
+      "urban_location": "Shibuya Crossing",
+      "dynamic_action": "One hand exaggeratedly reaching towards the foreground",
+      "fingernail_detail": "Fingernails clearly visible",
+      "building_cluster": "Distorted Shibuya 109 building and other forest of buildings",
+      "crowd_traffic": "Bustling traffic",
+      "monster_element": "Giant pink and blue gradient cartoon monster",
+      "monster_feature": "Giant tentacles and horns",
+      "distorted_city": "Distorted urban landscape",
+      "lighting_atmosphere": "Sunny",
+      "shadow_contrast": "Strong light-shadow contrast",
+      "ratio": "Circular Aspect Ratio",
+      "render_style": "High-quality 2D illustration style"
+    },
+    "tags": [
+      "photography",
+      "creative",
+      "character"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_detective_social",
+    "name": "Historical Figure's Moments",
+    "content": "Use your creativity to brainstorm with me. Imagine {{character_groups}} using {{social_media}}, including replying, commenting, and liking. Design some fun, high-contrast scenarios of characters interacting on social media feeds, combining big events that fit the characters with humor, memes, and contrast. Create a screenshot of {{social_media}}, in English, with aspect ratio {{ratio}}.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/14/6ff892060de55ea9.jpg",
+    "selections": {
+      "character_groups": "Ancient Chinese Founding Emperors",
+      "social_media": "WeChat Moments",
+      "ratio": "9:16 Vertical"
+    },
+    "tags": [
+      "creative",
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@dotey",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_magazine_cover",
+    "name": "Magazine Cover",
+    "content": "### PROJECT GOAL\nCreate a 9:16 travel magazine cover-quality photo based on the uploaded real-life photo, achieving 100% facial feature restoration, presenting a professional, exquisite, and authentic magazine-textured cover.\n\n### SUBJECT\nFully restore based on the uploaded person's facial features; the person is located in {{travel_location}}. Please dress the character according to the real-time weather, temperature, and seasonal clothing logic of that location; the overall style should be natural, elegant, and atmospheric.\n\n### POSE & EXPRESSION\nThe person enters the frame in a standard magazine cover pose, with a touch of composed quality; natural and relaxed facial expressions but with attractiveness.\nBody posture adapts freely according to the scene and weather, presenting a \"real state of traveling locally.\"\n\n### ENVIRONMENT\nThe background shows representative visual cues of the location input by the user. Please present scene logic consistent with the local real-time weather, temperature, and season; maintain a high-end realistic style, not exaggerated or surreal.\nLighting is mainly natural, with a sense of time of the site environment.\n\n### CAMERA & AESTHETICS\nAspect Ratio: {{ratio}}\nComposition: Render full use of vertical space to create a \"cover-level\" visual center. Lens language: Professional studio-level clarity and depth of field; skin texture shows pores and natural grain (no smoothing); overall atmosphere has the realism and beauty of a high-end travel magazine.\n\n### MAGAZINE DESIGN\nModern, clean layout with an international travel magazine vibe.\nMain title, subtitle, and magazine graphic elements can be automatically generated but must match the person and location.\nHigh-end, coordinated color palette.\nThe final result should approach the cover temperament of \"Vogue\" or \"National Geographic Traveler.\"",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/16/a6106f5cc6e92a74.jpg",
+    "selections": {
+      "travel_location": "Snow Village in Northeast China",
+      "ratio": "9:16 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@hx831126",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_manga_reality",
+    "name": "Manga to Reality",
+    "content": "### SUBJECT\n{{character_originality}}, stepping out from the manga panel borders and breaking boundaries. A dynamic and seamless interaction between the real-life version and the manga version.\n\n### SETTING\nLocation: {{comic_scene}}\nA giant manga book is spread open on the floor.\n\n### MANGA DETAILS\n- **Style:** Surreal black and white four-panel manga.\n- **Technique:** Authentic Japanese layout, screentone effects, thick black ink lines, clean and sharp linework.\n- **Content:** The manga version of the same person is trapped inside the manga book.\n- **Contrast:** Strong visual contrast between the monochromatic manga world and the vibrant real world.\n\n### REAL LIFE VERSION\n- **Visual Texture:** Vivid, colorful, photo-realistic, ultra-realistic 8K quality.\n- **Interaction:** Dynamically emerging from the manga surface, interacting directly with the manga version.\n- **Atmosphere:** Meta-style, a humorous encounter.\n\n### TECHNICAL SPECS\n- **Image Quality:** Ultra-realistic, 8K resolution, intricately detailed.\n- **Blending:** Seamless fusion of manga line art and real-life photography.\n- **Aspect Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/16/f5291c56ece88cd9.jpg",
+    "selections": {
+      "character_originality": "Use character in attachment, ensure consistency",
+      "comic_scene": "Beautiful bedroom",
+      "ratio": "9:16 Vertical"
+    },
+    "tags": [
+      "character",
+      "creative",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "PlayForge AI",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_industrial_design",
+    "name": "Industrial Design Masterpiece",
+    "content": "### Goal\nDesign a top-tier industrial design product introduction page using a minimalist promotional layout. Deeply understand the designer's philosophy and style, and fully integrate this design understanding into the product's industrial design and presentation page.\n\n### Content\n- **Designer:** {{designer}}\n- **Product:** {{design_item}}\n\n### Visuals\n- **Designer Intro:**\nOccupies a very small part of the frame, including a bio (with an atmospheric portrait), the designer's thoughts and design philosophy for this product, and their signature.\n- **Core Content:**\n80% or more of the frame is used to present the product itself—a top-tier product design illustration fully consistent with the designer's own style and methods (a complete single product effect presentation). Use different compositions based on the industrial design results. The overall color scheme must match the designer's style and product content.\n- **Composition:**\nFinal Composition: {{ratio}}.\nThe overall layout is clear in hierarchy, organized, and highly stylish and characteristic.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/17/7dbe43ae66b1a78c.jpg",
+    "selections": {
+      "designer": "Jonathan Ive",
+      "design_item": "Drone",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825972
+  },
+  {
+    "id": "tpl_photo_grid_v2",
+    "name": "3x3 Photo Grid (Out of Box)",
+    "content": "### Photo Grid Composition (Out-of-Box Version)\n\n**Scene:** 3x3 grid layout, using a seamless cool grey background. The character (facial features exactly as in the uploaded image) is wearing {{clothing}}, ensuring character consistency across all photos.\n\n**Lighting:** {{lighting}}, creating a unified and layered lighting effect.\n\n**Grid Details:**\n1. {{grid_pose}}, unified style, lens parameter: {{lens_param}};\n2. {{grid_pose}}, lens parameter: {{lens_param}}, showing different angles and expressions;\n3. {{grid_pose}}, lens parameter: {{lens_param}}, capturing subtle emotional expressions;\n4. {{grid_pose}}, lens parameter: {{lens_param}}, using depth of field to create layers;\n5. {{grid_pose}}, lens parameter: {{lens_param}}, highlighting the vividness of dynamic moments;\n6. {{grid_pose}}, lens parameter: {{lens_param}}, enhancing visual focus through foreground blur;\n7. {{grid_pose}}, lens parameter: {{lens_param}}, showing elegant posture and relaxed state;\n8. {{grid_pose}}, lens parameter: {{lens_param}}, capturing facial changes under natural light;\n9. {{grid_pose}}, lens parameter: {{lens_param}}, macro close-up showing facial details and texture.\n\n**Post-processing:** Maintain the realism of the original material, smooth contrast, apply moderate softening effects, ensuring uniform overall tone and high-quality texture.\n\n**Special Instructions:** The central grid image is not confined to its own square, creating a 3D visual effect as if jumping out of the frame. The central character occupies a larger area and is shown in full-body, overlapping other squares and casting shadows on them, creating a naked-eye 3D visual tension.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/17/77bfd2bf7abc3eac.png",
+    "selections": {
+      "clothing": "Charcoal grey sleeveless dress",
+      "grid_pose-0": "Out-of-focus fingers in foreground",
+      "grid_pose-1": "Eyes locked on camera",
+      "grid_pose-2": "Monochrome hand on chin",
+      "grid_pose-3": "Frontal close-up with shadows",
+      "grid_pose-4": "Angled shot",
+      "grid_pose-5": "Hands on collarbones",
+      "grid_pose-6": "Seated half-body profile",
+      "grid_pose-7": "Side macro with water drops",
+      "grid_pose-8": "Looking back with a smile",
+      "lens_param-0": "85mm, f/1.8",
+      "lens_param-1": "85mm, f/2.0",
+      "lens_param-2": "50mm, f/2.2",
+      "lens_param-3": "50mm, f/2.5",
+      "lens_param-4": "50mm, f/3.2",
+      "lens_param-5": "35mm, f/4.5",
+      "lens_param-6": "85mm, f/1.9",
+      "lens_param-7": "50mm, f/1.8",
+      "lens_param-8": "85mm, f/2.2"
+    },
+    "tags": [
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "PlayForge AI",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825973
+  },
+  {
+    "id": "tpl_raindrop_art",
+    "name": "Raindrop Art",
+    "content": "### Raindrop Art\n**Core Performance:**\nCapture the moment a raindrop falls into the water surface, with the splashing droplets forming an abstract {{rain_shape}} in the air.\n\n**Artistic Vision:**\nThe resulting water droplet form is relatively conceptual, following the dynamic feel of the splash, yet the artistic vision can be felt through the movement or pose. The image is a frozen-in-time artwork of the subtle beauty of rain interacting with nature, blending dynamism and elegance to present a poetic visual expression.\n\n**Environment/Background:**\nThe background is a hazy rainy scene.\n\n**Specifications:**\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/19/6b6e14845635b168.jpg",
+    "selections": {
+      "rain_shape": "Ballerina",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825973
+  },
+  {
+    "id": "tpl_art_growth",
+    "name": "Artistic Evolution Path",
+    "content": "### Visualized Artistic Growth Path\n**Role Definition**\nYou are a History Evolution Architect. Your goal is to create an ultra-high-density, vertically stacked isometric 3D gallery render showing the development history of {{art_type}}. Use a gallery to showcase a milestone timeline: the base is the humble early stages, rising vertically through historical changes to the modern or future peak.\n\n**Core Competency | Key Visual Strategy (Frameless Tech-Lapse):**\n- **Gallery Simulation:** Use a multi-level art gallery to host the development. Levels represent temporal progression, with different \"rooms\" potentially showing different styles from the same era.\n- **Eradicate Containers:** Strictly forbid base plates, borders, or cross-section views. The bottom edge is the historical origin (primitive or ancient society).\n- **Vertical Timeline:** A \"Zig-Zag Ascent\" through the innovation journey.\n  - Bottom (Foreground): Origins and prototypes.\n  - Middle (Ascending): Brilliant development from ancient to modern times.\n  - Top (Background): Current development status and future possibilities.\n- **Integrated 3D Title:** A clear title consistent with the theme.\n\n**Retrieval & Organization:**\n- Extract several important historical development stages.\n- List \"classics\" defining each era.\n- Changes in tools and media.\n\n**Composition & Lighting:**\nIsometric gallery view. A vertical zig-zag timeline stacking development from the base to the future at the top. The environment and era-defining classics evolve with height. Multiple classic products are presented as \"megaliths.\"\nTilt-shift photography with {{render_style}}, aspect ratio {{ratio}}.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/19/47a2cbfec635a29a.jpg",
+    "selections": {
+      "art_type": "Fine Arts",
+      "render_style": "3D Pixel Art Style",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@sundyme",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825973
+  },
+  {
+    "id": "tpl_miniature_desk",
+    "name": "Window Desk Miniature",
+    "content": "### Window-side Desk Miniature Scene\nDisplays a scene on a desk by a window.\n\n**Core Content:**\nA miniature restoration of a classic scene from \"{{show_name}}\", using the {{render_style}} style, fully embodying the artistic expression of miniature photography.\n\n**Environment/Background:**\nThe background is a real desk, with some crafting tools and scattered books, creating a sense of messiness as if the scene was just finished. There are also woven plans and prototype manuscripts on the desk.\n\n**Window Interaction:**\nOutside the window, a real {{character_name}} is curiously looking inside at the work on the desk.\n\n**Image Specs:**\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/20/8e9c9c28b3d2cf1b.jpg",
+    "selections": {
+      "show_name": "My Neighbor Totoro",
+      "character_name": "Totoro",
+      "render_style": "Felt and Clay",
+      "ratio": "4:3 Horizontal"
+    },
+    "tags": [
+      "photography",
+      "creative",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825973
+  },
+  {
+    "id": "tpl_japanese_product_poster",
+    "name": "Japanese Product Poster",
+    "content": "### Premium Japanese-style Product Poster (16:9 Landscape)\n\nPremium Japanese-style product poster in 16:9 landscape format, editorial design showcasing {{fruit_1}} juice skin packaging concept with sophisticated visual storytelling:\n\n**LEFT SIDE (40% of canvas):**\n- **Hero product:** One large {{fruit_1}} juice skin package displayed vertically with dramatic gentle lighting, showing ultra-realistic {{fruit_1}} peel texture wrapped around rectangular container, skin texture that matches the characteristic features of {{fruit_1}}, covering entire surface, with natural texture, color and detail variations specific to this fruit, looks exactly like real {{fruit_1}} skin stretched over package\n- **Below:** One cross-sectioned fresh {{fruit_1}} showing flesh texture that matches the characteristic features of {{fruit_1}}, displaying its unique internal structure and color\n- **Japanese typography vertically aligned:** \"{{fruit_1}} Skin\" ({{fruit_1}} Skin) in elegant thin gothic font\n- **Subtitle:** \"Fruit Juice Skin / {{fruit_1}}\" in refined style\n- **Small design philosophy text in Japanese**\n\n**CENTER (30% of canvas):**\n- **Generous white negative space (Ma - Negative Space)**\n- **Minimal geometric elements:** delicate thin lines\n- **Floating text:** \"Natural materials\" (natural materials)\n- **Subtle minimalist brand mark**\n- **Very subtle {{fruit_1}} characteristic texture pattern in background (low opacity)**\n\n**RIGHT SIDE (30% of canvas):**\n- **Two {{fruit_1}} juice skin packages arranged artistically at different angles and heights**\n- **One whole fresh {{fruit_1}} with natural skin texture that matches the characteristic features of this fruit**\n- **Typography:** \"Natural Packaging / Natural packaging\"\n- **Tagline:** \"The skin is the package / The skin is the package\"\n- **Detail callouts pointing to skin texture details that match the fruit's characteristics**\n\n**DESIGN PRINCIPLES:** Abundant white space, asymmetrical balance, Wabi-sabi aesthetic, Muji/Noritake editorial minimalism\n**COLOR PALETTE:** tones that match {{fruit_1}} characteristics, pure white background, characteristic flesh color as accent\n**PHOTOGRAPHY:** Soft diffused studio lighting, ultra-sharp macro details showing texture that matches the fruit's characteristics, hyperrealistic rendering\n**CRITICAL:** The {{fruit_1}} skin packaging must look incredibly realistic - actual organic texture that fully matches the natural characteristics of this fruit, including its unique texture, color and details, NOT plastic\n\n16:9 widescreen, high-end Japanese product poster, gallery quality",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/25/a574127d24ac34e3.png",
+    "selections": {
+      "fruit_1-0": "Lemon",
+      "ratio": "16:9 Horizontal"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@berryxia",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_luxury_editorial",
+    "name": "Luxury Editorial Portrait",
+    "content": "### High-Fashion Luxury Editorial Portrait\n\nUse the uploaded reference image as the same {{subject}}. Preserve identity strictly: same face structure, skin tone, hairstyle. No gender swap.\n\n**POSE & COMPOSITION:**\nThree-quarter back view. Back partially facing camera, torso angled slightly left. Head gently turned to the right, revealing a clean side profile. Eyes softly lowered or closed. Shoulders relaxed. The open back is the main visual focus.\n\n**WARDROBE:**\n{{clothing}}. Deep V open back with elegant drape. Matte fabric, no shine, no glitter, no bridal elements.\n\n**ACCESSORIES:**\nSmall delicate earrings. {{jewelry_style}} with subtle gemstone details resting along the spine.\n\n**FLOWERS:**\n{{flower_type}} held over the right shoulder. The flowers partially overlap the shoulder, creating layered fashion blocking.\n\n**CAMERA:**\nEye-level to slightly above shoulder height. 85mm portrait lens look. Shallow depth of field, compressed perspective. No wide-angle distortion.\n\n**LIGHTING:**\n{{lighting}}. Key light from upper-left, illuminating side face and upper back. Subtle fill light for skin texture. Very soft rim light outlining dress and flowers. Low contrast, smooth tonal transitions.\n\n**BACKGROUND:**\n{{background_style}}. No environment, no props, no texture.\n\n**STYLE:**\nLuxury fashion magazine aesthetic. Elegant, restrained, timeless. Natural refined skin texture, not over-smoothed.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/25/bb94a5f7b87af2ee.jpg",
+    "selections": {
+      "subject": "Woman",
+      "clothing": "Minimalist black couture gown",
+      "background_style": "Clean pure white studio background",
+      "lighting": "Soft editorial studio lighting",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@sidona",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_pixar_deconstruction",
+    "name": "Role Deconstruction",
+    "content": "### Character Essence Unveiled Upgrade Version\n\n**CORE TASK:** Create a film-style 3D {{render_style}} style character deconstruction poster. Transform {{subject}} into a stylized realistic animated character.\n\n**📷 CHARACTER & MODE:**\n- **Character Mode:** {{character_type_pixar}}. Strictly maintain identity, facial structure, and aura based on the reference image.\n\n**📷 ITEM LAYOUT:**\nUsing {{item_layout_pixar}}, a total of 30-36 items arranged orderly around the character.\n- **Category 1: Fashion Atelier** - {{fashion_parts}}. All parts suspended and separated, showing fine material textures.\n- **Category 2: Beauty Collection** - {{beauty_items}}. Showing glass transparency and liquid refraction.\n- **Category 3: Modern Essentials** - {{digital_items}}. Showing PBR materials of metal and glass.\n- **Category 4: Luxury & Hobbies** - {{luxury_hobby_items}}. Gemstones must have dispersion effects.\n\n**📷 TECHNICAL SPECIFICATIONS:**\n- **Exploded View:** Use elegant dashed/solid lines to connect floating parts, with circular numbered tags 01-36.\n- **Design Elements:** Includes macro material samples, measurement rulers, and attribute radar charts.\n- **Typography:** Main title \"📷 THE ART OF DECONSTRUCTION 📷\", subtitle \"Character Essence Unveiled\".\n- **Color Scheme:** {{theme_pixar}}.\n- **Rendering:** 4K resolution, path-traced rendering, PBR material workflow, extreme hair and skin details.\n\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/26/1931582fcfb9d1e5.png",
+    "selections": {
+      "render_style": "Pixar Cartoon Rendering",
+      "subject": "Fashionable Female Character",
+      "character_type_pixar": "Single: Focus on personal lifestyle",
+      "ratio": "16:9 Horizontal"
+    },
+    "tags": [
+      "character",
+      "creative",
+      "cartoon",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@berryxia",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_street_self_dialogue",
+    "name": "Street Self-Dialogue",
+    "content": "### Street Self-Dialogue\n\n1. **CORE THEME & STYLE:** A deeply storytelling street photography portrait capturing a philosophical moment of \"self-dialogue.\" Uses natural lighting, film-style narrative feel, and motion blur artistic effects.\n2. **SCENE & BACKGROUND:** {{building_cluster}}. Time & Lighting: {{lighting_atmosphere}}. Light focused on the central character. Atmosphere: Busy, alienated, filled with contrast between dynamics and tranquility.\n3. **CENTRAL CHARACTER:** Located in the center, standing still, with a pensive expression or calmly staring at the camera, forming a sharp contrast with the rush of the surrounding environment. Wardrobe: {{clothing}}, facial features highly consistent with the uploaded image.\n4. **SURROUNDING CROWD (KEY NARRATIVE ELEMENT):** All passing pedestrians are \"different selves\" of the central character, wearing clothes representing their social roles: surrounding characters' faces must remain highly consistent with the uploaded image. Numerous \"selves\" in different outfits weave around the central character. Surrounding characters move rapidly, creating significant motion blur and visual trailing, contrasting with the static nature of the central character. Surrounding characters and the central character share the same face and identity—do not Introduce irrelevant people. Surrounding characters need accurate spatial relationships (front/back) with the central character.\n5. **PHOTOGRAPHY & COMPOSITION:** {{lens_param}}, leaning towards character close-up with larger depth of field. Central character's face and upper body are sharp and clear, while foreground and background (including motion-blurred crowd and street environment) are moderately blurred. Composition: Central composition, half-body style, occupying a large portion of the center. Camera angle slightly above the character looking slightly downward, only the central character looks up at the camera, {{ratio}}.\n6. **QUALITY & TONE:** High resolution, delicate film texture, slight grain. Tones dominated by warm oranges and deep blue shadows, vivid but layered colors.\n7. **EMOTION & STORY:** Conveys feelings of loneliness, introspection, identity multiplicity, and the complexity of inner dialogue. The image freezes a quiet philosophical moment within dynamics.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/25/fd3cbc98f5afa970.png",
+    "selections": {
+      "building_cluster": "New York skyscraper cluster",
+      "lighting_atmosphere": "Sunset afterglow",
+      "clothing": "Black slim-fit suit",
+      "lens_param": "85mm, f/1.8",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_wooden_art_xmas",
+    "name": "Layered Wood Art",
+    "content": "### Wood Art & Xmas (Laser-Cut Layered Art)\nA stunning, detailed illustration of multi-layered wooden art created by laser cutting techniques.\n\n**Visual Style:**\n- **Technique:** Laser-cut wooden panel art with numerous intricate layers and precise craftsmanship.\n- **Art Style:** Abstract art where each layer features a distinct, complementary color.\n- **Theme:** The artwork theme is {{xmas_theme}}, integrating geometric shapes and rich textures, showcasing maestro-level artistry.\n\n**Photography & Presentation:**\n- **Style:** Top-tier product promotion photography, emphasizing depth and the authentic tactile quality of wood.\n- **Aesthetics:** Professional commercial photography composition, using light and shadow to define the edges of each wooden layer, resulting in a clean and highly stylish image.\n\n**Specifications:**\n- **Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/26/3170b82b79a7801e.jpeg",
+    "selections": {
+      "xmas_theme": "an abstract Christmas Tree",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_brand_concept_object",
+    "name": "Brand Concept Object",
+    "content": "### Brand Concept Object\nA high-end, glossy concept art magazine editorial shot of a unique, unexpected functional object conceptualized and designed by {{company}}.\n\n**1. The Concept & Object (AI Invention):**\nBased on the design philosophy, heritage, and material vocabulary of {{company}}, reinterpret and design a novel utility product: {{design_item}}. The object should feel sculptural yet functional, and definitely NOT a standard item like clothing or bags usually produced by the brand.\n\n**2. Materials & Details (Hyper-Premium):**\nThe object is constructed from ultra-premium, highly tactile materials characteristic of {{company}} (e.g., patinated exotic leather, brushed aerospace-grade titanium, sculpted matte ceramics, molded carbon fiber, or technical high-fashion textiles). Every detail is hyper-realistic: visible stitching, microscopic material grain, precision engravings, and complex texture contrasts.\n\n**3. Photography & Lighting (film-style Studio):**\nShot on a medium format Phase One camera with a 100mm macro lens. Extremely shallow depth of field, with focused crisp look on the hero details of the object and a creamy, smooth bokeh background. The lighting is sophisticated studio softbox lighting: gentle, enveloping fill light with precise rim lighting to accentuate contours and material textures.\n\n**4. Environment:**\nA seamless, impeccably clean studio cyclorama background in a pure, ultra-light pastel tone (e.g., desaturated mint, pale blush, or off-white), free of shadows.\n\n**5. Layout & UI Elements (Strict Placement):**\n- **Bottom Right Corner:** A small, understated, monochrome gray logo of {{company}}.\n- **Bottom Left Corner:** Small, minimalist monochrome gray text. Format: \"CONCEPT STUDY: [Invented Product Name]. MATERIAL: [Main Materials]. SS25.\" Font styled like Manrope Regular with very tight tracking.\n\n**Specifications:**\n- **Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/27/e893bd88e9ea324b.png",
+    "selections": {
+      "company": "Apple",
+      "design_item": "Drone",
+      "ratio": "1:1 Square"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@AmirMushich",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_fashion_focus",
+    "name": "Fashion Magazine - FOCUS",
+    "content": "### High-end Fashion Magazine Cover - FOCUS\nA high-end fashion magazine cover. The character is {{character_originality}}, with a confident and avant-garde aura, strong body tension, dynamic pose, staring straight at the camera.\n\n**Visual Core:**\n- **Wardrobe:** {{clothing}}, modern editorial styling.\n- **Action:** The model's hands form a \"viewfinder\" gesture, as if interacting with a rectangular selection box that covers the face and shoulders.\n- **Rule:** Only the area inside the selection box is sharp and in natural color; the area outside the box is entirely grayscale and heavily pixelated, with no color or clear regions.\n\n**Photography & Lighting:**\n- **Angle:** Low-angle shot looking up.\n- **Lighting:** Soft diffused studio lighting.\n\n**Layout & Typography:**\n- **Top:** Centered bold uppercase wide sans-serif title \"FOCUS\", with \"DECEMBER 2025\" in small text above it; \"VOL + random 2 digits\" at the bottom left of the title.\n- **Bottom Left:** Text block (short confident fashion title, short paragraph, barcode).\n- **Right:** \"FASHION INTERVIEW\"; \"THE EDIT\" in small serif font and a \"random 01-09 digit\" in large font at the bottom right.\n- **Layering:** The model overlaps/occludes the title, creating clear depth and a clean, modern look.\n- **Color:** All fonts are white, in a montage style, creating a strong contrast between text and image.\n\n**Specifications:**\n- **Aspect Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/29/ebe3e34755c3ef2e.png",
+    "selections": {
+      "character_originality": "Use character in attachment, ensure consistency",
+      "clothing": "High-end autumn/winter fashion apparel",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Latte",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825974
+  },
+  {
+    "id": "tpl_city_glimpse",
+    "name": "City Glimpse",
+    "content": "### City Glimpse - Urban Miniature\nA suitable artistic tool (e.g., {{art_tool}}), as if in the middle of creation, sketching a delicate, elegant curve from the bottom left to the top right.\n\n**Visual Core:**\n- **Stroke Landscape:** Within the brushstroke lies a miniature landscape of famous {{city_name}} landmarks: a curated set of iconic locations, blending local history, modern architecture, natural elements, and urban life.\n- **Art Style:** The overall style combines {{art_style}} with academic poster design: diverse brushstrokes and marks create a 3D sense of space, presenting a three-dimensional miniature landscape and low-relief texture.\n- **Color:** {{dominant_colors}} as the dominant tones, interspersed with traditional {{city_name}} aesthetic elements and intertwined with the modern city skyline.\n\n**Composition & Background:**\n- **Perspective:** Minimalist top-down view, with large areas of negative space outside the main stroke.\n- **Background:** Textured high-quality fiber paper, bright and clean tones (e.g., {{background_color_clean}}), creating a clear contrast with the main subject and fostering a sense of purity.\n- **Details:** The tip of the art tool pauses at the end of the stroke (top right), with clean negative space beyond the stroke; the miniature landscape exists only inside the stroke, densely detailed but not cluttered.\n\n**Master-level Typography:**\n- **Main Title:** \"{{city_name}}\" in an artistic font matching the painting style aesthetics, highly attractive with high contrast as the core visual hierarchy.\n- **Subtitle:** \"{{city_glimpse_subtitle}}\" in sophisticated typography that echoes the main title and painting texture.\n- **Decorative Text:** All using font styles integrated with {{art_style}}, creating rhythm and hierarchy through segmentation, echoing the main title.\n\n**Specifications:**\n- **Quality:** High detail, hyper-realistic effect, HDR, 8K resolution.\n- **Aspect Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/29/d02fe64ad317ad60.jpg",
+    "selections": {
+      "city_name": "Kyoto",
+      "art_style": "Ukiyo-e",
+      "art_tool": "Ink Brush",
+      "dominant_colors": "Traditional Kyoto red and antique ink black",
+      "background_color_clean": "Pure White",
+      "city_glimpse_subtitle": "The thousand-year-old ancient capital",
+      "ratio": "4:3 Horizontal"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Aztec Alpaca",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825975
+  },
+  {
+    "id": "tpl_multiple_selves_indoor",
+    "name": "Multiple Self-Dialogue (Indoor Party)",
+    "content": "### Multiple Self-Dialogue (Indoor Party Edition)\n\n**1. Core Theme & Style:** A storytelling photography portrait with exceptional quality, capturing a philosophical moment of \"self-dialogue.\" It presents a film-style narrative feel.\n\n**2. Scene & Location:** A modern residential interior. It features a group of identical-looking people engaging in various activities within the room, resembling a fantastical holiday party.\n\n**3. Central Character (Visual Anchor):** Located in the exact center of the living room, standing perfectly still with a pensive expression, eyes calmly staring at the camera. This absolute stillness forms a sharp contrast with the surrounding hustle. Wardrobe: {{clothing}}, facial features strictly consistent with the uploaded image.\n\n**4. Surrounding Figures (Multiple Selves):** There are 5 other \"selves\" in the room, identical in appearance to the central character, wearing different outfits (matching their actions) and engaging in the following:\n- Person A is {{action_status}};\n- Person B is {{action_status}};\n- Person C is {{action_status}};\n- Person D is {{action_status}};\n- Person E is {{action_status}}.\nEveryone is busy with their own task in the living room without interfering with each other, creating an atmosphere of absurd holiday-like joy.\n\n**5. Details & Composition:**\n- **Photography Specs:** Shot with {{lens_param}}. The central character's face and upper body are sharp and clear, while foreground/background figures and objects are moderately blurred to create excellent depth of field.\n- **Environmental Detail:** A decorative wooden carving hangs on the wall, reading \"2025,\" where the digit \"5\" appears wobbly and on the verge of falling off.\n\n**6. Quality & Tone:** High resolution, fine film texture with slight grain. The color palette is dominated by warm oranges (warm lighting) and deep blue shadows (complementary colors), providing vivid and layered colors.\n\n**7. Emotion & Story:** Conveys a complex sense of identity multiplicity and introspection within solitude. The image freezes a quiet philosophical moment amidst dynamic activity.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2025/12/30/fe7893150e65cc54.jpg",
+    "selections": {
+      "clothing": "autumn/winter casual wear",
+      "action_status-0": "playing PS5",
+      "action_status-1": "playing the guitar",
+      "action_status-2": "coding in front of a computer",
+      "action_status-3": "painting with a banana",
+      "action_status-4": "putting on diving fins",
+      "lens_param": "85mm, f/1.8",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825975
+  },
+  {
+    "id": "tpl_character_sheet_art",
+    "name": "Character Sheet",
+    "content": "### Character Sheet\n  **Core Content:** Character Sheet, based on {{character_originality}}.\n  \n  **Composition:** Multiple angles, expressive facial variations.\n  \n  **Medium:** {{art_tool}}.\n  \n  **Background:** {{background_style}}.\n  \n  **Style:** {{draw_style}}, sharp linework.\n  \n  **Color:** Soft pastel color palette, high contrast.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/04/d530d1e38098944e.png",
+    "selections": {
+      "character_originality": "Create an original character",
+      "art_tool": "Ink Brush",
+      "background_style": "Minimalist solid color background",
+      "draw_style": "Hand-drawn Manga Style"
+    },
+    "tags": [
+      "character",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825975
+  },
+  {
+    "id": "tpl_underwater_caustics",
+    "name": "Underwater Caustics Portrait",
+    "content": "### Creative Underwater Photography: Beauty of Caustics\n\n**Subject:**\nUse the character from the uploaded image as {{subject}}, strictly maintaining facial consistency.\nThe character is wearing a {{clothing}}, which appears semi-transparent due to being wet underwater.\n\n**Action & Scene:**\nThe character is immersed in {{underwater_color}}, relaxed, and looking up slightly towards the surface.\nSurrounded by many {{creatures}}, creating a natural ecological flow.\n\n**Lighting (Caustics):**\nThe core visual effect is strong **Caustics**: sunlight passing through the wavy water surface, casting undulating light patterns onto the character's face and clothes.\nBeams of light create a distinct **Tyndall Effect**, piercing through the water to enhance spatial depth.\n\n**Atmosphere & Quality:**\n- **Aura:** Dreamy, surreal, quiet, film-style.\n- **Quality:** hyperrealistic, 8K resolution, high detail, capturing every droplet and bubble.\n\n**Specifications:**\n- **Ratio:** {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s41.ax1x.com/2026/01/05/pZdAL9K.jpg",
+    "selections": {
+      "subject": "Woman",
+      "clothing": "white shirt and lingerie",
+      "underwater_color": "deep teal transparent underwater",
+      "creatures": "many small silver fish",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825975
+  },
+  {
+    "id": "tpl_daily_snapshot",
+    "name": "Daily Snapshot",
+    "content": "### Daily Snapshot\n\n**Scene Setting:**\n{{background_scene}}.\n\n**Photography Style:**\n{{lighting}}. Not carefully composed or lit, presenting an authentic sense of recording.\n\n**Character Features:**\nThe subject is {{subject}}, with a {{clothing}}. {{accessory_glasses}}.\n\n**Action & Composition:**\n{{action_status}}. Using an {{camera_angle}}.\n\n**Outfit Style:**\n{{underwear_style}}.\n\n**Aspect Ratio:**\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/08/599f54de89ca6198.jpg",
+    "selections": {
+      "background_scene": "Dark, ordinary room with a plain wall behind the subject",
+      "lighting": "Casual portrait photography with a daily snapshot vibe",
+      "clothing": "Slightly mature 'onee-san' fashion style",
+      "accessory_glasses": "wearing glasses with mild lens reflections",
+      "action_status": "Sitting on a sofa, casually playing on her phone",
+      "camera_angle": "upper-body close-up",
+      "underwear_style": "'pure-seductive' outfit style",
+      "subject": "Female, around 20 years old",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "underwood",
+    "createdAt": 1781571856709,
+    "updatedAt": 1781585825975
+  },
+  {
+    "id": "tpl_surveillance_still",
+    "name": "Surveillance Still",
+    "content": "### Surveillance Still / Hidden Camera Footage\n\n**Camera Settings:**\n{{camera_angle}}. Hidden perspective with {{lighting}}.\n\n**Subject:**\nThe subject is {{character_originality}}, with {{hair_style}}. {{action_status}}. She is wearing {{clothing}}.\n\n**Environment:**\n{{background_scene}}. The atmosphere is quiet, private, and intimate.\n\n**Face Detection & Overlay:**\n- **Face Lock:** A faint red rectangular bounding box with crosshair locked intensely on her face.\n- **Zoom Inset:** Floating top-right zoom-in inset (4.0x ratio), focusing on her eyes with clear catchlight.\n- **Alert Text:** \"ALERT: SUBJECT AWARE / EYE CONTACT DETECTED\" displayed on screen.\n- **Rec Indicator:** Red 'REC' indicator and vintage timestamp \"[REC] 23:47:32 | CAM 04 - DRESSING RM\" in the corner.\n\n**Composition:**\nSubject centered, direct gaze into the lens. The tone is vulnerable, tense, and surprising.\n\n**Aspect Ratio:**\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/08/ff4ac4b4171f41f5.jpg",
+    "selections": {
+      "character_originality": "Young Korean female K-pop idol",
+      "hair_style": "Black straight hair, falling over shoulders",
+      "action_status": "frozen in surprise, looking directly into the lens while changing",
+      "clothing": "half-removed oversized grey hoodie, revealing white camisole",
+      "background_scene": "dimly lit, cozy backstage dressing room or private dorm room",
+      "lighting": "Hidden camera style, Portra 400 film grain aesthetic",
+      "camera_angle": "eye-level, slightly hidden intimate medium shot",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@YaseenK7212",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825976
+  },
+  {
+    "id": "tpl_fine_art_garden",
+    "name": "Fine-art Garden Portrait",
+    "content": "### Dreamy Fine-art Garden Portrait\n\n**Objective:**\nCreate a dreamy fine-art portrait with a romantic, ethereal garden atmosphere.\n\n**Subject Details:**\nThe subject is {{subject}}. She has {{hair_style}}, with a calm, introspective, slightly melancholic expression. {{action_status}}. She is wearing {{clothing}}.\n\n**Scene & Atmosphere:**\n{{background_scene}}. The frame is filled with abundant flowering plants and soft greenery. {{flower_type}}, caught mid-motion by a gentle breeze.\n\n**Composition & Photography:**\nA {{camera_angle}}. Elegant, centered composition with a shallow depth of field and creamy bokeh. Shot with a {{lens_param}}.\n\n**Lighting & Color:**\n{{lighting}}. The color palette includes muted greens, soft teals, and pale peach/white accents. Painterly, desaturated, romantic tones.\n\n**Art Direction:**\n{{role}}. with rich details fabric and natural skin texture.\n\n**Aspect Ratio:**\n{{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/08/d325cd6ce1727205.jpg",
+    "selections": {
+      "subject": "Female Character",
+      "hair_style": "Short, softly tousled dark hair",
+      "action_status": "Looking gently toward the camera, with a touch of melancholy",
+      "clothing": "Muted teal floral dress with subtle vintage patterns",
+      "background_scene": "Lush garden in full bloom",
+      "flower_type": "White and pale peach flower petals drifting through the air",
+      "camera_angle": "Waist-up fine-art portrait",
+      "lens_param": "85mm, f/1.8",
+      "lighting": "Soft natural light under overcast sky",
+      "role": "Fine-art photography blended with cinematic realism",
+      "ratio": "2:3 Vertical"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Taaruk",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825976
+  },
+  {
+    "id": "tpl_chinese_new_year_poster",
+    "name": "Chinese New Year Fashion Poster",
+    "content": "### Chinese New Year Fashion Poster\n\nA modern fashionable Chinese New Year poster blending high-end fashion photography with traditional festive elements, featuring strong visual impact and artistic beauty.\n\n**Core Subject:**\n{{character_originality}}, extreme face and neck close-up. {{character_heroic}} rides a white horse elegantly yet powerfully charging towards the screen, capturing the moment of about to leap out of frame. This is an ordinary Chinese person wearing exquisitely designed {{clothing_style_chinese}} in {{clothing_color_traditional}}, with natural friendly expression full of life, delicate light makeup, soft natural grooming, and elegant slender neck. The character gently holds a refined Chinese red envelope in their mouth, adding festive fun and celebratory atmosphere.\n\n**Composition & Photography:**\n- Ultra-close face and neck shot, the character nearly fills the entire frame\n- Extremely shallow depth of field makes background soft and blurred, forming stunning bokeh effects\n- Precisely controlled motion blur, mane and hair gently flowing, showing elegant dynamic\n- Character and horse appear about to leap out of the frame, breaking the visual boundary with strong impact\n- High-end fashion lighting techniques, perfect rim light outlining character silhouette and neck lines\n- Fashion magazine grade retouched quality, smooth refined skin, sculpted facial features, elegant neck\n- Dutch angle composition enhancing modern fashion sense and dynamic tension\n\n**Detail Rendering:**\n- Facial details: perfect makeup, smooth refined skin, bright expressive eyes, red envelope at corner of mouth adding playfulness\n- Red envelope details: exquisite Chinese red envelope, golden auspicious patterns, subtle reflective texture\n- Clothing texture: premium fabric quality, exquisite craftsmanship, tailored fit\n- Horse details: clean and tidy, healthy coat sheen, smooth flowing mane\n- Lighting effects: high-end fashion lighting, rich layers, exquisite vibrant colors, golden patterns on red envelope shimmering\n\n**Background & Atmosphere:**\n- Realistic vast grassland background with immense depth and spatial sense\n- Magnificent red sunset sky, the afterglow dyes the entire horizon creating romantic atmosphere\n- Warm sunset glow showers on the character and horse, forming golden rim light\n- Background bokeh treatment, the horizon line of grassland and red sky is soft and natural\n- Overall color tone is warm elegant orange-red, creating fashionable yet festive visual impact\n\n**Photography Style:**\n- Top-tier artistic fashion photography with Fuji film charm\n- Fujicolor Velvia style, rich and vibrant colors, moderate soft contrast\n- Subtle film grain texture adding high-end vintage artistic atmosphere\n- Fashion magazine grade depth of field control, main subject sharp and prominent, background beautifully blurred\n- Rich lighting layers, complete detail retention in shadows and highlights\n- Strong fashion aesthetic and visual appeal\n\n**Photography Specs:**\n{{ratio}}\nHigh resolution, fashion poster grade quality, Fuji film photography style",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/09/83205df357ad8c1c.jpg",
+    "selections": {
+      "character_originality": "Create an original character",
+      "character_heroic": "Artistic Youth",
+      "clothing_style_chinese": "Classical red Hanfu",
+      "clothing_color_traditional": "Dark Red",
+      "ratio": "2:3 Vertical"
+    },
+    "tags": [
+      "creative",
+      "character",
+      "fashion",
+      "holiday"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825976
+  },
+  {
+    "id": "tpl_cute_dynamic_portrait",
+    "name": "Cute Dynamic Portrait",
+    "content": "### Cute Dynamic Portrait\n\n**Room Environment**:\n{{room_style_cute}}\n\n**Character**:\nJapanese female college student, early 20s.\n\n**Photography Parameters**:\n- Extreme floor-level low-angle worm's-eye view\n- Composition with {{lens_type}} distortion making her appear massive\n- {{cute_pose_dynamic}}\n\n**Outfit**:\n{{cute_outfit}}, swaying naturally with movement.\n\n**Prop**:\nHolding a small cute animal plushie (pink or white bear/rabbit) in right hand, naturally posing to lightly hide the back of skirt. Underwear absolutely not visible.\n\n**Lighting**:\nWarm indoor lighting and natural light from window, soft glow of fairy lights, gentle highlights on skin.\n\n**Atmosphere**:\nConfident, full of playfulness, cute yet slightly sexy, dynamic indoor portrait.\n\n**Note**:\nCopyright characters and existing anime styles are strictly prohibited.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/10/9e64b198ccc9663a.jpg",
+    "selections": {
+      "room_style_cute": "Cute pink room, pastel pink bed and walls, original cute animal plushies, fairy lights, cute posters, fluffy rug",
+      "lens_type": "20mm wide-angle lens",
+      "cute_pose_dynamic": "Walking forward while looking back, confidently and playfully looking down from directly above, charming smile",
+      "cute_outfit": "Black tight camisole dress, hip-length, sleeveless, thin straps",
+      "lighting": "Warm indoor natural light streaming through window, soft fairy lights in background",
+      "camera_angle": "Extreme low-angle worm's-eye view, bed height"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "M7",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825976
+  },
+  {
+    "id": "tpl_fitness_selfie",
+    "name": "Fitness Selfie Scene",
+    "content": "### Fitness Selfie Scene\n\n**Core Atmosphere:**\nA raw, candid mirror selfie snapshot taken in a busy gym with an on-camera flash firing.\n\n**Subject:**\nA young pretty Chinese Jiangnan woman with a \"wanghong\" face and gentle Eastern charm, with {{physical_state}}. She is in a {{fitness_pose}}, turned sideways to the mirror, holding a smartphone.\n\n**Clothing & Appearance:**\nWearing {{fitness_clothing}}. Hair is {{sweat_appearance}}, and cheeks are flushed red, showing clear signs of a recent workout.\n\n**Facial Expression:**\n{{facial_expression}}\n\n**Scene Details:**\n{{fitness_location}}\n\n**Selfie Style:**\n{{selfie_style}}\n\n**Technical Effects:**\nThe photo has noticeable {{photo_effect}}, creating an authentic, unposed daily life atmosphere.\n\n**Specifications:**\nAspect Ratio: {{ratio}} --niji 7",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/13/9413347206a80484.png",
+    "selections": {
+      "physical_state": "Healthy athletic build",
+      "fitness_pose": "Half-squat pose, turned sideways to mirror",
+      "fitness_clothing": "Sports skirt, tight and form-fitting",
+      "sweat_appearance": "Hair disheveled and damp with sweat",
+      "facial_expression": "Cheeks flushed red, dreamy and slightly unfocused eyes",
+      "fitness_location": "Busy gym with mirrors and equipment visible",
+      "selfie_style": "Raw, authentic mirror selfie",
+      "photo_effect": "Motion blur from slow shutter speed",
+      "ratio": "3:4 vertical portrait"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_miniature_model",
+    "name": "Miniature Scene Model",
+    "content": "### Miniature Scene Model\n\nA miniature scene model showcasing a tiny {{miniature_character}} interacting with a giant {{giant_object}}.\n\nExaggerated scale contrast, expressive poses, film-style lighting. Extremely detailed props, handmade realistic textures, macro lens perspective.\n\n**Aspect Ratio**: {{ratio}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/16/9dae0828037cbf5d.jpg",
+    "selections": {
+      "miniature_character": "Firefighter",
+      "giant_object": "Burning Matchstick",
+      "ratio": "16:9 horizontal landscape"
+    },
+    "tags": [
+      "creative",
+      "product",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@aleenaamiir",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_pop_mart_plush",
+    "name": "Pop Mart Plush Toys",
+    "content": "### Pop Mart Blind Box Style Plush Toys Wallpaper\n\nA vertical phone wallpaper featuring a crowded group of cute anthropomorphic horse plush toys stacked inside a {{festive_archway}}. Pop Mart blind box style, soft fuzzy fur texture, C4D render.\n\nHighly diverse and funny expressions: {{plush_expression}}.\n\nWide variety of unique accessories and decorations: {{cute_accessory}}.\n\nColorful, warm lighting, with rich details, cute and playful vibe.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/17/1e75e6702b92266c.jpg",
+    "selections": {
+      "plush_expression": "winking with playful expression",
+      "cute_accessory": "beanie hats",
+      "festive_archway": "traditional Chinese archway"
+    },
+    "tags": [
+      "cartoon",
+      "creative",
+      "holiday"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Liangjin",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_3d_isometric_diorama",
+    "name": "3D Isometric Diorama",
+    "content": "### 3D Isometric Diorama\n\nA clean, minimal 3D isometric diorama of a {{exhibition_type}}, featuring {{display_objects}} arranged within a {{pod_structure}}, subtle lighting accents, smooth floor surfaces, soft studio lighting, realistic materials, rounded edges, miniature architectural model style, high detail, neutral background.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/17/214fca0da3c13139.jpg",
+    "selections": {
+      "exhibition_type": "modern art exhibition",
+      "display_objects": "abstract sculptures and installation art",
+      "pod_structure": "glass cube pod"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "architecture"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Aleena Amir",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_chinese_bridal_portrait",
+    "name": "Chinese Bridal Portrait",
+    "content": "### Chinese Traditional Bridal Portrait Photography\n\nA traditional Chinese bridal portrait photograph. A woman with an updo hairstyle adorned with {{bridal_hair_decoration}}, wearing {{traditional_bridal_attire}} and {{bridal_jewelry}}.\n\nRealistic human proportion, eye-level perspective, close-up portrait with paper-cut decorative foreground.\n\n**Key Materials**: Smooth satin texture, delicate paper-cut texture, glossy pearl surface.\n\n**Lighting & Atmosphere**: Soft side lighting, soft shadows, warm and elegant traditional Chinese festive atmosphere.\n\n**Technical Parameters**: 50mm lens",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/17/fa745814a2980164.jpg",
+    "selections": {
+      "bridal_hair_decoration": "red paper-cut flowers and butterflies",
+      "traditional_bridal_attire": "red satin cheongsam",
+      "bridal_jewelry": "white pearl jewelry and small pearl earrings"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "holiday"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "ttmouse-Douba",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_premium_food_advertising",
+    "name": "Premium Food Advertising",
+    "content": "{{premium_food_subject}}, premium food advertising, white seamless background, high key studio lighting, floating stacked composition, levitating pieces, {{ingredient_bits}} scattered, clean minimal layout, crisp soft shadow on surface, ultra realistic, macro product photography, 100mm lens look, f/8 focused crisp look, subtle texture detail, editorial commercial, 8k",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/17/416c81356ded66d4.jpg",
+    "selections": {
+      "premium_food_subject": "handcrafted chocolate truffles",
+      "ingredient_bits": "cocoa powder and gold flakes"
+    },
+    "tags": [
+      "product",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Amira Zairi",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_forbidden_city_phoenix",
+    "name": "Forbidden City Snow Night Phoenix",
+    "content": "### Forbidden City Snow Night Phoenix\n\nIn {{imperial_palace_scene}}, a \"human phoenix\" embodies the soul of the palace. She wears {{phoenix_crown}} and {{flowing_garment}}, {{festive_props}}.\n\nThe composition creates a strong visual resonance between the ornate headdress and flowing robes with the magnificent architecture behind. The backlight amidst falling snow greatly enhances the mythical atmosphere, creating a dreamlike artistic conception that transcends time and space with magnificence and solemnity.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/17/3665163b0de1bf93.jpg",
+    "selections": {
+      "imperial_palace_scene": "Forbidden City snow night with falling snowflakes",
+      "phoenix_crown": "ornate golden phoenix crown",
+      "flowing_garment": "flowing red-orange silk robes",
+      "festive_props": "holding red envelope in mouth and unfolded spring festival blessing in hand"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "holiday",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Sidona",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_interior_rendering",
+    "name": "Interior Design Rendering",
+    "content": "### Interior Design hyperrealistic Rendering\n\nMaintaining the original perspective and wall structure, Create a realistic interior rendering of {{room_type}}. Perform reasonable interior furniture layout and material matching, assigning materials to the ceiling, walls, and floor respectively, presenting an overall {{interior_design_style}}. Both interior and exterior are rendered with realism.\n\nIncluding {{furniture_set}}, with realistic material textures and {{interior_lighting}}. The overall image presents professional architectural photography lighting effects, with {{render_quality}} image details.\n\n**Material Details**:\n- Ceiling: {{ceiling_material}}\n- Walls: {{wall_material}}\n- Floor: {{floor_material}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/18/df7ed03d64db5339.jpg",
+    "selections": {
+      "room_type": "Living Room",
+      "interior_design_style": "Modern Light Luxury Style",
+      "furniture_set": "Sofa, rug, coffee table, TV",
+      "ceiling_material": "White latex flat ceiling",
+      "wall_material": "White latex paint wall",
+      "floor_material": "Light gray marble tile",
+      "interior_lighting": "Natural lighting",
+      "render_quality": "4K Ultra HD resolution"
+    },
+    "tags": [
+      "architecture",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825977
+  },
+  {
+    "id": "tpl_isometric_interior_scene",
+    "name": "Isometric Interior Scene",
+    "content": "### Isometric Interior Scene\n\nBased on design requirements, create an isometric perspective (orthographic axonometric view) {{room_type}} interior scene image with no perspective effects, maintaining consistency in viewing angle and camera position. The main architectural elements remain consistent.\n\n**Room Condition**: {{room_condition}}\n\n**Design Style**: {{interior_design_style}}\n\n**Material Details**:\n- Floor: {{floor_material}}\n- Walls: {{wall_material}}\n\n**Technical Requirements**: Use 3D modeling material textures and common rendering software effects, including material texture effects, AO effects, and outline effects (selected based on room condition). White background, Blender rendering quality.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/imgs/2026/01/19/b04fd355944cfb21.jpg",
+    "selections": {
+      "room_type": "Living Room",
+      "room_condition": "Exquisitely decorated, high-end materials with refined details",
+      "interior_design_style": "Modern Minimalist Style",
+      "floor_material": "Light gray sintered stone floor",
+      "wall_material": "Warm white walls with decorative art"
+    },
+    "tags": [
+      "architecture",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_product_design_spec",
+    "name": "Product Design Specification",
+    "content": "### Product Design Specification\n\n**Layout**: Vertical 3:4 canvas, warm neutral paper background\n\n**Top Section - Lifestyle Product Image**:\n\nA {{product_category}} placed in {{environment_style}}.\n\n**Environment Details**:\n- {{lighting}}, soft but high-contrast shadows\n- Subtle concrete or stone flooring\n- Textured plaster wall background\n- Generous whitespace around product\n\n**Rendering Style**:\n- Editorial lifestyle photography\n- High realism\n- Warm, muted, premium color grading\n\n**Bottom Section - Technical Specification Panel**:\n\n**Technical Drawings** (bottom left and center):\n- {{drawing_style}}\n- Front view, side view, three-quarter cutaway view\n- Orthographic projection\n- Muted red or sepia fine technical lines\n- Minimal, editorial measurement callouts\n\n**Materials Panel** (bottom right):\n- 3-4 material swatches that match the product's aesthetic\n- Square or rectangular samples\n- Small editorial caption labels\n- Technical but refined tone\n\n**Typography**:\n- Minimal editorial\n- Subtle captions, no large headlines\n- Soft black or dark brown\n\n**Overall Aesthetic**:\n- Design catalog / product design journal mood\n- Architectural, premium, calm\n- Avoid clutter, bold colors, heavy branding, overly decorative graphics\n\n**Constraints**:\n- Do not change product design\n- Do not invent new materials\n- No logos unless present in reference\n- No perspective distortion in drawings",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/01/31/FNHtuBte.jpg",
+    "selections": {
+      "product_category": "Modern Chair",
+      "environment_style": "Minimal Architectural Interior",
+      "lighting": "Natural window light",
+      "drawing_style": "Architectural Line Drawing Style"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Ege",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_character_line_art",
+    "name": "Character Line Art",
+    "content": "### Transform to Character Line Art\n\nTransform to black and white line art illustration, pen and ink drawing style.\n\n**Character Subject**: {{character_subject}}\n\n**Portrait View**: {{portrait_view}}\n\n**Art Style**:\n- {{line_art_style}}\n- Bold outlines, high contrast\n- Clean linework, hand-drawn appearance\n- Graphic novel aesthetic\n\n**Shading Technique**: {{shading_technique}}\n\n**Background Treatment**: {{background_treatment}}\n\n**Overall Effect**:\n- Monochrome sketch\n- Black and white line art illustration\n- Comic book style portrait\n- Minimalist, emphasizing outlines",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/01/31/GWQUDXpd.jpg",
+    "selections": {
+      "character_subject": "Young woman with long hair, smiling",
+      "portrait_view": "Front portrait",
+      "line_art_style": "Pen and ink style",
+      "shading_technique": "Minimalist cross-hatching",
+      "background_treatment": "White background"
+    },
+    "tags": [
+      "character",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Vigo Zhao",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_classic_game_realism",
+    "name": "Classic Game Realism",
+    "content": "### Classic Game Realism\n\nhyperrealistic reimagining of classic game worlds.\n\nIn one image, photographically visualize what the characters, enemies, and surrounding world of {{classic_game}} would look like if it was real. Render this image as recognisable to the game as possible.\n\n**Visual Requirements**:\n- hyperrealistic rendering\n- Realistic interpretation of 8-bit/16-bit game aesthetics\n- Realistic presentation of iconic game elements\n- Reference to original game colors and atmosphere\n\n**Quality Standards**:\n- High detail, film-style lighting\n- Realistic materials and textures\n- Accurate reconstruction of game scenes",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/01/31/sQzIztAD.jpg",
+    "selections": {
+      "classic_game": "Donkey Kong (1981 vintage arcade game)"
+    },
+    "tags": [
+      "game",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Michael Rabone",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_science_paper_model",
+    "name": "Scientific Discovery Paper Model",
+    "content": "### Scientific Discovery Paper Model\n\nDeconstruct major scientific discoveries into 3D paper sculpture installations.\n\n**Input**: {{scientific_discovery}}\n\n**Deconstruct the science into 3 Narrative Assets**:\n\n**Model (The Centerpiece)**:\n- Identify the physical shape that represents the theory\n- Examples: DNA → A Double Helix | Relativity → A Curved Gravity Grid/Sphere | Germs → A Microscopic Cell | Heliocentrism → The Solar System\n\n**Researchers (The Cast)**:\n- Identify the key scientists involved\n- Examples: Watson, Crick & Franklin | Einstein | Pasteur | Copernicus\n\n**Data (The Diagrams)**:\n- Identify the visual language of the notes\n- Examples: Chemical bonds, Mathematical formulas, Biological sketches, Orbital paths\n\n**Container (The Lab Journal)**:\n- Goal: \"Scientific Pop-Up\" Diorama Photography\n- Object: A massive, antique Leather-Bound Journal\n- Pose: The book stands upright, opened at a strict 90-degree angle (L-Shape)\n- Vertical Page: Acts as the blackboard/diagram wall\n- Horizontal Page: Acts as the laboratory floor\n\n**Sculpture (The Paper Theory)**:\n- Construction: The \"Model\" rises vertically from the center gutter of the book\n- Material: The model is constructed entirely from Strips of the Book's Own Paper\n- Detail: The paper strips are twisted, folded, and connected to form the structure (e.g., the twisting ladder of the DNA)\n- Highlight: Subtle use of Colored Ink or Pencil (Red, Blue, Yellow) on the paper model to distinguish parts (e.g., base pairs or atoms)\n\n**Narrative Scale (The Scientists)**:\n- Figures: 1:35 Scale Miniature Figures of the \"Researchers\" stand on the horizontal page\n- Attire: Period-accurate clothing (e.g., 1950s Lab Coats, Victorian Suits, Renaissance Robes)\n- The Action: They are interacting with the giant Paper Model—pointing, measuring with tiny tools, or holding miniature clipboards\n\n**Visual**:\n- Background: The vertical page behind the model is covered in Hand-Drawn Ink Illustrations and diagrams relevant to the discovery\n- Title: Handwritten text at the top of the page: \"The Discovery of [Input]\"\n- Foreground: The floor page is scattered with scribbled notes, formulas, and signatures\n\n**Output**:\n- ONE image, 1:1 Aspect Ratio\n- Macro Photography, \"Academic History\" aesthetic\n- High Texture Fidelity",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/01/31/gB4NpxYw.jpg",
+    "selections": {
+      "scientific_discovery": "The Structure of DNA"
+    },
+    "tags": [
+      "creative",
+      "diagram",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Gadgetify",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_anatomy_figure_study",
+    "name": "Anatomical Figure Drawing Study",
+    "content": "### Anatomical Figure Drawing Study\n\nGeometric mannequin breakdown of human pose reference photo placed in top-left corner (small thumbnail), main area shows structural anatomy sketch.\n\n**GEOMETRIC CONSTRUCTION:**\n- Cylindrical forms for limbs (arms, legs, neck)\n- Box/wedge shapes for torso, pelvis, feet\n- Spherical joints at shoulders, elbows, knees, wrists\n- Beveled cube for head with facial plane indication\n- {{anatomy_teaching_style}}\n\n**STYLE SPECIFICATIONS:**\n- {{construction_line_color}}\n- Loose gestural linework with visible construction strokes\n- Semi-transparent overlapping forms showing depth\n- Horizon line marked at figure's ground plane\n- Multiple viewing angles of same pose if complex\n\n**ARTISTIC APPROACH:**\n- Figure drawing study aesthetic\n- Educational illustration quality\n- White/off-white background\n- Hand-drawn pencil sketch appearance\n\n**COMPOSITION:**\n- Reference photo: top-left corner, small scale\n- Geometric breakdown: fills remaining 80% of canvas\n- Clean professional layout like anatomy textbook",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/02/02/rcAAVlSX.jpg",
+    "selections": {
+      "anatomy_teaching_style": "Proko style (simplified geometry, educational focus, clear construction lines)",
+      "construction_line_color": "Purple/violet sketch lines (primary construction)"
+    },
+    "tags": [
+      "character",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Vigo Zhao",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_sketch_reality_comparison",
+    "name": "Sketch to Reality Comparison",
+    "content": "### Sketch to Reality Comparison\n\nJust finished a sketch, placing the artwork alongside the real scene for a photo, showing \"look how accurately I captured this\" effect.\n\n**Core Scene:**\nA person holding a freshly completed sketch drawing, with the real scene depicted in the artwork visible right next to the paper. Both elements share the same frame, creating a strong visual comparison—the real building or scene on one side, the sketch drawing in hand on the other. The artwork must perfectly correspond to the actual scene, demonstrating exceptional drawing skill and observation.\n\n**Composition Layout:**\n- Hand-drawn artwork: Holding the sketch paper on one side of the frame (right or left), clearly displaying the complete sketch\n- Real scene: Immediately beside the paper is the actual scene depicted in the drawing, both within the same shot\n- Sketch style: Using {{line_art_style}}, showcasing the artistic quality of the hand-drawn work\n- Separated display: The drawing and real scene are two independent elements, not blended or overlapped, but physically separate for comparison\n\n**Visual Effects:**\n- Sketch portion: Clear lines, fluid brushstrokes, complete composition, showcasing the artistic charm of the sketch\n- Real scene portion: Authentic scene details, natural lighting, rich colors, echoing with the hand-drawn work\n- Comparison effect: Viewers can clearly see the similarity between sketch and reality, feeling the amazement of \"it looks just like the real thing\"\n- Overall atmosphere: Natural authentic photography feel, with subtle grain and film texture, like a commemorative photo after the artist completed their work\n\n**Emotional Expression:**\nThis is not a fusion effect, but a genuine comparison display—the artist standing before the scene they just depicted, holding up their drawing alongside the actual view, demonstrating their power of observation and recreation.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/02/06/hbxQtfml.jpg",
+    "selections": {
+      "line_art_style": "Pencil sketch style"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_tavern_fight_video",
+    "name": "Tavern Fight Scene",
+    "content": "### Tavern Fight Scene Video Generation\n\nThis depicts the opening and ending frames of a tavern fight scene. Based on these two scenes, Create a fluid sequence of a woman in black fighting several assassins.\n\n**Fight Style:**\n{{fight_style}}\n\n**Storyboard & Camera Requirements:**\n- Utilize storyboarding and different angle transitions to create rhythm and film-style feel\n- {{camera_rhythm}}\n- Opening shot pushes from wide tavern establishing shot to character close-up\n- Intersperse environmental interactions during combat (tables flipping, wine jars shattering)\n- Ending shot pulls from close-up to wide, revealing the aftermath of the tavern battle\n\n**Visual Atmosphere:**\n- Dimly lit tavern interior, flickering candlelight, interplay of light and shadow\n- Woman in black moves with agility, fluid and seamless combat movements\n- Assassins strike from the shadows, creating tense and oppressive mood\n- Overall dark tonal palette, key action moments emphasized with highlights",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/02/08/5cHqPlDX.jpg",
+    "selections": {
+      "fight_style": "Wuxia elegant style (light kung fu, sword aura, flowing robes)",
+      "camera_rhythm": "Rapid montage cutting (multi-angle fast edits)"
+    },
+    "tags": [
+      "action",
+      "cinematic",
+      "character",
+      "wuxia"
+    ],
+    "nsfw": false,
+    "bestModel": "Seedance 2.0",
+    "author": "YangGuang",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_3x3_storyboard_video",
+    "name": "3x3 Storyboard Video Creation",
+    "content": "Create a video using storyboard images.\n\nTransform 3x3 storyboard images into video.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/02/08/mM0bxzAh.jpg",
+    "selections": {},
+    "tags": [
+      "creative",
+      "design"
+    ],
+    "nsfw": false,
+    "bestModel": "Seedance 2.0",
+    "author": "Mr.Iancu @Iancu_ai",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_cyberpunk_vehicle_chase",
+    "name": "Cyberpunk Vehicle Chase",
+    "content": "### Cyberpunk Vehicle Chase Video\n\n**Movie Style**: {{sci_fi_movie_style}}, high contrast neon lighting, IMAX movie quality, epic soundtrack feel.\n\n**Video Duration**: 10 seconds\n\n**Storyboard Script**:\n\n[00:00-00:04] Shot 1: {{tracking_camera_shot}}\nScene: {{cyberpunk_city_scene}}, night has fallen, it's raining.\nAction: A {{futuristic_vehicle}} weaves through skyscrapers at extreme speed.\nEnvironmental Details (Core Test Point): Countless giant holographic ads flickering, neon lights reflecting complexly off wet glass curtain walls and the vehicle surface. The vehicle's tail creates long blue light trails.\n\n[00:04-00:07] Shot 2: {{action_camera_shot}}\nAction: The vehicle makes a sharp banked Transform to dodge obstacles.\nDetails: The camera is extremely close to the vehicle, capturing every detail.\n\n[00:07-00:10] Shot 3: Pull back to reveal the vehicle disappearing into the neon-lit depths of the city.",
+    "mediaType": "image",
+    "cover": "",
+    "selections": {
+      "sci_fi_movie_style": "Cyberpunk Aesthetics",
+      "futuristic_vehicle": "Streamlined Anti-gravity Vehicle",
+      "cyberpunk_city_scene": "Futuristic Megacity Canyon",
+      "tracking_camera_shot": "Wide Angle Tracking Shot with Deep Depth",
+      "action_camera_shot": "Tense Cockpit View"
+    },
+    "tags": [
+      "sci-fi",
+      "action",
+      "cinematic",
+      "game"
+    ],
+    "nsfw": false,
+    "bestModel": "Seedance 2.0",
+    "author": "John @johnAGI168",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825978
+  },
+  {
+    "id": "tpl_rainforest_waterfall_jet",
+    "name": "Rainforest Waterfall Jet",
+    "content": "A film-style video sequence that opens with an {{aerial_opening_shot}} of a vast {{natural_environment}} stretching to the horizon, mist rolling through the canopy as a colossal roaring waterfall dominates the center of the landscape, plunging into shadowed depths.\n\nThe camera then transitions smoothly into a {{dynamic_tracking_shot}} positioned just behind and slightly above a {{military_aircraft}}, locked onto its movement as it accelerates at extreme speed from high altitude toward the waterfall.\n\nThe sense of velocity is emphasized by turbulent air distortion, vapor trails, engine heat shimmer, and subtle camera vibration as the jet cuts through clouds.\n\nThe jet descends rapidly, skimming just above the treetops while the camera follows tightly from behind, banking and rolling in perfect sync as the aircraft weaves between towering trees and steep cliffs with precise, agile movements.\n\nSunlight flashes across the jet's fuselage, leaves blur past beneath it, and mist and spray rush toward the camera as if being pulled along in the jet's wake.\n\nAs the waterfall looms closer, the roar intensifies, water exploding outward on all sides while droplets streak past the tracking camera.\n\nIn the final moment, the jet pulls sharply upward into a flawless 90 degree vertical climb, the camera staying directly behind as it rockets through dense mist and radiant light.\n\nThe sequence culminates as the jet bursts above the waterfall, revealing a breathtaking wide vista of a serene, glowing river winding through untouched, lush forest on the other side, calm and majestic in striking contrast to the violent ascent.",
+    "mediaType": "image",
+    "cover": "",
+    "selections": {
+      "natural_environment": "Ancient Rainforest",
+      "military_aircraft": "Fighter Jet",
+      "aerial_opening_shot": "Epic Ultra Wide Aerial Shot",
+      "dynamic_tracking_shot": "Third-Person Tight Tracking"
+    },
+    "tags": [
+      "action",
+      "cinematic",
+      "nature"
+    ],
+    "nsfw": false,
+    "bestModel": "Seedance 2.0",
+    "author": "Umesh @umesh_ai",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_imported_mmqc6ok1_subway_costume",
+    "name": "Subway Costume",
+    "content": "A photo showing an extremely crowded {{location}} carriage interior with people standing in a row for a full-body shot. A huge, cute {{subway_costume}} wearing {{costume_material}} material costume is looking at the camera, riding the subway through {{city_name}} city traffic. Wearing {{accessory}} on head.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/14/8OzmfHGv.jpg",
+    "selections": {
+      "location": "Japanese subway",
+      "subway_costume": "Pink wool rabbit costume",
+      "costume_material": "wool",
+      "accessory": "pink flower hair clip",
+      "city_name": "Tokyo",
+      "subway_costume-0": "Yellow chick costume",
+      "city_name-0": "Nagoya Station"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_imported_mmrp53jl_social_card",
+    "name": "Social Card",
+    "content": "Create a 3D {{art_style}} illustration. Picture a full-length {{character_type}} peeking out of the frame of an Instagram post, as if she were a social media character. The background is {{social_bg_color}} in the style of neurography. The girl is joyful, sweet, with wide eyes and a smile. The profile name is indicated in the frame: {{social_profile_name}}. Introduce Instagram-style \"like\", \"comment\" and \"send\" icons. A hand holds the frame. 3:4 format",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/15/Yc01hJ3Q.jpg",
+    "selections": {
+      "art_style": "cartoon-style",
+      "character_type": "woman",
+      "social_bg_color": "pink and burgundy",
+      "social_profile_name": "@RealMe+",
+      "character_type-0": "male employee",
+      "social_bg_color-0": "mint green and coral",
+      "social_profile_name-0": "@Nexus Studio"
+    },
+    "tags": [
+      "creative",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_imported_mmrq1zn6_skateboard_girl",
+    "name": "Skateboard Girl",
+    "content": "A film-style, hand-painted anime illustration in a clear {{art_style}} style. A tall young woman with long flowing brown hair is riding a {{design_item}} straight downhill along a narrow concrete path on top of a coastal hill. She has a slender, long-legged silhouette that enhances the elegant vertical composition. Her body posture is aligned naturally with the slope of the road shoulders level and parallel to the path, hips centered, no excessive twisting. She is facing forward in the direction of motion. One foot is placed firmly at the front of the skateboard, the back foot positioned naturally near the tail, both feet aligned with the board. Her legs are straight and relaxed, not bent at the knees. The skateboard is straight and perfectly parallel to the downhill path, not tilted sideways, expressing controlled and confident movement. She wears a lightweight {{clothing}} flowing backward in the ocean wind. The fabric gently trails behind her, emphasizing her tall and graceful figure. Her long hair streams directly behind her due to forward motion. No backpack. The camera is positioned directly behind her at a slightly elevated angle, centered on the path. The horizon line is straight and stable no tilted or dutch angle. The perspective emphasizes depth and the steep downhill slope. The hilltop path is surrounded by lush green grass, descending toward a panoramic turquoise coastline far below. A seaside town spreads along the curved shore. Massive cumulus clouds tower in a rich blue sky, sunlight illuminating the ocean surface. Vertical composition, 9:16 aspect ratio, ultra high resolution, dynamic yet stable composition, elegant proportions, anime movie still, masterpiece quality.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/15/NeHsU0GX.jpg",
+    "selections": {
+      "art_style": "Makoto Shinkai × Studio Ghibli",
+      "design_item": "skateboard",
+      "clothing": "seafoam green dress",
+      "design_item-0": "skateboard",
+      "clothing-0": "seafoam green dress",
+      "art_style-0": "Makoto Shinkai × Studio Ghibli"
+    },
+    "tags": [
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "Nexus User",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_imported_mmszando_fanta_soda_can",
+    "name": "Fanta Soda Can",
+    "content": "Professional shot of a {{drink_product: Fanta softdrink can}}. On a {{drink_background: orange background}}. The {{drink_product: Fanta softdrink can}} is {{drink_action: exploding with oranges bursting from the can}}. The orange juice is swirling around the can. Highlights on the can and oranges shadow on the backdrop. {{drink_camera_angle: high angle overhead shot capturing the swirling arc of orange juice}} taken with a DSLR 35mm 2.8",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/16/gOnlAk9I.jpg",
+    "selections": {
+      "drink_product": "Fanta softdrink can",
+      "drink_background": "orange background",
+      "drink_action": "exploding with oranges bursting from the can",
+      "drink_camera_angle": "high angle overhead shot capturing the swirling arc of orange juice"
+    },
+    "tags": [
+      "product",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_skincare_fantasy_ad",
+    "name": "Skincare Fantasy Ad",
+    "content": "A surreal luxury skincare advertising shot of a tilted giant {{skincare_product: serum dropper bottle}} floating above soft white clouds, bottle is {{skincare_color: pink-peach colored}} glass material with fresh condensation droplets inside, the bottle slightly inclined in the air. A fashionable young woman with a calm natural facial expression {{fantasy_character_pose: sitting on the bottle cap}}, wearing a {{fantasy_dress_style: elegant flowing dress}} that moves gently in the breeze. {{fantasy_floating_elements: ripe peaches and peach slices}} floating around in the sky. Dreamy whimsical skincare campaign aesthetic, {{fantasy_sky_background: bright clear blue sky}} background, glossy reflections on the glass bottle, ultra realistic commercial product photography, soft film-style sunlight with crisp highlights, shot with a Canon EOS R5, 50mm f/1.8 lens, {{pastel_color_palette: pastel peach and sky blue}} color palette",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/17/IBad9qh6.jpg",
+    "selections": {
+      "skincare_product": "serum dropper bottle",
+      "skincare_color": "pink-peach colored",
+      "fantasy_character_pose": "sitting on the bottle cap",
+      "fantasy_dress_style": "elegant flowing dress",
+      "fantasy_floating_elements": "ripe peaches and peach slices",
+      "fantasy_sky_background": "bright clear blue sky",
+      "pastel_color_palette": "pastel peach and sky blue"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "fantasy"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_character_design_sheet",
+    "name": "Character Design Sheet",
+    "content": "character design sheet for a {{character_animal}} named {{character_name: June}}, toddler-friendly storybook character, {{fur_color: soft warm pastel yellow fur}}, {{body_description: large round head and small oval body}}, long slightly floppy ears with peach inner ears, tiny pink nose, large dark eyes with gentle highlights, subtle blush cheeks, simple curved smile, wearing {{character_accessories: small red-orange adventurer scarf and tiny brown satchel}}, {{character_persona: cute fantasy explorer}}, multiple poses and expressions (standing, hopping, looking up, floating, reaching, sleeping curled up), expression sheet (curious, determined, surprised, happy, sleepy), front view, side view, back view, pose sketches, clean layout like an animation model sheet, {{art_style: High-quality 2D illustration style}}, {{line_art_style: fine ink linework}}, {{shading_technique: minimal shading}}, white background, professional {{design_sheet_type: character turnaround sheet}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/20/L6uohhgC.jpg",
+    "selections": {
+      "character_animal": "Little Bunny",
+      "fur_color": "Soft warm pastel yellow",
+      "body_description": "Large round head and small oval body",
+      "character_accessories": "Small red-orange adventurer scarf and tiny brown satchel",
+      "character_persona": "Cute fantasy explorer",
+      "art_style": "High-quality 2D illustration style",
+      "line_art_style": "Pen and ink style",
+      "shading_technique": "Minimalist cross-hatching",
+      "design_sheet_type": "Character turnaround sheet"
+    },
+    "tags": [
+      "cartoon",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@j03_1",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_comic_page",
+    "name": "Dynamic Comic Page",
+    "content": "single dynamic comic book page, {{comic_subject: two stealthy ninjas}} infiltrating {{comic_location: ancient Japanese temple}} at {{comic_time: night}}, multi-panel layout, bold black panel borders, white gutters: top wide establishing shot of moonlit temple with ornate wooden pagodas, stone lanterns, cherry blossom trees under starry sky; middle panels: one ninja leaping silently over high wall with grappling hook, second ninja crouching in deep shadow avoiding patrolling guard lanterns; bottom close-up panels: masked faces in tense conversation, one ninja throwing a shuriken, traditional black shinobi outfits with hoods and katanas, dramatic high-contrast lighting, cool blue moonlight, warm orange lantern glow, thick ink lines, halftone shading, crosshatching, minimal speech bubbles with Japanese text Shhh…, {{comic_art_style: traditional black and white manga style}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/20/QS11NEIQ.jpg",
+    "selections": {
+      "comic_subject": "two stealthy ninjas",
+      "comic_location": "ancient Japanese temple",
+      "comic_time": "night",
+      "comic_art_style": "traditional black and white manga style"
+    },
+    "tags": [
+      "creative",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_3d_furniture_pixar",
+    "name": "Pixar-style 3D Furniture",
+    "content": "{{background_color_clean}} background, {{interior_design_style}} style 3D furniture in {{render_style}} style, {{furniture_set}}, front view with proper 3D perspective",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/03/29/6iocHrUY.jpg",
+    "selections": {
+      "background_color_clean": "Pure White",
+      "render_style": "Pixar Cartoon Rendering",
+      "interior_design_style": "European Classical Style",
+      "furniture_set": "Sofa, rug, coffee table, TV"
+    },
+    "tags": [
+      "creative",
+      "product"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_creative_container",
+    "name": "Creative Container · Miniature World",
+    "content": "### Creative Container Photography\n\nTransparent 750ml glass wine bottle, cross-section view, inside showing a miniature world of {{landscape_location: Transylvania vineyard}} landscapes, {{lighting_time: morning sunlight}} casting soft shadows, hyperrealistic, intricate details, depth of field, realistic glass reflections, natural window light, studio background.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/07/YhFhh6t3.jpg",
+    "selections": {
+      "landscape_location": "Transylvania vineyard",
+      "lighting_time": "morning sunlight"
+    },
+    "tags": [
+      "product",
+      "photography",
+      "creative",
+      "container"
+    ],
+    "nsfw": false,
+    "bestModel": "Nexus AI Studio",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_museum_infographic",
+    "name": "Museum Infographic",
+    "content": "Please Create a \"Museum Handbook-style Exploded Infographic\" based on the theme {{museum_theme}}. The infographic must include a realistic main visual, structural deconstruction, clear labels, material descriptions, pattern symbolism, color meanings, and a summary of core features. You should automatically determine the most appropriate main subject, costume system, utensil structure, historical style, key components, materials/craftsmanship, color scheme, and layout structure based on {{museum_theme}}, without requiring any additional user input.\n\n**Overall Style**: National Museum Exhibition Board, Historical Costume Handbook, Museum Special Infographic. The background should use paper textures such as off-white, silk paper white, or light tea color. The overall design should feel premium, restrained, professional, and collectible.\n\n**Layout Structure (Fixed)**:\n- Top: Main title, subtitle, and introduction\n- Left side: Structural deconstruction area, with callout lines labeling key components and matching detailed close-ups\n- Top right: Material / Craftsmanship / Texture area, displaying realistic texture swatches and annotations\n- Middle right: Pattern / Color / Symbolism area, displaying the main color palette, pattern samples, and cultural explanations\n- Bottom: Wearing order / composition flowchart + summary of core features\n\nIf the theme fits human figures, use a full-body standing pose as the central main visual; if it fits a single object or utensil, use a central exploded view. All labels and annotations must be clear, neat, and highly legible. Emphasize authentic structure, material contrast, cultural context, and a handbook aesthetic.\n\n**Avoid**: Poster style, photo-studio look, e-commerce style, anime, cosplay vibes, incorrect labels, flawed structures, blurry text, fake materials, or excessive decoration.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/18/vBKchUMk.jpg",
+    "selections": {
+      "museum_theme": "Ming Dynasty Hanfu"
+    },
+    "tags": [
+      "diagram",
+      "character",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@MrLarus",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_nine_grid_designers",
+    "name": "Nine Designers Grid",
+    "content": "A 3x3 photo grid showcasing the exact same object, {{design_item}}, designed by nine different famous contemporary designers. For each designer, include a designer portrait, their short textual design philosophy / explanation, and their corresponding work presentation. Consistent layout rules.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/18/NHJv6A14.png",
+    "selections": {
+      "design_item": "Mechanical keyboard"
+    },
+    "tags": [
+      "diagram",
+      "product",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_four_panel_ads",
+    "name": "Four-Panel Fictional Ads",
+    "content": "Create images of four fictional {{ad_regional_style}} in various genres, arranged side by side. In trendy designs made by professional designers. Aspect ratio 1:1",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/fTR7DPMq.jpg",
+    "selections": {
+      "ad_regional_style": "Chinese advertisements"
+    },
+    "tags": [
+      "creative",
+      "product",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@midori_tatsuta",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825979
+  },
+  {
+    "id": "tpl_guochao_city_poster",
+    "name": "Neo-Chinese City Poster",
+    "content": "Premium Neo-Chinese minimalist city poster, 9:16 vertical aspect ratio, centered on {{city_name}} as the core theme, with an abstract geometric iconic tower of the city as the focal point—clean, simple, and recognizable.\n\nOverall S-curved flowing composition extending upward from the bottom; the city's representative water system is rendered as flowing ripples fused with traditional auspicious cloud motifs, forming a visual flow around the frame (adapt to the city's geography if not river-adjacent).\n\nLandmarks of {{city_name}} are dotted with negative space + line art + localized color blocks: {{city_landmarks}}. Traditional and modern architecture blend naturally with layered depth and clear foreground/background separation.\n\nStyle: minimal + premium + Eastern mood—not cluttered, not overly hyperrealistic.\n\nColor palette (key): saturated yet restrained—Chinese red, cyan-blue, and gilt gold as primaries, with warm gold highlights for strong impact without vulgarity.\n\nBackground: large clean negative space or light rice-paper texture for breathability and premium feel; background texture: {{poster_texture_style}}.\n\nDetails: auspicious clouds and water ripples with subtle emboss / gold-foil hot-stamp quality; micro light particles or flowing light streaks for a modern touch.\n\nLighting: soft gradient light + local highlights for a majestic atmosphere.\n\nOverall: Guochao premium illustration / brand-poster quality / 8K / ultra-sharp detail.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/SVh3Q8G6.jpg",
+    "selections": {
+      "city_name": "Guangzhou",
+      "city_landmarks": "Zhujiang New Town twin towers, Liede Bridge, Baiyun Mountain silhouette, Lingnan arcade buildings",
+      "poster_texture_style": "Generous negative space with light rice-paper grain"
+    },
+    "tags": [
+      "creative",
+      "architecture",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@liyue_ai",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_textbook_poem_page",
+    "name": "Textbook · Classical Poem Page",
+    "content": "Create a single Chinese language textbook page for \"{{classical_poem}}\", in primary/middle-school textbook style: lesson number and title, author and dynasty, full poem text, author bio in a side box, mood-matching illustrated background, and a \"Poem Interpretation\" section with writing background, line-by-line understanding, and central theme in detail. Clean hierarchy, legible typography, all text in Simplified Chinese.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/3tYkO4th.jpg",
+    "selections": {
+      "classical_poem": "A Welcome Rain on a Spring Night"
+    },
+    "tags": [
+      "creative",
+      "diagram",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_app_iconfont",
+    "name": "App Iconfont Set",
+    "content": "Create a full iconfont set for {{app_icon_category}}: minimalist line icons, white background, two-tone (dark gray/black + one accent color), uniform ~2px stroke with rounded caps and joins, neat grid (e.g. 3×7), Chinese label under each icon, header with title and specs (e.g. 24px, stroke weight). Icons must match typical features and scenarios for this category. Professional flat vector UI style.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/WLASD2yD.jpg",
+    "selections": {
+      "app_icon_category": "Sports app"
+    },
+    "tags": [
+      "creative",
+      "product",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@akokoi1",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_collab_postcard",
+    "name": "Dual-IP Collab Postcard",
+    "content": "Design a collaborative postcard for {{collab_theme_a}} × {{collab_theme_b}}: split layout (main illustration + correspondence area), airmail diagonal border, postage stamp and postmark, bilingual tagline and handwritten-style quote, soft watercolor hand-drawn look with paper grain, night sky and stars, seamless mashup of both worlds, premium collectible feel.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/GtauyAVI.jpg",
+    "selections": {
+      "collab_theme_a": "The Little Prince",
+      "collab_theme_b": "SpaceX"
+    },
+    "tags": [
+      "creative",
+      "cartoon",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@akokoi1",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_gacha_card_set",
+    "name": "Neo-Chinese Gacha Card Set",
+    "content": "Design a premium mobile gacha card-set showcase for \"{{card_game_collection}}\": Neo-Chinese luxury UI, dark ground, gold filigree, calligraphy title. Include SSR / SR / R tiers (grid + color coding), large featured card in center; card art, character bio, stats, active/passive/ultimate skills with icons and detailed Chinese descriptions, synergy bonds and sample lineup. SSR cards need holographic foil, laser-rainbow border, or particle effects. Clear information hierarchy like an in-game card spec sheet, Simplified Chinese for text.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/19/jZAGAbk8.jpg",
+    "selections": {
+      "card_game_collection": "Ancient Chinese poets"
+    },
+    "tags": [
+      "creative",
+      "game",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_ancient_celebrity_business_card",
+    "name": "Ancient Scholar Name Card",
+    "content": "Design an ancient name card for {{ancient_celebrity}}, showing both front and back, with Chinese Oriental aesthetics.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/21/IkMDFWPz.png",
+    "selections": {
+      "ancient_celebrity": "Su Shi"
+    },
+    "tags": [
+      "creative",
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_heritage_building_deconstruction",
+    "name": "Heritage Building Deconstruction",
+    "content": "Create an architectural deconstruction diagram of {{heritage_building}} with detailed annotations, in Chinese aesthetic style.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/21/JCPtpHEd.jpg",
+    "selections": {
+      "heritage_building": "Temple of Heaven"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_retro_skeuomorphic_icons",
+    "name": "Retro Skeuomorphic Device Icons",
+    "content": "Create a set of vintage skeuomorphic {{retro_device_theme}} icons, each with its name labeled on the image.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/21/8H5POly2.jpg",
+    "selections": {
+      "retro_device_theme": "vintage electronic devices"
+    },
+    "tags": [
+      "creative",
+      "product",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_lifestyle_app_ui",
+    "name": "Lifestyle App UI",
+    "content": "Create a mobile app UI design for {{utility_app_category}}, Chinese interface; modern minimalist, card-based layout, comfortable rounded corners and whitespace, clear information hierarchy, bottom navigation and status bar.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/21/2tys9tTD.png",
+    "selections": {
+      "utility_app_category": "plant care and maintenance tracker"
+    },
+    "tags": [
+      "creative",
+      "product",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_minimalist_geometric_poster",
+    "name": "Minimalist Geometric Product Poster",
+    "content": "Please create a \"Minimalist Geometric Installation Style Product Poster\" for {{subject_product}}.\n\nIf I provide a product image, please use it as the main reference, preserving the product's core appearance features, packaging form, color, material, brand identity, and overall temperament, and prioritize using the primary color tone and color relationships from the product image for the design.\nIf I do not provide a product image, please automatically Create a product appearance and packaging design that fits the {{subject_product}}'s positioning, and match naturally reasonable primary and auxiliary colors, prop shapes, and display methods based on the product attributes, category characteristics, and temperament.\n\nOverall Poster Style Requirements:\nThe image uses a high-key white or warm white studio background, overall clean, transparent, soft, and bright, with a high-end commercial feel and modern brand visual temperament. The composition is not a common e-commerce studio shot, but a conceptual poster combining brand visual proposals, artistic still-life photography, and 3D product displays.\n\nThe main subject of the image should include:\n1. The {{subject_product}} itself\n2. Product packaging\n3. Raw materials, slices, components, functional elements, or material details related to the product\n\nThese three together form a complete visual chain, allowing viewers to immediately understand \"what this product is, what the content is, and what the selling point or source is.\"\n\nIncorporate simple and design-oriented geometric installation props into the scene, such as: cylinders, blocks, long strips, rings, spheres, semicircles, platforms, stacked blocks, acrylic stands, toy-like structures, etc., used to support, suspend, surround, or set off the main product, forming an artistic display composition with a sense of order, rhythm, and layering.\n\nThe overall color palette should naturally revolve around the product itself, with the product's associated colors as the visual core, paired with neutral colors like white, cream, and light gray. Introduce small amounts of auxiliary accent colors when necessary to keep the image color unified, restrained, comfortable, and fresh, without being cluttered or gaudy. Different products should automatically adapt to different color schemes; do not use a fixed background color.\n\nMaterial representation should be delicate and realistic, with a high-quality commercial rendering texture. Transparent plastic, acrylic, frosted materials, paper labels, glass, metal, smooth plastic, fruit pulp texture, food texture, or product surface details should all be natural and believable. There can be slight reflections and soft shadows, but not too heavy or messy.\n\nComposition requirements call for ample white space, clear subject matter, a balanced image, and visual tidiness, with a brand temperament that is relaxed, gentle, modern, exquisite, approachable, and slightly playful but not childish. The overall feel is like a high-aesthetic brand product KV poster, very suitable for e-commerce key visuals, social media grass-planting posts, and product display images.\n\nOutput requirements:\n- Vertical composition\n- 3:4 ratio\n- Single poster\n- Strong sense of high-end quality, simplicity, and branding",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/24/xWHKmpbh.png",
+    "selections": {
+      "subject_product": "Strawberry Soda"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@MrLarus",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825980
+  },
+  {
+    "id": "tpl_apple_event_bento",
+    "name": "Apple Style BentoCard Event Slide",
+    "content": "Create an Apple-style event keynote slide, presenting the latest generation of {{apple_style_product}} in a {{layout_style_bento}} format.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/04/24/loHTJhoH.png",
+    "selections": {
+      "apple_style_product": "3.5-inch Floppy Disk",
+      "layout_style_bento": "BentoCard"
+    },
+    "tags": [
+      "product",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "Gpt-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_big_isometric_white_arch",
+    "name": "BIG-Style Isometric White Architectural Diagram",
+    "content": "Create an isometric axonometric conceptual white mass architectural rendering of {{arch_building_name}}.\nSimplified white massing with minimal surrounding context, in the classic analytical diagram expression style associated with BIG (Bjarke Ingels Group).\nAmbient occlusion (AO) with fine line contour outlining.\nOverall fresh, natural mood, no text anywhere.\nLow-saturation colors for the environment: light gray roads, pale green plants, architecture remains pure white.\nAspect ratio: {{ratio}}.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/kyB1kgmL.png",
+    "selections": {
+      "arch_building_name": "Solomon R. Guggenheim Museum",
+      "ratio": "3:4 Vertical"
+    },
+    "tags": [
+      "architecture",
+      "diagram",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_food_personification_realistic",
+    "name": "Food Personification · Realistic Portrait",
+    "content": "This is my food today. Based on this image, Transform the food into the appearance of a real human being. Create a photographic personification that matches this photo—its vibe, textures, palette, and implied personality—with the dish translated into human form. Do not depict the unchanged original dish as its own standalone subject on the canvas; imagine the food suddenly becomes a concrete, lifelike personification. Place the original image as a small inset in the top-right corner of the final image, held by a paper clip so it looks pinned to the corner like a reference note.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/bwDqm7SE.png",
+    "selections": {},
+    "tags": [
+      "creative",
+      "character",
+      "photography"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_lego_modular_typography_poster",
+    "name": "Modular Brick Typography Concept Poster",
+    "content": "Create a \"LEGO-inspired modular toy-brick typography concept poster\".\nDesign an original brick-style typeface system for the theme—do not include official LEGO trademarks or logos. The main headline must look built from realistic plastic brick modules with studs, thickness, shadows, and clear stacking logic. Based on the theme, invent one core visual metaphor, then execute it as a premium exhibition poster: generous white space, grid-driven layout, infographic logic, concept-board structure. The image should include the main title, metaphor graphic, type specimen, module breakdown, color legend, and fine leader-line annotations. Overall tone: refined, restrained, modern, collector-grade—never a childish toy ad. Choose an appropriate aspect ratio automatically from the theme.\nTheme: {{lego_typography_theme}}",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/BhXVFUvL.png",
+    "selections": {
+      "lego_typography_theme": "Toys in the Age of AI"
+    },
+    "tags": [
+      "creative",
+      "diagram",
+      "product"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@xiaoxiaodong01",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_futuristic_sport_editorial_poster",
+    "name": "Futuristic Sportswear Editorial Poster",
+    "content": "Premium futuristic sportswear editorial poster, full-length female model in a dynamic wide-legged stance, {{sport_luxe_ensemble}}, {{beauty_editorial_look}}, confident editorial expression, studio fashion photography, centered composition, behind the model {{inflatable_studio_backdrop}}, oversized bold white typography for \"{{hero_typography_word}}\" partially placed behind the subject, premium sport brand campaign aesthetic, ultra-clean lighting, soft diffused studio shadows, luxury streetwear advertising, contemporary magazine cover design, minimalist layout, subtle futuristic graphic micro-type, highly polished commercial fashion retouching, tack-focused crisp look, film-style soft contrast, hyperrealistic, with rich details, 8K",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/G23TXYtK.png",
+    "selections": {
+      "sport_luxe_ensemble": "oversized minimalist white hoodie with enormous voluminous sleeves, glossy semi-transparent parachute pants, chunky white-and-orange sneakers",
+      "beauty_editorial_look": "fashionably messy updo bun, bold statement gold earrings, soft natural makeup",
+      "inflatable_studio_backdrop": "large abstract smooth red-pink organic 3D inflatable soft shapes on a smooth neutral beige gradient backdrop",
+      "hero_typography_word": "just"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@iamsofiaijaz",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_giant_sneaker_fashion_ad",
+    "name": "Giant Sneaker Fashion Campaign Poster",
+    "content": "A high-end fashion advertisement poster. A young woman {{model_styling_outfit}} leans casually against a giant white sneaker that is 3x her height, the sneaker has \"{{campaign_brand_word}}\" written on its side. {{studio_set_floor}}. Bold massive white sans-serif typography \"{{campaign_brand_word}}\" fills the entire background behind her. Tagline at bottom center in white italic font: \"{{advert_campaign_tagline}}\" Small text top-right corner reads \"Designed with GPT Image 2\" in grey. hyperrealistic, editorial magazine style, medium format camera look.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/PCBDPwng.png",
+    "selections": {
+      "campaign_brand_word": "APEX",
+      "model_styling_outfit": "in a mint cropped windbreaker with cream oversized joggers",
+      "studio_set_floor": "warm sand-toned soft light with lightly amber-waxed glossy floorboards",
+      "advert_campaign_tagline": "Where comfort meets ambition."
+    },
+    "tags": [
+      "character",
+      "photography",
+      "product"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@Strength04_X",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_iconic_architecture_art_poster",
+    "name": "Iconic Architecture Art Poster",
+    "content": "Create a premium {{poster_art_style}} poster centered on the iconic building {{iconic_architecture}}.\nAt the center, present the architecture as a refined editorial illustration. Behind it, place ONE English keyword in massive ultra-bold condensed sans-serif typography that emotionally and conceptually matches the building; surround with micro-type articulating design philosophy on a restrained grid.\nPresent as collectors'-grade contemporary architectural art.\nUse a subdued palette coordinated with the architecture—color planes and linework may read as discrete structural echoes or as quiet outward extensions from the massing.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/06/DLtOVgSJ.png",
+    "selections": {
+      "iconic_architecture": "Farnsworth House (Mies van der Rohe)",
+      "poster_art_style": "minimalist"
+    },
+    "tags": [
+      "architecture",
+      "creative",
+      "diagram"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_mirror_selfie_chibi_clones",
+    "name": "Mirror Selfie · Chibi Mini-Mes",
+    "content": "A young woman takes a mirror selfie in a minimal modern home, {{casual_mirror_outfit}}. Cute chibi mini versions of herself surround her, {{chibi_clone_manner}}. {{cozy_mirror_room}}. {{selfie_render_blend}}.",
+    "mediaType": "image",
+    "cover": "https://img.wjwj.top/2026/05/07/b84c26a465935281af35511c690f69ba.png",
+    "selections": {
+      "casual_mirror_outfit": "wearing an all-black relaxed casual outfit with a crossbody bag and sunglasses perched on her head",
+      "chibi_clone_manner": "striking playful poses (jumping, sitting, peace sign, sipping bubble tea) with bright sparkling eyes and a soft cartoon look",
+      "cozy_mirror_room": "The background includes a potted plant, a wooden table, neutral-toned décor, and framed artwork",
+      "selfie_render_blend": "Soft natural light, cozy lifestyle aesthetic, white doodled sparkles and hearts, hybrid of photorealism and cute 3D cartoon, highly detailed"
+    },
+    "tags": [
+      "character",
+      "photography",
+      "cartoon"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@Sairah_0",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  },
+  {
+    "id": "tpl_lego_landmark_street_film",
+    "name": "LEGO Landmark Street Snap",
+    "content": "Create a highly creative image: a street shot of a classic landmark, as if a passerby shot it from the sidewalk, yet keep the disciplined composition and formal beauty of architectural visualization. The twist: the entire landmark is built from life-scaled LEGO bricks—giant studs and interlocking seams at real-world proportions, reading as a plausible civic volume. Core building: {{iconic_architecture}}. Photographic treatment: {{street_film_photography}}.",
+    "mediaType": "image",
+    "cover": "https://s3.bmp.ovh/2026/05/09/SShOX699.png",
+    "selections": {
+      "iconic_architecture": "Lloyd's Building, London (Richard Rogers)",
+      "street_film_photography": "1990s classic street-snap feel with Fujifilm texture—fine grain, gentle fade, soft contrast, diffused overcast daylight"
+    },
+    "tags": [
+      "architecture",
+      "photography",
+      "creative"
+    ],
+    "nsfw": false,
+    "bestModel": "GPT-image-2",
+    "author": "@tanshilong",
+    "createdAt": 1781571856710,
+    "updatedAt": 1781585825981
+  }
+]
