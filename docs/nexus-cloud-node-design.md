@@ -62,13 +62,28 @@ persist across runs/sessions. Differences are hidden in the adapter:
 - RunPod → Network Volume ($0.07/GB/mo, survives teardown). Vast → flagged as fragile in its adapter.
 
 ## 6. Build plan (phased)
-1. **Adapter interface + node shell + Modal adapter.** Prove the architecture end-to-end with the
-   provider we already understand (reuse `comfyapp.py`). Sidebar shows one provider.
+1. **[DONE] Adapter interface + node shell + Modal adapter.** Built at
+   `comfyui-nodes/comfyui-nexus-cloud/`: `adapters/base.py` (interface),
+   `adapters/modal.py` (working reference), `server.py` (routes + `/prompt`
+   router), `web/js/nexus-cloud.js` (sidebar with provider dropdown),
+   `nexus_modal_app.py` (the Modal App it deploys). Beam/Cerebrium/RunPod/Vast
+   ship as **declared stubs** so all five show in the dropdown. Bundled via the
+   manifest `local` source (copied at build, not cloned). Python verified.
 2. **Beam adapter.** Easiest second (Modal-like SDK) — validates the abstraction across two SDK providers.
 3. **RunPod adapter.** Validates the API-provision family + Network Volume.
 4. **Studio wiring.** Point `generateImage/generateVideo/chat` at the active adapter's endpoint; add the
    "Nexus Cloud" provider card in Settings with the GPU profile + status dashboard.
 5. **Cerebrium / Vast** as additional adapters once the pattern is proven.
+
+### What's real vs. needs a live account
+- **Real now:** the architecture, the interface, the registry, the sidebar UI, the
+  route layer, bundling, and the Modal adapter's control flow (connect/provision/
+  status/run/stop). Verified by Python import + a registry smoke test.
+- **Needs a live Modal account to fully validate:** the actual `modal.runner.
+  deploy_app` call and the deployed ComfyUI web URL round-trip — can't be exercised
+  in this sandbox.
+- **Stubs:** Beam/Cerebrium/RunPod/Vast `connect/deploy/run` intentionally return
+  501 "not wired up yet" until each adapter is implemented (mirror `modal.py`).
 
 ## 7. Honest notes / risks
 - This is a real multi-week build; each adapter is its own integration + testing against that provider.

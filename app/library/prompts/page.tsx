@@ -337,6 +337,8 @@ function EditForm({ item, onSave }: { item: PromptItem; onSave: (p: PromptItem) 
 function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () => void, onImport: (data: any) => void }) {
   const [isSystem, setIsSystem] = useState(false);
   const [url, setUrl] = useState("");
+  const [repoUrl, setRepoUrl] = useState("");
+  const [githubToken, setGithubToken] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleUrlImport() {
@@ -355,6 +357,32 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
       alert(`Imported ${mapped.length} prompts.`);
       onClose();
     } catch (e: any) { alert("Fetch failed: " + e.message); }
+    setLoading(false);
+  }
+
+  async function handleGithubRepoImport() {
+    if (!repoUrl) return;
+    setLoading(true);
+    try {
+      const fetchPath = `/api/import-github?repo=${encodeURIComponent(repoUrl)}${githubToken ? '&token=' + encodeURIComponent(githubToken) : ''}`;
+      const r = await fetch(fetchPath);
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.error || "Failed to fetch GitHub repo");
+      
+      const arr = j.prompts || [];
+      const mapped = mapGalleryItems(arr);
+      if (isSystem) mapped.forEach(p => p.category = "System Prompt");
+      
+      if (mapped.length > 0) {
+        onImport({ prompts: mapped });
+        alert(`Imported ${mapped.length} prompts from the repository.`);
+        onClose();
+      } else {
+        alert("No markdown (.md) files found in the repository.");
+      }
+    } catch (e: any) {
+      alert("GitHub Repo Import failed: " + e.message);
+    }
     setLoading(false);
   }
 
@@ -439,6 +467,17 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
           <div className="flex gap-2">
             <input className="input text-xs flex-1" placeholder="https://raw.githubusercontent.com/..." value={url} onChange={e => setUrl(e.target.value)} disabled={loading} />
             <button className="btn-primary text-xs px-3" onClick={handleUrlImport} disabled={loading}>{loading ? "Fetching..." : "Fetch"}</button>
+          </div>
+        </div>
+
+        <div className="card p-3 border border-border/40">
+          <div className="font-semibold text-xs mb-2">Import from GitHub Repo (MD files)</div>
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <input className="input text-xs flex-1" placeholder="e.g., cscannellnexus/prompts-md" value={repoUrl} onChange={e => setRepoUrl(e.target.value)} disabled={loading} />
+              <button className="btn-primary text-xs px-3" onClick={handleGithubRepoImport} disabled={loading}>{loading ? "Fetching..." : "Fetch Repo"}</button>
+            </div>
+            <input className="input text-[10px] w-full" type="password" placeholder="GitHub Access Token (Optional, for private repos)" value={githubToken} onChange={e => setGithubToken(e.target.value)} disabled={loading} />
           </div>
         </div>
 

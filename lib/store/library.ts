@@ -110,7 +110,30 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
   set: (key, value) => { set({ [key]: value } as any); idbSet(KEY, snapshot({ ...getState(), [key]: value } as any)); },
   importJSON: (data) => {
     const s = getState();
-    const merged = { prompts: data.prompts ? [...s.prompts, ...data.prompts] : s.prompts, ingredients: data.ingredients ? [...s.ingredients, ...data.ingredients] : s.ingredients, recipes: data.recipes ? [...s.recipes, ...data.recipes] : s.recipes, characters: data.characters ? [...s.characters, ...data.characters] : s.characters };
+    
+    // Helper to generate a unique key for prompts to detect duplicates
+    const pk = (p: PromptItem) => p.category + "|" + (p.subcategory || "") + "|" + p.title + "|" + p.body;
+    
+    // Filter out incoming prompts that already exist
+    const newPrompts = (data.prompts || []).filter(dp => !s.prompts.some(sp => pk(sp) === pk(dp)));
+    
+    // Clean up any existing duplicates in the current store
+    const uniquePrompts = [];
+    const seen = new Set();
+    for (const p of [...s.prompts, ...newPrompts]) {
+      const key = pk(p);
+      if (!seen.has(key)) {
+        seen.add(key);
+        uniquePrompts.push(p);
+      }
+    }
+
+    const merged = { 
+      prompts: uniquePrompts, 
+      ingredients: data.ingredients ? [...s.ingredients, ...data.ingredients] : s.ingredients, 
+      recipes: data.recipes ? [...s.recipes, ...data.recipes] : s.recipes, 
+      characters: data.characters ? [...s.characters, ...data.characters] : s.characters 
+    };
     set(merged as any); idbSet(KEY, snapshot({ ...s, ...merged } as any));
   },
   reseed: async (mode) => {

@@ -94,10 +94,21 @@ $env:PIP_CONSTRAINT = $constraints
 Write-Host "==> Pinned $(@($pinned).Count) core packages in constraints.txt"
 
 # 3. Install every custom node from the manifest + its requirements (constrained).
+#    Two source kinds: `local` (a path in this repo — nodes we own, copied) and
+#    `repo` (a git URL — third-party, cloned/updated).
 $spec = Get-Content $manifest -Raw | ConvertFrom-Json
 foreach ($node in $spec.nodes) {
   $nodeDir = Join-Path $customNodes $node.name
-  if (Test-Path $nodeDir) {
+  if ($node.local) {
+    $srcDir = Join-Path $root $node.local
+    if (-not (Test-Path $srcDir)) { throw "Local node source not found: $srcDir" }
+    Write-Host "==> Copying local node $($node.name) <- $($node.local)"
+    if (Test-Path $nodeDir) { Remove-Item -Recurse -Force $nodeDir }
+    New-Item -ItemType Directory -Force -Path $nodeDir | Out-Null
+    # Copy node source, excluding any dev cruft.
+    Copy-Item -Path (Join-Path $srcDir "*") -Destination $nodeDir -Recurse -Force `
+      -Exclude @("__pycache__", "*.pyc", ".git")
+  } elseif (Test-Path $nodeDir) {
     Write-Host "==> Updating node $($node.name)"
     git -C $nodeDir pull --ff-only 2>$null
   } else {

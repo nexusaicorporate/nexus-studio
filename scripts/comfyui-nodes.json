@@ -1,11 +1,10 @@
 {
-  "_comment": "Custom nodes baked into the packaged ComfyUI at build time by scripts/prepare-comfyui.ps1. Add a node by appending to `nodes`. Each node is git-cloned into ComfyUI/custom_nodes/<name> and its requirements.txt (if any) is installed into the bundled embedded Python. `ref` optionally pins a tag/branch/commit. `pip` lists extra packages to install globally into the bundled Python.",
+  "_comment": "Custom nodes baked into the packaged ComfyUI at build time by scripts/prepare-comfyui.ps1. Each node is either git-cloned (`repo`) into ComfyUI/custom_nodes/<name>, or copied from the repo (`local`, a path relative to the project root) for nodes we own. `ref` optionally pins a tag/branch/commit for cloned nodes. `pip` lists extra packages to install globally into the bundled Python; requirements.txt inside each node is also installed.",
   "nodes": [
     {
-      "name": "comfyui-modal",
-      "repo": "https://github.com/JunnnnyWon/comfyui-modal",
-      "ref": "",
-      "note": "Cloud GPU offload via Modal (first provider)."
+      "name": "comfyui-nexus-cloud",
+      "local": "comfyui-nodes/comfyui-nexus-cloud",
+      "note": "OUR cloud-GPU node. Provider dropdown (Modal, Beam, Cerebrium, RunPod, Vast) in the sidebar; routes /prompt to the active provider with models on a persistent volume. Modal adapter is the working reference; others are declared stubs."
     },
     {
       "name": "ComfyUI-Manager",
