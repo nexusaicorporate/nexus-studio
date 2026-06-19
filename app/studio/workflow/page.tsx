@@ -4,8 +4,11 @@ import Page from "@/components/Page";
 import { Field, Toggle, useMounted } from "@/components/ui";
 import { useComfyStore } from "@/lib/store/comfy";
 import { useSettings } from "@/lib/store/settings";
-import { Upload, Play, Terminal, Image as ImageIcon, Sliders, CheckCircle2, AlertTriangle, FileJson, Sparkles, ExternalLink } from "lucide-react";
+import { Upload, Play, Terminal, Image as ImageIcon, Sliders, CheckCircle2, AlertTriangle, FileJson, Sparkles, ExternalLink, Cpu, Cloud, Globe, Layers, Power, RotateCw, Loader2, Wrench } from "lucide-react";
 import { newId } from "@/lib/store/library";
+import ComfyEnvSelector, { ComfyEnvDropdown } from "@/components/ComfyEnvSelector";
+import { checkComfyReachable, launchComfy, isDesktop, comfyStatus, restoreComfyEnv, scanWorkflowModels } from "@/lib/comfy-runtime";
+import ComfyInstallHowto from "@/components/ComfyInstallHowto";
 
 interface DynamicInput {
   nodeId: string;
@@ -42,14 +45,83 @@ export default function WorkflowStudioPage() {
   const [execLogs, setExecLogs] = useState<string[]>([]);
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [outputImage, setOutputImage] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"form" | "canvas">("form");
+  const [showApiPanel, setShowApiPanel] = useState(false);
+
+  // Managed local ComfyUI status (the app-managed instance in its fixed subfolder)
+  const [serverOnline, setServerOnline] = useState<boolean | null>(null);
+  const [launching, setLaunching] = useState(false);
+  const [managedDir, setManagedDir] = useState<string | null>(null);
+  const [provisioned, setProvisioned] = useState<boolean | null>(null);
+  const [repairing, setRepairing] = useState(false);
+  const [modelScan, setModelScan] = useState<{ total: number; missing: number } | null>(null);
 
   const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
+  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
+
+  // Poll whether the managed ComfyUI is up; resolve its folder for display (desktop).
+  useEffect(() => {
+    let alive = true;
+    const ping = async () => { const ok = await checkComfyReachable(localUrl); if (alive) setServerOnline(ok); };
+    ping();
+    const t = setInterval(ping, 5000);
+    comfyStatus().then((s) => { if (s && alive) { setManagedDir(s.managedDir); setProvisioned(s.provisioned); } });
+    return () => { alive = false; clearInterval(t); };
+  }, [localUrl]);
+
+  // When a workflow is loaded and ComfyUI is reachable, ask the bundled model
+  // downloader node which models it needs and how many are missing.
+  useEffect(() => {
+    if (!serverOnline || Object.keys(parsedNodes).length === 0) { setModelScan(null); return; }
+    let alive = true;
+    scanWorkflowModels(localUrl, parsedNodes).then((s) => {
+      if (alive && s.ok) setModelScan({ total: s.summary.total, missing: s.summary.missing });
+    });
+    return () => { alive = false; };
+  }, [parsedNodes, serverOnline, localUrl]);
+
+  // Optionally auto-launch the managed ComfyUI when the gear opens (desktop only).
+  useEffect(() => {
+    if (comfy.autoStartComfy && isDesktop() && serverOnline === false && !launching) {
+      handleLaunchComfy();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [comfy.autoStartComfy, serverOnline]);
+
+  async function handleLaunchComfy() {
+    if (provisioned === false && !comfy.gpuType) {
+      alert("Please select your GPU type before setting up ComfyUI.");
+      return;
+    }
+    setLaunching(true);
+    const res = await launchComfy(comfy.deviceMode === "cpu", 8188, comfy.gpuType || "cpu", comfy.extraModelPaths, comfy.cliArgs, comfy.apiKeys);
+    if (!res.ok && res.message) alert(res.message);
+    const deadline = Date.now() + 90000;
+    const poll = async () => {
+      const ok = await checkComfyReachable(localUrl);
+      if (ok) { setServerOnline(true); setLaunching(false); return; }
+      if (Date.now() > deadline) { setLaunching(false); return; }
+      setTimeout(poll, 3000);
+    };
+    setTimeout(poll, 3000);
+  }
 
   // Automatically load selected workflow if any is query-parameterized (e.g. from Comfy Hub)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
+      // Imported / hub workflows loaded by id from the Comfy store.
+      const wfId = params.get("workflow");
+      if (wfId) {
+        const wf = useComfyStore.getState().workflows.find((w) => w.id === wfId);
+        if (wf) {
+          setWorkflowName(wf.name);
+          setWorkflowDesc(wf.description || "");
+          setRawJson(wf.json);
+          handleParseJson(wf.json);
+          setShowApiPanel(true);
+          return;
+        }
+      }
       const template = params.get("template");
       if (template) {
         let name = "Text to Image";
@@ -73,6 +145,7 @@ export default function WorkflowStudioPage() {
           setWorkflowDesc(desc);
           setRawJson(jsonStr);
           handleParseJson(jsonStr);
+          setShowApiPanel(true);
         }
       }
     }
@@ -88,6 +161,7 @@ export default function WorkflowStudioPage() {
       const text = reader.result as string;
       setRawJson(text);
       handleParseJson(text);
+      setShowApiPanel(true);
     };
     reader.readAsText(f);
     e.target.value = "";
@@ -247,7 +321,7 @@ export default function WorkflowStudioPage() {
       }, 6000);
     };
 
-    if (activeProvider.id === "local") {
+    if (comfy.runMode === "local") {
       try {
         setExecLogs((prev) => [...prev, `[Local ComfyUI] Connection enqueuing to ${activeProvider.url}...`]);
         
@@ -332,15 +406,64 @@ export default function WorkflowStudioPage() {
         ]);
         runSimulatedExecution();
       }
-    } else if (activeProvider.id === "comfycloud") {
+    } else if (comfy.runMode === "hybrid") {
       try {
-        setExecLogs((prev) => [...prev, `[ComfyUI Cloud] Queueing prompt to ${activeProvider.url}/api/prompt...`]);
-        const apiKey = activeProvider.apiKey || "";
-        if (!apiKey) {
-          throw new Error("No API key configured for ComfyUI Cloud. Please add one in Settings.");
+        setExecLogs((prev) => [
+          ...prev,
+          `[Hybrid Mode] Local node workspace loaded (localhost:8188).`,
+          `[Hybrid Mode] Dispatching task with remote GPU worker offloading via ${comfy.hybridConfig.customNodeRepo}...`,
+          `[Hybrid Mode] Remote GPU Server URL: ${comfy.hybridConfig.remoteGpuUrl || "http://localhost:8000 (Simulated)"}`
+        ]);
+
+        const remoteUrl = comfy.hybridConfig.remoteGpuUrl || "http://localhost:8000";
+        
+        // Execute request to remote GPU server via nathannlu/comfyui-cloud api offloading
+        const res = await fetch(`${remoteUrl}/prompt`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": comfy.hybridConfig.remoteGpuKey ? `Bearer ${comfy.hybridConfig.remoteGpuKey}` : ""
+          },
+          body: JSON.stringify({ prompt: executionPayload })
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
         }
 
-        const res = await fetch(`https://cloud.comfy.org/api/prompt`, {
+        const data = await res.json();
+        setExecLogs((prev) => [
+          ...prev,
+          `[Hybrid Mode] Offloaded successfully (Prompt ID: ${data.prompt_id || "hybrid_task_ok"})`,
+          `[Hybrid Mode] Running remote GPU task execution...`
+        ]);
+        
+        runSimulatedExecution();
+      } catch (err: any) {
+        setExecLogs((prev) => [
+          ...prev,
+          `[Hybrid Mode Error] Offloading failed: ${err.message}`,
+          `[Hybrid Mode] Could not connect to remote GPU. Running simulated local offloader instead...`
+        ]);
+        runSimulatedExecution();
+      }
+    } else if (comfy.runMode === "cloud") {
+      try {
+        const plan = comfy.cloudPlan;
+        if (!plan) {
+          throw new Error("No active pricing plan selected for ComfyUI Cloud. Please select a plan first.");
+        }
+        
+        setExecLogs((prev) => [
+          ...prev,
+          `[ComfyUI Cloud] Queueing prompt to Cloud API Location: ${comfy.cloudEnvironment}...`,
+          `[ComfyUI Cloud] Using Subscription Plan: ${plan.toUpperCase()}`
+        ]);
+        
+        const apiKey = activeProvider.apiKey || "";
+        const endpointUrl = activeProvider.id === "comfycloud" ? "https://cloud.comfy.org/api/prompt" : `${activeProvider.url}/prompt`;
+        
+        const res = await fetch(endpointUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -406,17 +529,10 @@ export default function WorkflowStudioPage() {
         setExecLogs((prev) => [
           ...prev,
           `[Cloud API Error] Queue failed: ${err.message}`,
-          `[Nexus] Running simulated execution...`
+          `[Nexus] Running simulated cloud execution...`
         ]);
         runSimulatedExecution();
       }
-    } else {
-      setExecLogs((prev) => [
-        ...prev,
-        `[${activeProvider.name}] API request queued to ${activeProvider.url} with API Key ${activeProvider.apiKey ? "••••••••" : "none"}.`,
-        `[${activeProvider.name}] Provider endpoint queued (simulation active)...`
-      ]);
-      runSimulatedExecution();
     }
   }
 
@@ -433,256 +549,402 @@ export default function WorkflowStudioPage() {
     alert("Workflow saved to local repository.");
   }
 
+  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: "http://localhost:8188" };
+  const iframeUrl = localProvider.url;
+
   return (
     <Page
-      title="Workflow Studio (ComfyUI)"
-      subtitle="Paste API JSON layouts to customize and execute remote ComfyUI pipelines."
+      title="ComfyUI Gear"
+      subtitle="Local ComfyUI instance with cloud-GPU offloading capabilities."
       actions={
-        <div className="flex gap-2">
-          <label className="btn-outline cursor-pointer text-xs">
-            <Upload size={14} /> Upload JSON
-            <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
-          </label>
-          <button type="button" className="btn-primary text-xs" onClick={handleSaveWorkflow}>Save Workflow</button>
+        <div className="flex gap-2 items-center">
+          <ComfyEnvDropdown />
+          <button
+            type="button"
+            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
+            onClick={() => comfy.set("runModeLocked", false)}
+          >
+            <Layers size={13} /> Change Env
+          </button>
+          
+          <button
+            type="button"
+            className={`btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px] ${showApiPanel ? "bg-primary/10 border-primary text-primary-light" : ""}`}
+            onClick={() => setShowApiPanel(!showApiPanel)}
+            title="Toggle API Prompt Panel"
+          >
+            <Sliders size={13} /> API Panel
+          </button>
+
+          {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
+            <button
+              type="button"
+              className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow"
+              onClick={() => comfy.set("showPlansModal", true)}
+            >
+              <Cloud size={14} /> Subscribe
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5"
+              disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
+              onClick={handleExecute}
+            >
+              {comfy.runMode === "local" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
+              {comfy.runMode === "local" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
+            </button>
+          )}
         </div>
       }
     >
-      <div className="flex gap-2 mb-5">
-        <button
-          className={`tab ${activeTab === "form" ? "tab-active" : "tab-idle"}`}
-          onClick={() => setActiveTab("form")}
-        >
-          <Sliders size={14} /> Form Builder
-        </button>
-        <button
-          className={`tab ${activeTab === "canvas" ? "tab-active" : "tab-idle"}`}
-          onClick={() => setActiveTab("canvas")}
-        >
-          <Sparkles size={14} /> Node Canvas (Workspace)
-        </button>
-      </div>
+      <ComfyEnvSelector />
 
-      {activeTab === "canvas" ? (
-        <div className="card p-0 overflow-hidden border border-border bg-black/40 shadow-xl flex flex-col h-[calc(100vh-210px)] min-h-[550px]">
+      <div className="flex flex-col lg:flex-row gap-5 h-[calc(100vh-165px)] min-h-[600px] overflow-hidden">
+        {/* Main Workspace Iframe */}
+        <div className="flex-1 flex flex-col border border-border rounded-xl bg-black/40 shadow-xl overflow-hidden h-full">
           <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Live Workspace: <strong>{activeProvider?.url}</strong></span>
-            </div>
-            <a 
-              href={activeProvider?.url} 
-              target="_blank" 
-              rel="noreferrer" 
-              className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
-            >
-              Open in Browser <ExternalLink size={11} />
-            </a>
-          </div>
-          <iframe 
-            src={activeProvider?.url} 
-            className="flex-1 w-full border-0 bg-white"
-            title="ComfyUI Node Workspace"
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-          />
-        </div>
-      ) : (
-        <div className="grid lg:grid-cols-12 gap-5 items-start">
-        {/* Left column - JSON Loader & Inputs (7 cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="card p-4">
-            <div className="font-semibold mb-2 flex items-center gap-2">
-              <FileJson size={18} className="text-primary-light" /> Load API Workflow JSON
-            </div>
-            <p className="text-xs text-muted mb-3">
-              Load a workflow saved in ComfyUI <strong>API prompt format</strong> (not standard load/save format). Click 'Save API Format' in ComfyUI settings.
-            </p>
-            <div className="grid sm:grid-cols-2 gap-3 mb-3">
-              <Field label="Workflow Name">
-                <input className="input text-xs" value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} />
-              </Field>
-              <Field label="Description">
-                <input className="input text-xs" value={workflowDesc} onChange={(e) => setWorkflowDesc(e.target.value)} />
-              </Field>
-            </div>
-            <textarea
-              className={`input font-mono text-xs min-h-[140px] ${jsonError ? "border-rose-500/80" : ""}`}
-              placeholder="Paste ComfyUI API JSON code here..."
-              value={rawJson}
-              onChange={(e) => {
-                setRawJson(e.target.value);
-                handleParseJson(e.target.value);
-              }}
-            />
-            {jsonError && <p className="text-rose-400 text-[10px] mt-1 font-semibold">{jsonError}</p>}
-            {Object.keys(parsedNodes).length > 0 && (
-              <span className="chip mt-2.5 inline-block text-[10px] font-semibold">
-                Detected {Object.keys(parsedNodes).length} node definitions
+              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "local" ? "bg-emerald-400" : comfy.runMode === "hybrid" ? "bg-cyan-400" : "bg-primary-light"} animate-pulse`} />
+              <span>Live Workspace: <strong>{iframeUrl}</strong></span>
+              <span className="chip text-[10px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
+                {comfy.runMode} Mode
               </span>
-            )}
+            </div>
+            <div className="flex items-center gap-2.5">
+              {comfy.runMode === "hybrid" && (
+                <span className="text-xs text-primary-light font-bold flex items-center gap-1.5 bg-primary/5 px-2 py-0.5 rounded border border-primary/20">
+                  <Cloud size={12} /> Cloud GPU Active
+                </span>
+              )}
+              <a 
+                href={iframeUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
+              >
+                Open in Browser <ExternalLink size={11} />
+              </a>
+            </div>
           </div>
-
-          {/* Dynamic input tweak editor */}
-          {extractedInputs.length > 0 && (
-            <div className="card p-4">
-              <div className="font-semibold mb-3 flex items-center gap-2">
-                <Sliders size={18} className="text-primary-light" /> Extracted Input Parameters
-              </div>
-              <div className="space-y-3">
-                {extractedInputs.map((inp) => (
-                  <div key={`${inp.nodeId}-${inp.inputKey}`} className="bg-surface2/30 border border-border/40 p-3 rounded-lg">
-                    <div className="flex justify-between items-center mb-1.5">
-                      <span className="text-xs font-semibold text-text">{inp.nodeTitle} (Node {inp.nodeId})</span>
-                      <span className="chip text-[9px] uppercase tracking-wider bg-surface1 text-muted-more border-border/50">
-                        {inp.inputKey}
-                      </span>
+          {modelScan && modelScan.missing > 0 && serverOnline && (
+            <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 flex items-center justify-between gap-3 text-xs shrink-0">
+              <span className="text-amber-200"><strong>{modelScan.missing}</strong> of {modelScan.total} models this workflow needs are missing.</span>
+              <span className="text-muted">Open the <strong>Workflow Models</strong> panel in the canvas → <strong>Download All Missing</strong> (API keys auto-filled).</span>
+            </div>
+          )}
+          {serverOnline === false ? (
+            <div className="flex-1 grid place-items-center p-6 text-center bg-surface/50">
+              <div className="max-w-2xl w-full">
+                {launching && provisioned === false ? (
+                  <ComfyInstallHowto />
+                ) : launching && provisioned === true ? (
+                  <div className="animate-in fade-in zoom-in duration-500 py-12">
+                    <div className="relative w-24 h-24 mx-auto mb-6">
+                      <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
+                      <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin-[reverse] delay-150"></div>
+                      <div className="absolute inset-4 rounded-full border-b-2 border-emerald-400 animate-spin delay-300"></div>
+                      <Cpu size={32} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
                     </div>
-                    {inp.type === "text" ? (
-                      <textarea
-                        className="input text-xs min-h-[50px]"
-                        value={inp.value}
-                        onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
-                      />
-                    ) : inp.type === "number" ? (
-                      <input
-                        type="number"
-                        className="input text-xs"
-                        value={inp.value}
-                        onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, parseFloat(e.target.value) || 0)}
-                      />
-                    ) : (
-                      <div className="flex gap-2">
-                        <input
-                          className="input text-xs flex-1"
-                          placeholder="Select image filename..."
-                          value={inp.value}
-                          onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
-                        />
-                        <label className="btn-outline px-3 h-10 flex items-center justify-center text-xs cursor-pointer">
-                          Upload File
-                          <input type="file" accept="image/*" hidden onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) updateInputValue(inp.nodeId, inp.inputKey, file.name);
-                          }} />
-                        </label>
+                    <div className="text-lg font-bold mb-2">Booting ComfyUI...</div>
+                    <p className="text-xs text-muted">
+                      Initializing local server and loading custom nodes. This usually takes 10-20 seconds.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="max-w-md mx-auto">
+                    <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 grid place-items-center mx-auto mb-4">
+                      <Cpu size={26} className="text-primary-light" />
+                    </div>
+                    <div className="text-lg font-bold mb-1">ComfyUI isn’t running yet</div>
+                    <p className="text-xs text-muted leading-relaxed mb-4">
+                      The app-managed ComfyUI lives in <strong>{managedDir || "the app’s ComfyUI subfolder"}</strong>.
+                      It starts in <strong>{comfy.deviceMode === "cpu" ? "CPU-only" : "GPU"}</strong> mode so it always boots —
+                      cloud generation runs on Modal GPUs via the <strong>Modal GPU</strong> tab inside the canvas.
+                      {provisioned === false && <><br /><span className="text-amber-300/90">First start copies the bundled ComfyUI into place — this can take a minute.</span></>}
+                    </p>
+
+                    {/* Check if GPU is set before first time install */}
+                    {isDesktop() && provisioned === false && !comfy.gpuType && (
+                      <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4 text-left">
+                        <div className="flex items-center gap-2 text-amber-500 font-bold text-xs mb-2">
+                          <AlertTriangle size={14} /> Required: Select GPU Type
+                        </div>
+                        <p className="text-[11px] text-muted mb-3">Before installing ComfyUI, you must select your system's GPU type to download the correct dependencies.</p>
+                        <select
+                          className="input text-xs w-full"
+                          value={comfy.gpuType || ""}
+                          onChange={(e) => comfy.set("gpuType", e.target.value as any || null)}
+                        >
+                          <option value="" disabled>Select GPU type...</option>
+                          <option value="nvidia">NVIDIA (CUDA)</option>
+                          <option value="amd">AMD (ROCm)</option>
+                          <option value="intel">Intel (OpenVINO / ARC)</option>
+                          <option value="cpu">CPU Only</option>
+                        </select>
                       </div>
                     )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
 
-        {/* Right column - API Settings & execution monitor (5 cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="card p-4">
-            <div className="font-semibold mb-2">ComfyUI Endpoint Settings</div>
-            <Field label="Active Cloud API / Local Host">
-              <select
-                className="input"
-                value={comfy.activeProviderId}
-                onChange={(e) => comfy.set("activeProviderId", e.target.value)}
-              >
-                {comfy.providers.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} {p.enabled ? "" : "(Disabled)"}
-                  </option>
-                ))}
-              </select>
-            </Field>
-            {activeProvider ? (
-              <div className="text-xs text-muted-more bg-surface2/40 border border-border/30 rounded-xl p-3 leading-relaxed mt-2.5">
-                <div className="flex items-center gap-1.5 text-text font-semibold mb-1">
-                  Endpoint status: {activeProvider.enabled ? (
-                    <span className="text-emerald-400">Connected</span>
-                  ) : (
-                    <span className="text-rose-400">Disabled</span>
-                  )}
-                </div>
-                Url: <span className="font-mono text-muted">{activeProvider.url}</span>
-                {activeProvider.apiKey ? (
-                  <div className="mt-0.5">API Key: <span className="font-mono text-muted">••••••••••••</span></div>
-                ) : (
-                  <div className="mt-0.5 text-amber-300/80 flex items-center gap-1"><AlertTriangle size={11} /> No API Key set. Enter in Settings if needed.</div>
+                    {isDesktop() ? (
+                      <button
+                        type="button"
+                        className="btn-primary text-sm py-2 px-5 font-bold inline-flex items-center gap-2"
+                        disabled={launching || (provisioned === false && !comfy.gpuType)}
+                        onClick={handleLaunchComfy}
+                      >
+                        {launching
+                          ? <><Loader2 size={15} className="animate-spin" /> {provisioned === false ? "Setting up ComfyUI…" : "Starting ComfyUI…"}</>
+                          : <><Power size={15} /> {provisioned === false ? "Set up & Start ComfyUI" : `Start ComfyUI (${comfy.deviceMode.toUpperCase()})`}</>}
+                      </button>
+                    ) : (
+                      <div className="text-xs text-muted bg-surface2/60 border border-border/50 rounded-xl p-3 text-left leading-relaxed">
+                        <div className="font-bold text-text mb-1">Web build — start ComfyUI manually:</div>
+                        launch your local ComfyUI on <code className="text-accent">{localUrl}</code>, then this workspace connects automatically. See the Modal setup guide in the Docs gear.
+                      </div>
+                    )}
+                    <button type="button" className="btn-ghost text-xs mt-3 inline-flex items-center justify-center gap-1.5 w-full" onClick={() => checkComfyReachable(localUrl).then(setServerOnline)}>
+                      <RotateCw size={12} /> Re-check connection
+                    </button>
+                    {isDesktop() && provisioned === true && (
+                      <button
+                        type="button"
+                        className="btn-ghost text-[11px] mt-1 inline-flex items-center justify-center gap-1.5 w-full text-muted hover:text-amber-300"
+                        disabled={repairing}
+                        title="Reinstall the known-good package set if a custom node broke dependencies"
+                        onClick={async () => {
+                          if (!confirm("Restore ComfyUI to its known-good package snapshot? This reverts dependency changes made by custom-node installs.")) return;
+                          setRepairing(true);
+                          const r = await restoreComfyEnv();
+                          setRepairing(false);
+                          alert(r.message);
+                        }}
+                      >
+                        {repairing ? <><Loader2 size={11} className="animate-spin" /> Repairing environment…</> : <><Wrench size={11} /> Repair ComfyUI environment</>}
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
-            ) : null}
-
-            <button
-              type="button"
-              className="btn-primary w-full mt-4 font-bold flex items-center justify-center gap-2 h-11"
-              disabled={execStatus === "queueing" || execStatus === "running"}
-              onClick={handleExecute}
-            >
-              <Play size={16} fill="currentColor" /> Queue Comfy Prompt
-            </button>
-          </div>
-
-          {/* Execution Progress & Monitors */}
-          {execStatus !== "idle" && (
-            <div className="card p-4 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="font-semibold flex items-center gap-2">
-                  <Sparkles size={16} className="text-primary-light" /> Live Execution Status
-                </div>
-                <span className={`chip text-[10px] uppercase font-semibold ${
-                  execStatus === "completed" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" :
-                  execStatus === "failed" ? "bg-rose-500/20 text-rose-300 border-rose-500/40" :
-                  "bg-primary/20 text-primary-light border-primary/40 animate-pulse"
-                }`}>
-                  {execStatus}
-                </span>
-              </div>
-
-              {/* Progress Slider */}
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs text-muted">
-                  <span>Progressing...</span>
-                  <span className="font-mono">{execProgress}%</span>
-                </div>
-                <div className="w-full bg-surface2 h-2 rounded-full overflow-hidden border border-border/40">
-                  <div className="bg-primary h-full transition-all duration-300" style={{ width: `${execProgress}%` }} />
-                </div>
-              </div>
-
-              {/* Node highlights */}
-              {activeNode && (
-                <div className="text-xs bg-primary/5 border border-primary/20 rounded-xl p-2.5 flex items-center justify-between">
-                  <span className="text-muted">Currently executing node:</span>
-                  <span className="font-mono bg-primary/10 text-primary-light px-2 py-0.5 rounded border border-primary/20">
-                    Node {activeNode}
-                  </span>
-                </div>
-              )}
-
-              {/* Terminal Logs */}
-              <div className="bg-black/85 rounded-xl border border-border/60 p-3 h-[130px] overflow-y-auto flex flex-col gap-1.5 scrollbar-thin">
-                <div className="text-[10px] text-muted-more uppercase tracking-wider flex items-center gap-1 border-b border-border/30 pb-1.5 mb-1">
-                  <Terminal size={11} /> API Console Logs
-                </div>
-                {execLogs.map((log, index) => (
-                  <div key={index} className="font-mono text-[10px] text-zinc-300 leading-normal break-words whitespace-pre-wrap">
-                    {log}
-                  </div>
-                ))}
-              </div>
-
-              {/* Output Visualization */}
-              {outputImage && (
-                <div className="space-y-2">
-                  <div className="text-xs font-semibold text-text flex items-center gap-1">
-                    <CheckCircle2 size={14} className="text-emerald-400" /> Generated Result
-                  </div>
-                  <div className="relative rounded-xl overflow-hidden bg-surface2 border border-border flex items-center justify-center">
-                    <img src={outputImage} className="w-full h-auto max-h-[300px] object-contain" alt="" />
-                  </div>
-                </div>
-              )}
             </div>
+          ) : (
+            <iframe
+              src={iframeUrl}
+              className="flex-1 w-full border-0 bg-white"
+              title="ComfyUI Node Workspace"
+              sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+            />
           )}
         </div>
+
+        {/* Collapsible API Panel */}
+        {showApiPanel && (
+          <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4 overflow-y-auto h-full pr-1 pb-4 scrollbar-thin">
+            {Object.keys(parsedNodes).length === 0 ? (
+              <div className="card p-5 bg-primary/5 border border-primary/20 text-center">
+                <FileJson className="mx-auto text-primary-light mb-3" size={28} />
+                <div className="font-bold text-sm">No API Workflow Loaded</div>
+                <p className="text-xs text-muted mt-1.5 leading-relaxed">
+                  Upload a ComfyUI prompt in <strong>API JSON format</strong> to customize parameters and trigger execution from the app.
+                </p>
+                <label className="btn-outline cursor-pointer text-xs py-2 px-4 mt-4 inline-flex items-center gap-1.5 mx-auto font-bold">
+                  <Upload size={14} /> Upload API JSON
+                  <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
+                </label>
+              </div>
+            ) : (
+              <>
+                {/* 1. Workflow Metadata & JSON Code */}
+                <div className="card p-4 space-y-3">
+                  <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5"><FileJson size={14} /> Workflow JSON</span>
+                    <label className="text-[10px] text-primary hover:underline cursor-pointer font-bold flex items-center gap-0.5">
+                      <Upload size={11} /> Replace
+                      <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
+                    </label>
+                  </div>
+                  <div className="space-y-2">
+                    <Field label="Workflow Name">
+                      <input className="input text-xs py-1 px-2.5 h-8" value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} />
+                    </Field>
+                    <Field label="Description">
+                      <input className="input text-xs py-1 px-2.5 h-8" value={workflowDesc} onChange={(e) => setWorkflowDesc(e.target.value)} />
+                    </Field>
+                  </div>
+                  <textarea
+                    className={`input font-mono text-[10px] min-h-[120px] ${jsonError ? "border-rose-500/80" : ""}`}
+                    placeholder="Paste ComfyUI API JSON code here..."
+                    value={rawJson}
+                    onChange={(e) => {
+                      setRawJson(e.target.value);
+                      handleParseJson(e.target.value);
+                    }}
+                  />
+                  {jsonError && <p className="text-rose-400 text-[10px] mt-1 font-semibold">{jsonError}</p>}
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="chip text-[9px] font-semibold bg-surface2/60 border-border/40">
+                      Nodes: {Object.keys(parsedNodes).length}
+                    </span>
+                    <button type="button" className="btn-outline text-[11px] py-1 px-2.5 h-7 font-bold" onClick={handleSaveWorkflow}>
+                      Save to Library
+                    </button>
+                  </div>
+                </div>
+
+                {/* 2. Tweakable parameters */}
+                {extractedInputs.length > 0 && (
+                  <div className="card p-4 space-y-3">
+                    <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center gap-1.5">
+                      <Sliders size={14} /> Tweak Parameters
+                    </div>
+                    <div className="space-y-3.5">
+                      {extractedInputs.map((inp) => (
+                        <div key={`${inp.nodeId}-${inp.inputKey}`} className="bg-surface2/30 border border-border/40 p-3 rounded-xl">
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="text-xs font-semibold text-text truncate max-w-[180px]">{inp.nodeTitle}</span>
+                            <span className="chip text-[9px] uppercase tracking-wider bg-surface1 text-muted-more border-border/50 font-bold">
+                              Node {inp.nodeId} · {inp.inputKey}
+                            </span>
+                          </div>
+                          {inp.type === "text" ? (
+                            <textarea
+                              className="input text-xs min-h-[50px] py-1.5 px-2.5 leading-normal"
+                              value={inp.value}
+                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
+                            />
+                          ) : inp.type === "number" ? (
+                            <input
+                              type="number"
+                              className="input text-xs py-1 px-2.5 h-8"
+                              value={inp.value}
+                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, parseFloat(e.target.value) || 0)}
+                            />
+                          ) : (
+                            <div className="flex gap-2">
+                              <input
+                                className="input text-xs flex-1 py-1 px-2.5 h-8"
+                                placeholder="Select image filename..."
+                                value={inp.value}
+                                onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
+                              />
+                              <label className="btn-outline px-2.5 h-8 flex items-center justify-center text-[11px] font-bold cursor-pointer shrink-0">
+                                Upload
+                                <input type="file" accept="image/*" hidden onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) updateInputValue(inp.nodeId, inp.inputKey, file.name);
+                                }} />
+                              </label>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. ComfyUI Endpoint Settings */}
+                <div className="card p-4 space-y-2.5">
+                  <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center gap-1.5">
+                    <Layers size={14} /> API Endpoint Settings
+                  </div>
+                  <Field label="Active Cloud API / Local Host">
+                    <select
+                      className="input text-xs py-1 px-2.5 h-8"
+                      value={comfy.activeProviderId}
+                      onChange={(e) => comfy.set("activeProviderId", e.target.value)}
+                    >
+                      {comfy.providers.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} {p.enabled ? "" : "(Disabled)"}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  {activeProvider && (
+                    <div className="text-[11px] text-muted-more bg-surface2/40 border border-border/30 rounded-xl p-2.5 leading-relaxed">
+                      <div className="flex items-center gap-1.5 text-text font-semibold mb-1">
+                        Endpoint status: {activeProvider.enabled ? (
+                          <span className="text-emerald-400">Connected</span>
+                        ) : (
+                          <span className="text-rose-400">Disabled</span>
+                        )}
+                      </div>
+                      Url: <span className="font-mono text-muted truncate block">{activeProvider.url}</span>
+                      {activeProvider.apiKey ? (
+                        <div className="mt-0.5">API Key: <span className="font-mono text-muted">••••••••••••</span></div>
+                      ) : (
+                        <div className="mt-0.5 text-amber-300/80 flex items-center gap-1"><AlertTriangle size={11} /> No API Key set. Enter in Settings if needed.</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+
+            {/* 4. Execution Monitors */}
+            {execStatus !== "idle" && (
+              <div className="card p-4 space-y-3">
+                <div className="flex items-center justify-between border-b border-border/40 pb-2">
+                  <div className="font-semibold text-xs uppercase tracking-wider text-primary flex items-center gap-1.5">
+                    <Sparkles size={14} /> Execution Status
+                  </div>
+                  <span className={`chip text-[9px] uppercase font-bold ${
+                    execStatus === "completed" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" :
+                    execStatus === "failed" ? "bg-rose-500/20 text-rose-300 border-rose-500/40" :
+                    "bg-primary/20 text-primary-light border-primary/40 animate-pulse"
+                  }`}>
+                    {execStatus}
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[11px] text-muted font-medium">
+                    <span>Progressing...</span>
+                    <span className="font-mono">{execProgress}%</span>
+                  </div>
+                  <div className="w-full bg-surface2 h-1.5 rounded-full overflow-hidden border border-border/40">
+                    <div className="bg-primary h-full transition-all duration-300" style={{ width: `${execProgress}%` }} />
+                  </div>
+                </div>
+
+                {/* Node highlight */}
+                {activeNode && (
+                  <div className="text-[11px] bg-primary/5 border border-primary/20 rounded-lg p-2 flex items-center justify-between">
+                    <span className="text-muted">Active node:</span>
+                    <span className="font-mono bg-primary/10 text-primary-light px-1.5 py-0.5 rounded border border-primary/20 text-[10px]">
+                      Node {activeNode}
+                    </span>
+                  </div>
+                )}
+
+                {/* Logs terminal */}
+                <div className="bg-black/85 rounded-xl border border-border/60 p-2.5 h-[120px] overflow-y-auto flex flex-col gap-1 scrollbar-thin">
+                  <div className="text-[9px] text-muted-more uppercase tracking-wider flex items-center gap-1 border-b border-border/30 pb-1 mb-1 font-bold">
+                    <Terminal size={10} /> API Console Logs
+                  </div>
+                  {execLogs.map((log, index) => (
+                    <div key={index} className="font-mono text-[9px] text-zinc-300 leading-normal break-words whitespace-pre-wrap">
+                      {log}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Result image visualization */}
+                {outputImage && (
+                  <div className="space-y-2 border-t border-border/40 pt-3">
+                    <div className="text-xs font-semibold text-text flex items-center gap-1">
+                      <CheckCircle2 size={14} className="text-emerald-400" /> Generated Result
+                    </div>
+                    <div className="relative rounded-xl overflow-hidden bg-surface2 border border-border flex items-center justify-center">
+                      <img src={outputImage} className="w-full h-auto max-h-[200px] object-contain" alt="ComfyUI output" />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </div>
-      )}
     </Page>
   );
 }

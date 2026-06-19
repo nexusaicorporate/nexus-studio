@@ -15,7 +15,7 @@ export async function fetchModels(p: ProviderConfig): Promise<string[]> {
     }
     if (p.kind === "google") {
       if (!p.apiKey) return p.models;
-      const r = await fetch(p.baseUrl.replace(/\/$/, "") + "/v1beta/models?key=" + p.apiKey);
+      const r = await fetch(p.baseUrl.replace(/\/$/, "") + "/v1beta/models?key=" + encodeURIComponent(p.apiKey.trim()));
       const j = await r.json();
       return (j.models || []).map((m: any) => (m.name || "").replace("models/", "")).filter(Boolean);
     }
@@ -44,7 +44,7 @@ export async function chat(o: ChatOpts): Promise<string> {
   if (p.kind === "google") {
     const isStream = !!onChunk;
     const action = isStream ? "streamGenerateContent" : "generateContent";
-    const url = `${p.baseUrl.replace(/\/$/, "")}/v1beta/models/${model}:${action}?key=${p.apiKey || ""}`;
+    const url = `${p.baseUrl.replace(/\/$/, "")}/v1beta/models/${model}:${action}?key=${encodeURIComponent((p.apiKey || "").trim())}`;
     const contents = o.messages.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [
@@ -292,6 +292,28 @@ export async function chat(o: ChatOpts): Promise<string> {
 export interface ImageOpts { provider: ProviderConfig; prompt: string; width?: number; height?: number; model?: string; seed?: number; image?: string; }
 export async function generateImage(o: ImageOpts): Promise<string> {
   const { prompt } = o;
+  // Self-hosted / managed compute backend (e.g. a Modal endpoint running an HF model).
+  // Contract: POST {baseUrl}/generate/image  -> { image: <b64> } | { url } | { images:[...] }
+  if (o.provider.kind === "modal") {
+    const base = o.provider.baseUrl.replace(/\/$/, "");
+    const r = await fetch(base + "/generate/image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(o.provider.apiKey ? { Authorization: "Bearer " + o.provider.apiKey } : {}) },
+      body: JSON.stringify({
+        model: o.model || o.provider.selectedModel || o.provider.models[0],
+        prompt,
+        width: o.width || 1024,
+        height: o.height || 1024,
+        seed: o.seed,
+        image: o.image, // base64/data-url for image-to-image
+      }),
+    });
+    if (!r.ok) throw new Error(`Modal image error: ${r.status} ${await r.text()}`);
+    const j = await r.json();
+    const out = j.url || j.image || (Array.isArray(j.images) ? j.images[0] : "");
+    if (!out) throw new Error("Modal image endpoint returned no image.");
+    return out.startsWith("http") || out.startsWith("data:") ? out : "data:image/png;base64," + out;
+  }
   if (o.provider.kind === "openai" && o.provider.id === "openai" && o.provider.apiKey) {
     const r = await fetch(o.provider.baseUrl.replace(/\/$/, "") + "/images/generations", { method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer " + o.provider.apiKey }, body: JSON.stringify({ model: o.model || "gpt-image-1", prompt, size: `${o.width || 1024}x${o.height || 1024}` }) });
     const j = await r.json();
@@ -303,4 +325,62 @@ export async function generateImage(o: ImageOpts): Promise<string> {
   const w = o.width || 1024, h = o.height || 1024;
   const model = o.model && ["flux", "turbo", "flux-realism", "flux-anime"].includes(o.model) ? o.model : "flux";
   return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${w}&height=${h}&seed=${seed}&model=${model}&nologo=true&enhance=true`;
+}
+
+export interface VideoOpts {
+  provider: ProviderConfig;
+  prompt: string;
+  mode?: "t2v" | "i2v" | "r2v" | "v2v";
+  model?: string;
+  image?: string;        // start frame (b64/data-url) for image-to-video
+  frames?: number;
+  fps?: number;
+  seed?: number;
+  onProgress?: (pct: number, status: string) => void;
+}
+
+// Generate a video on a managed/self-hosted backend (e.g. a Modal endpoint).
+// Long-running, so it submits a job then polls until done.
+//   POST {baseUrl}/generate/video -> { job_id } | { url }
+//   GET  {baseUrl}/jobs/{job_id}   -> { status: "queued|running|done|error", progress?, url?, error? }
+export async function generateVideo(o: VideoOpts): Promise<string> {
+  if (o.provider.kind !== "modal") {
+    throw new Error(`Video rendering needs a Modal/compute backend. "${o.provider.name}" can't render video — add one in Settings.`);
+  }
+  const base = o.provider.baseUrl.replace(/\/$/, "");
+  const auth: Record<string, string> = o.provider.apiKey ? { Authorization: "Bearer " + o.provider.apiKey } : {};
+
+  const submit = await fetch(base + "/generate/video", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...auth },
+    body: JSON.stringify({
+      model: o.model || o.provider.selectedModel || o.provider.models[0],
+      mode: o.mode || "t2v",
+      prompt: o.prompt,
+      image: o.image,
+      frames: o.frames,
+      fps: o.fps,
+      seed: o.seed,
+    }),
+  });
+  if (!submit.ok) throw new Error(`Modal video error: ${submit.status} ${await submit.text()}`);
+  const sj = await submit.json();
+  // Some backends return the URL synchronously; otherwise poll the job.
+  if (sj.url) { o.onProgress?.(100, "done"); return sj.url; }
+  const jobId = sj.job_id || sj.id;
+  if (!jobId) throw new Error("Modal video endpoint returned neither a url nor a job id.");
+
+  const deadline = Date.now() + 15 * 60 * 1000; // 15 min cap
+  let delay = 2000;
+  while (Date.now() < deadline) {
+    await new Promise((res) => setTimeout(res, delay));
+    delay = Math.min(delay * 1.25, 8000);
+    const r = await fetch(`${base}/jobs/${jobId}`, { headers: auth });
+    if (!r.ok) continue;
+    const j = await r.json();
+    o.onProgress?.(typeof j.progress === "number" ? j.progress : 0, j.status || "running");
+    if (j.status === "done" && j.url) return j.url;
+    if (j.status === "error") throw new Error(j.error || "Video job failed.");
+  }
+  throw new Error("Video job timed out.");
 }

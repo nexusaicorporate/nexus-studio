@@ -1,5 +1,391 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::path::{Path, PathBuf};
+use std::process::{Child, Command};
+use std::sync::Mutex;
+use tauri::Manager;
+
+// ── App-managed ComfyUI ──────────────────────────────────────────────
+// ComfyUI lives in a FIXED subfolder of the app (no user-facing path).
+// We prefer a "comfyui" folder next to the executable (the install dir);
+// if that isn't writable (e.g. Program Files), we fall back to the app's
+// per-user local data dir. Either way the user never configures it.
+
+#[derive(Default)]
+struct ComfyProc {
+    child: Mutex<Option<Child>>,
+}
+
+#[derive(serde::Serialize)]
+struct LaunchResult {
+    ok: bool,
+    pid: Option<u32>,
+    message: Option<String>,
+}
+
+#[derive(serde::Serialize)]
+struct InstallResult {
+    ok: bool,
+    message: String,
+}
+
+fn resolve_comfy_dir(app: &tauri::AppHandle) -> PathBuf {
+    // 1) next to the executable (the "install path" subfolder)
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            let dir = parent.join("comfyui");
+            if std::fs::create_dir_all(&dir).is_ok() {
+                let probe = dir.join(".write-test");
+                if std::fs::write(&probe, b"ok").is_ok() {
+                    let _ = std::fs::remove_file(&probe);
+                    return dir;
+                }
+            }
+        }
+    }
+    // 2) fallback: per-user local data dir
+    if let Ok(base) = app.path().app_local_data_dir() {
+        let dir = base.join("comfyui");
+        let _ = std::fs::create_dir_all(&dir);
+        return dir;
+    }
+    PathBuf::from("comfyui")
+}
+
+// Locate ComfyUI's entry script and the python that should run it.
+// Supports the Windows portable layout (python_embeded) and generic installs.
+fn resolve_python_and_main(comfy_dir: &PathBuf) -> (PathBuf, PathBuf) {
+    let main_py = comfy_dir.join("ComfyUI").join("main.py");
+
+    // Windows portable: <comfy>/python_embeded/python.exe
+    let embedded = comfy_dir.join("python_embeded").join("python.exe");
+    if embedded.exists() {
+        return (embedded, main_py);
+    }
+    // venv layouts
+    #[cfg(windows)]
+    let venv = comfy_dir.join("venv").join("Scripts").join("python.exe");
+    #[cfg(not(windows))]
+    let venv = comfy_dir.join("venv").join("bin").join("python");
+    if venv.exists() {
+        return (venv, main_py);
+    }
+    // generic system python
+    #[cfg(windows)]
+    let sys_py = PathBuf::from("python");
+    #[cfg(not(windows))]
+    let sys_py = PathBuf::from("python3");
+    (sys_py, main_py)
+}
+
+// The ComfyUI we ship inside the installer (read-only resource dir).
+fn resolve_resource_comfy(app: &tauri::AppHandle) -> Option<PathBuf> {
+    if let Ok(res) = app.path().resource_dir() {
+        for cand in [res.join("comfyui"), res.join("resources").join("comfyui")] {
+            if cand.join("ComfyUI").join("main.py").exists() {
+                return Some(cand);
+            }
+        }
+    }
+    None
+}
+
+fn copy_dir_all(src: &Path, dst: &Path) -> std::io::Result<()> {
+    std::fs::create_dir_all(dst)?;
+    for entry in std::fs::read_dir(src)? {
+        let entry = entry?;
+        let from = entry.path();
+        let to = dst.join(entry.file_name());
+        if entry.file_type()?.is_dir() {
+            copy_dir_all(&from, &to)?;
+        } else {
+            std::fs::copy(&from, &to)?;
+        }
+    }
+    Ok(())
+}
+
+#[derive(serde::Serialize)]
+struct ProvisionStatus {
+    provisioned: bool, // a runnable ComfyUI exists in the managed folder
+    bundled: bool,     // a ComfyUI is shipped in the installer to provision from
+    managed_dir: String,
+}
+
+#[tauri::command]
+fn comfy_status(app: tauri::AppHandle) -> ProvisionStatus {
+    let managed = resolve_comfy_dir(&app);
+    ProvisionStatus {
+        provisioned: managed.join("ComfyUI").join("main.py").exists(),
+        bundled: resolve_resource_comfy(&app).is_some(),
+        managed_dir: managed.to_string_lossy().to_string(),
+    }
+}
+
+// First-run setup: copy the bundled ComfyUI into the writable managed folder.
+// `gpu_type` is recorded for messaging now; per-vendor backend selection
+// (NVIDIA vs AMD/DirectML vs Intel/XPU) is applied at launch and, for non-bundled
+// backends, will drive a per-vendor fetch in a later milestone.
+#[tauri::command]
+fn provision_comfyui(app: tauri::AppHandle, gpu_type: Option<String>) -> InstallResult {
+    let managed = resolve_comfy_dir(&app);
+    let gpu = gpu_type.unwrap_or_else(|| "cpu".to_string());
+    if managed.join("ComfyUI").join("main.py").exists() {
+        return InstallResult { ok: true, message: "Already set up".into() };
+    }
+    let Some(src) = resolve_resource_comfy(&app) else {
+        return InstallResult {
+            ok: false,
+            message: "Bundled ComfyUI not found in app resources (run the prepare-comfyui build step before packaging).".into(),
+        };
+    };
+    match copy_dir_all(&src, &managed) {
+        Ok(_) => InstallResult { ok: true, message: format!("ComfyUI set up in {} ({} backend)", managed.display(), gpu) },
+        Err(e) => InstallResult { ok: false, message: format!("Setup copy failed: {e}") },
+    }
+}
+
+#[tauri::command]
+fn comfy_managed_dir(app: tauri::AppHandle) -> String {
+    resolve_comfy_dir(&app).to_string_lossy().to_string()
+}
+
+#[derive(serde::Deserialize)]
+struct CliArgs {
+    #[serde(default)] listen: bool,
+    #[serde(default)] port: Option<u16>,
+    #[serde(default)] highvram: bool,
+    #[serde(default)] normalvram: bool,
+    #[serde(default)] lowvram: bool,
+    #[serde(default)] cpu: bool,
+    #[serde(default)] extra: String,
+}
+
+// Write extra_model_paths.yaml so ComfyUI also scans user-provided folders
+// (e.g. a models library on an external drive). Empty list removes the file.
+fn write_extra_model_paths(comfy_dir: &Path, paths: &[String]) {
+    let dest = comfy_dir.join("ComfyUI").join("extra_model_paths.yaml");
+    if paths.is_empty() {
+        let _ = std::fs::remove_file(&dest);
+        return;
+    }
+    let subdirs = ["checkpoints", "loras", "vae", "clip", "clip_vision", "controlnet",
+                   "diffusion_models", "unet", "upscale_models", "embeddings", "vae_approx",
+                   "style_models", "gligen"];
+    let mut yaml = String::from("# Generated by Nexus AI Studio — extra model locations\n");
+    for (i, p) in paths.iter().enumerate() {
+        let norm = p.replace('\\', "/");
+        yaml.push_str(&format!("nexus_extra_{i}:\n  base_path: {norm}\n"));
+        for d in subdirs.iter() {
+            yaml.push_str(&format!("  {d}: {d}\n"));
+        }
+    }
+    let _ = std::fs::write(dest, yaml);
+}
+
+#[derive(serde::Deserialize, Default)]
+struct ApiKeys {
+    #[serde(default)] civitai: String,
+    #[serde(default)] huggingface: String,
+    #[serde(default)] tavily: String,
+}
+
+// Auto-fill model-provider keys into ComfyUI's native settings file so the
+// workspace UI and nodes (e.g. the model downloader) read them on startup.
+fn write_comfy_settings(comfy_dir: &Path, keys: &ApiKeys) {
+    let dir = comfy_dir.join("ComfyUI").join("user").join("default");
+    let _ = std::fs::create_dir_all(&dir);
+    let path = dir.join("comfy.settings.json");
+    let mut map: serde_json::Map<String, serde_json::Value> = std::fs::read_to_string(&path)
+        .ok()
+        .and_then(|s| serde_json::from_str(&s).ok())
+        .unwrap_or_default();
+    map.insert("WorkflowModelsDownloader.HuggingFaceToken".into(), serde_json::Value::String(keys.huggingface.clone()));
+    map.insert("WorkflowModelsDownloader.CivitAIApiKey".into(), serde_json::Value::String(keys.civitai.clone()));
+    map.insert("WorkflowModelsDownloader.TavilyApiKey".into(), serde_json::Value::String(keys.tavily.clone()));
+    if let Ok(s) = serde_json::to_string_pretty(&serde_json::Value::Object(map)) {
+        let _ = std::fs::write(&path, s);
+    }
+}
+
+#[tauri::command]
+fn launch_comfyui(
+    app: tauri::AppHandle,
+    state: tauri::State<ComfyProc>,
+    cpu_only: bool,
+    port: Option<u16>,
+    gpu_type: Option<String>,
+    extra_model_paths: Option<Vec<String>>,
+    cli_args: Option<CliArgs>,
+    api_keys: Option<ApiKeys>,
+) -> LaunchResult {
+    let comfy_dir = resolve_comfy_dir(&app);
+    let (python, main_py) = resolve_python_and_main(&comfy_dir);
+
+    // First run: copy the bundled ComfyUI into the writable managed folder.
+    if !main_py.exists() {
+        if let Some(src) = resolve_resource_comfy(&app) {
+            let _ = copy_dir_all(&src, &comfy_dir);
+        }
+    }
+    if !main_py.exists() {
+        return LaunchResult {
+            ok: false,
+            pid: None,
+            message: Some(format!(
+                "ComfyUI is not set up in {} and no bundled copy was found in the app.",
+                comfy_dir.display()
+            )),
+        };
+    }
+
+    // If something is already running, report it rather than double-spawn.
+    {
+        let mut guard = state.child.lock().unwrap();
+        if let Some(c) = guard.as_mut() {
+            if matches!(c.try_wait(), Ok(None)) {
+                return LaunchResult { ok: true, pid: Some(c.id()), message: Some("Already running".into()) };
+            }
+        }
+    }
+
+    // Extra model locations (external drives / shared libraries).
+    write_extra_model_paths(&comfy_dir, &extra_model_paths.unwrap_or_default());
+
+    // Auto-fill model-provider API keys into ComfyUI's settings file (so the
+    // workspace + downloader node read them) and into the process env below.
+    let keys = api_keys.unwrap_or_default();
+    write_comfy_settings(&comfy_dir, &keys);
+
+    let args = cli_args.unwrap_or(CliArgs {
+        listen: true, port: None, highvram: false, normalvram: false, lowvram: false, cpu: false, extra: String::new(),
+    });
+    let gpu = gpu_type.unwrap_or_else(|| "cpu".to_string());
+    let port = args.port.or(port).unwrap_or(8188);
+    let use_cpu = cpu_only || args.cpu || gpu == "cpu";
+
+    let mut cmd = Command::new(&python);
+    cmd.arg("-s").arg(&main_py)
+        .arg("--port").arg(port.to_string())
+        .current_dir(comfy_dir.join("ComfyUI"))
+        .env("PYTHONIOENCODING", "utf-8");
+    // Guardrail: any pip install that ComfyUI-Manager or a custom node triggers at
+    // startup inherits PIP_CONSTRAINT, so it cannot change the pinned core packages
+    // (this is what prevents one node from breaking everyone's setup).
+    let constraints = comfy_dir.join("constraints.txt");
+    if constraints.exists() {
+        cmd.env("PIP_CONSTRAINT", &constraints);
+    }
+    // Model-provider keys as env vars too — broad coverage for any tool/node
+    // that reads them from the environment (HF libs, CivitAI downloaders).
+    if !keys.huggingface.is_empty() {
+        cmd.env("HF_TOKEN", &keys.huggingface)
+            .env("HUGGING_FACE_HUB_TOKEN", &keys.huggingface)
+            .env("HUGGINGFACE_TOKEN", &keys.huggingface);
+    }
+    if !keys.civitai.is_empty() {
+        cmd.env("CIVITAI_API_KEY", &keys.civitai).env("CIVITAI_TOKEN", &keys.civitai);
+    }
+    if !keys.tavily.is_empty() {
+        cmd.env("TAVILY_API_KEY", &keys.tavily);
+    }
+    if args.listen { cmd.arg("--listen").arg("127.0.0.1"); }
+    if use_cpu {
+        cmd.arg("--cpu");
+    } else if gpu == "amd" {
+        cmd.arg("--directml"); // Windows AMD path; NVIDIA needs no flag, Intel uses the XPU build
+    }
+    if args.highvram { cmd.arg("--highvram"); }
+    if args.normalvram { cmd.arg("--normalvram"); }
+    if args.lowvram { cmd.arg("--lowvram"); }
+    for tok in args.extra.split_whitespace() {
+        cmd.arg(tok);
+    }
+
+    match cmd.spawn() {
+        Ok(child) => {
+            let pid = child.id();
+            *state.child.lock().unwrap() = Some(child);
+            LaunchResult { ok: true, pid: Some(pid), message: None }
+        }
+        Err(e) => LaunchResult { ok: false, pid: None, message: Some(format!("Failed to launch ComfyUI: {e}")) },
+    }
+}
+
+#[tauri::command]
+fn stop_comfyui(state: tauri::State<ComfyProc>) -> LaunchResult {
+    let mut guard = state.child.lock().unwrap();
+    if let Some(mut child) = guard.take() {
+        let _ = child.kill();
+        let _ = child.wait();
+        LaunchResult { ok: true, pid: None, message: Some("Stopped".into()) }
+    } else {
+        LaunchResult { ok: true, pid: None, message: Some("Not running".into()) }
+    }
+}
+
+#[tauri::command]
+fn install_modal_node(app: tauri::AppHandle, repo_url: String) -> InstallResult {
+    let comfy_dir = resolve_comfy_dir(&app);
+    let custom_nodes = comfy_dir.join("ComfyUI").join("custom_nodes");
+    if std::fs::create_dir_all(&custom_nodes).is_err() {
+        return InstallResult { ok: false, message: format!("Cannot create {}", custom_nodes.display()) };
+    }
+
+    let name = repo_url.trim_end_matches('/').rsplit('/').next().unwrap_or("comfyui-modal");
+    let node_dir = custom_nodes.join(name);
+
+    // Clone or update the custom node.
+    let git_res = if node_dir.exists() {
+        Command::new("git").arg("-C").arg(&node_dir).arg("pull").output()
+    } else {
+        Command::new("git").arg("clone").arg(&repo_url).arg(&node_dir).output()
+    };
+    match git_res {
+        Ok(o) if !o.status.success() => {
+            return InstallResult { ok: false, message: format!("git failed: {}", String::from_utf8_lossy(&o.stderr)) };
+        }
+        Err(e) => return InstallResult { ok: false, message: format!("git not available: {e}") },
+        _ => {}
+    }
+
+    // Install the `modal` package into ComfyUI's python (respecting the core pins).
+    let (python, _) = resolve_python_and_main(&comfy_dir);
+    let mut pip = Command::new(&python);
+    pip.arg("-m").arg("pip").arg("install").arg("--no-warn-script-location").arg("modal");
+    let constraints = comfy_dir.join("constraints.txt");
+    if constraints.exists() { pip.env("PIP_CONSTRAINT", &constraints); }
+    match pip.output() {
+        Ok(o) if !o.status.success() => InstallResult {
+            ok: false,
+            message: format!("node cloned, but `pip install modal` failed: {}", String::from_utf8_lossy(&o.stderr)),
+        },
+        Err(e) => InstallResult { ok: false, message: format!("node cloned, but python/pip unavailable: {e}") },
+        _ => InstallResult { ok: true, message: format!("Installed {name} + modal into {}", comfy_dir.display()) },
+    }
+}
+
+// Roll the managed ComfyUI back to the known-good package snapshot shipped in the
+// install — recovers from a custom-node install that broke dependencies.
+#[tauri::command]
+fn restore_comfy_env(app: tauri::AppHandle) -> InstallResult {
+    let comfy_dir = resolve_comfy_dir(&app);
+    let snapshot = comfy_dir.join("nexus-snapshot.txt");
+    if !snapshot.exists() {
+        return InstallResult { ok: false, message: "No known-good snapshot found to restore from.".into() };
+    }
+    let (python, _) = resolve_python_and_main(&comfy_dir);
+    let constraints = comfy_dir.join("constraints.txt");
+    let mut pip = Command::new(&python);
+    pip.arg("-m").arg("pip").arg("install").arg("--no-warn-script-location").arg("-r").arg(&snapshot);
+    if constraints.exists() { pip.env("PIP_CONSTRAINT", &constraints); }
+    match pip.output() {
+        Ok(o) if o.status.success() => InstallResult { ok: true, message: "ComfyUI environment restored to the known-good snapshot.".into() },
+        Ok(o) => InstallResult { ok: false, message: format!("Restore failed: {}", String::from_utf8_lossy(&o.stderr)) },
+        Err(e) => InstallResult { ok: false, message: format!("python/pip unavailable: {e}") },
+    }
+}
+
 fn main() {
     let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -11,6 +397,16 @@ fn main() {
     }
 
     builder
+        .manage(ComfyProc::default())
+        .invoke_handler(tauri::generate_handler![
+            comfy_managed_dir,
+            comfy_status,
+            provision_comfyui,
+            launch_comfyui,
+            stop_comfyui,
+            install_modal_node,
+            restore_comfy_env
+        ])
         .setup(|app| {
             #[cfg(desktop)]
             {

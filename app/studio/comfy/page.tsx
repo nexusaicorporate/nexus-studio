@@ -1,271 +1,299 @@
 "use client";
 import { useState } from "react";
 import Page from "@/components/Page";
-import { BookOpen, Sparkles, Import, AlertCircle, Cpu, Download, ArrowRight, ExternalLink } from "lucide-react";
+import { BookOpen, Sparkles, Import, AlertCircle, Cpu, ExternalLink, Globe, Code, Layers, FileCode, CheckCircle2, Upload, Trash2, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMounted } from "@/components/ui";
+import { useComfyStore } from "@/lib/store/comfy";
+import { extractRequiredModels } from "@/lib/comfy-models";
+import ComfyEnvSelector, { ComfyEnvDropdown } from "@/components/ComfyEnvSelector";
+import { HUB_WORKFLOWS } from "@/lib/data/comfyworkflows";
 
 export default function ComfyHubPage() {
   const mounted = useMounted();
   const router = useRouter();
+  const comfy = useComfyStore();
   const [tab, setTab] = useState<"hub" | "docs">("hub");
-  const [viewMode, setViewMode] = useState<"live" | "offline">("live");
+  const [filterCat, setFilterCat] = useState<string>("All");
+
+  function importWorkflow(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = reader.result as string;
+        JSON.parse(text); // validate
+        comfy.addWorkflow({
+          id: "wf-" + Date.now(),
+          name: f.name.replace(/\.json$/i, ""),
+          description: "Imported workflow",
+          json: text,
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        });
+      } catch { alert("That file isn't valid workflow JSON."); }
+    };
+    reader.readAsText(f);
+    e.target.value = "";
+  }
+  function useWorkflow(id: string) { router.push(`/studio/workflow?workflow=${id}`); }
 
   if (!mounted) return null;
 
-  const templates = [
-    {
-      id: "t2i",
-      name: "Text to Image (Standard SDXL)",
-      desc: "Standard prompt execution block linking CLIPTextEncode, KSampler, EmptyLatentImage, and SaveImage. Ideal for basic checkpoints.",
-      difficulty: "Beginner",
-      nodes: 7
-    },
-    {
-      id: "i2i",
-      name: "Image to Image (VAE Encode)",
-      desc: "Uses a reference image, encodes it to latent space, and applies a KSampler with denoise scaling (0.4 - 0.7) to modify the subject.",
-      difficulty: "Beginner",
-      nodes: 8
-    },
-    {
-      id: "controlnet",
-      name: "ControlNet Pose Transfer",
-      desc: "Integrates ControlNet loaders and conditionings to lock in pose skeletons or structural layouts from reference images.",
-      difficulty: "Intermediate",
-      nodes: 10
-    }
-  ];
+  const categories = ["All", "Image", "Video", "ControlNet", "Flux", "Utilities"];
+  const filteredWorkflows = filterCat === "All"
+    ? HUB_WORKFLOWS
+    : HUB_WORKFLOWS.filter((w) => w.category === filterCat);
 
   return (
     <Page
-      title="Comfy Hub & Documentation"
-      subtitle="Browse standard workflow templates and read ComfyUI API integration references."
+      title="Comfy Hub Gear"
+      subtitle="Provision execution environments, browse built-in workflow JSON configurations, and read API integrations."
+      actions={
+        <div className="flex items-center gap-3">
+          <ComfyEnvDropdown />
+          <label className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer">
+            <Upload size={13} /> Import Workflow
+            <input type="file" accept="application/json" hidden onChange={importWorkflow} />
+          </label>
+          <button
+            type="button"
+            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5"
+            onClick={() => comfy.set("runModeLocked", false)}
+          >
+            <Layers size={13} /> Change Env
+          </button>
+        </div>
+      }
     >
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-        <div className="flex gap-2">
-          <button
-            className={`tab ${tab === "hub" ? "tab-active" : "tab-idle"}`}
-            onClick={() => setTab("hub")}
-          >
-            <Sparkles size={14} /> Comfy Hub
-          </button>
-          <button
-            className={`tab ${tab === "docs" ? "tab-active" : "tab-idle"}`}
-            onClick={() => setTab("docs")}
-          >
-            <BookOpen size={14} /> Official API Docs
-          </button>
-        </div>
+      {/* ComfyUI Startup Select Modal */}
+      <ComfyEnvSelector />
 
-        <div className="flex items-center gap-2 bg-surface2/60 border border-border/40 rounded-xl p-1 shrink-0">
-          <button
-            className={`px-3 py-1 rounded-lg text-xs transition-colors font-medium ${
-              viewMode === "live" ? "bg-primary text-primary-fg shadow" : "text-muted hover:text-text"
-            }`}
-            onClick={() => setViewMode("live")}
-          >
-            Live Web View
-          </button>
-          <button
-            className={`px-3 py-1 rounded-lg text-xs transition-colors font-medium ${
-              viewMode === "offline" ? "bg-primary text-primary-fg shadow" : "text-muted hover:text-text"
-            }`}
-            onClick={() => setViewMode("offline")}
-          >
-            Local Reader
-          </button>
-        </div>
+      {/* Tabs Menu */}
+      <div className="flex gap-2 mb-5">
+        <button
+          className={`tab ${tab === "hub" ? "tab-active" : "tab-idle"}`}
+          onClick={() => setTab("hub")}
+        >
+          <Sparkles size={14} /> Workflow Hub
+        </button>
+        <button
+          className={`tab ${tab === "docs" ? "tab-active" : "tab-idle"}`}
+          onClick={() => setTab("docs")}
+        >
+          <BookOpen size={14} /> ComfyUI API Documentation
+        </button>
       </div>
 
-      {viewMode === "live" ? (
-        <div className="card p-0 overflow-hidden border border-border bg-black/40 shadow-xl flex flex-col h-[calc(100vh-210px)] min-h-[500px]">
-          <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>
-                Connected to:{" "}
-                <strong>
-                  {tab === "hub" ? "comfy.org/workflows" : "docs.comfy.org"}
-                </strong>
-              </span>
+      {tab === "hub" ? (
+        <div className="space-y-6">
+          {/* Active Mode Notice */}
+          <div className="card p-4 bg-primary/5 border border-primary/20 flex flex-wrap gap-4 items-center justify-between">
+            <div className="flex gap-3 items-start">
+              <AlertCircle className="text-primary-light flex-shrink-0 mt-0.5" size={18} />
+              <div>
+                <div className="font-semibold text-primary-light text-sm">
+                  Active Resource Mode: <span className="capitalize">{comfy.runMode}</span> Mode
+                </div>
+                <p className="text-xs text-muted leading-relaxed mt-0.5">
+                  {comfy.runMode === "local" && "Executing locally on http://localhost:8188. Ensure your ComfyUI backend is running."}
+                  {comfy.runMode === "hybrid" && `Offloading local graph layouts to remote server GPU (${comfy.hybridConfig.remoteGpuUrl || "URL not set"}) using ${comfy.hybridConfig.customNodeRepo}.`}
+                  {comfy.runMode === "cloud" && `Executing fully in the cloud via API under the ${comfy.cloudPlan || "No plan"} plan (Location: ${comfy.cloudEnvironment}).`}
+                </p>
+              </div>
             </div>
-            <a
-              href={
-                tab === "hub"
-                  ? "https://comfy.org/workflows"
-                  : "https://docs.comfy.org/api-reference/cloud/workflow/get-information-about-current-prompt-execution"
-              }
-              target="_blank"
-              rel="noreferrer"
-              className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
-            >
-              Open in Browser <ExternalLink size={11} />
-            </a>
-          </div>
-          <iframe
-            src={
-              tab === "hub"
-                ? "https://comfy.org/workflows"
-                : "https://docs.comfy.org/api-reference/cloud/workflow/get-information-about-current-prompt-execution"
-            }
-            className="flex-1 w-full border-0 bg-white"
-            title={tab === "hub" ? "Comfy Hub" : "ComfyUI API Documentation"}
-            sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-          />
-        </div>
-      ) : tab === "hub" ? (
-        <div className="space-y-5">
-          <div className="card p-4 bg-primary/5 border border-primary/20 flex gap-3 items-start">
-            <AlertCircle className="text-primary-light flex-shrink-0 mt-0.5" size={18} />
-            <div>
-              <div className="font-semibold text-primary-light">What is the Comfy Hub?</div>
-              <p className="text-xs text-muted leading-relaxed mt-0.5">
-                The Comfy Hub offers pre-constructed, optimized ComfyUI API JSON workflows. Click <strong>Import to Studio</strong> to load them into the editor, tweak parameters, and run them remotely on your active ComfyUI host.
-              </p>
-            </div>
+            {comfy.runMode === "cloud" && !comfy.cloudPlan && (
+              <button
+                type="button"
+                className="btn-primary py-1.5 px-3 text-xs font-bold"
+                onClick={() => comfy.set("runModeLocked", false)}
+              >
+                Select Pricing Plan
+              </button>
+            )}
           </div>
 
-          <div className="grid md:grid-cols-3 gap-4">
-            {templates.map((tpl) => (
-              <div key={tpl.id} className="card p-4 flex flex-col justify-between hover:border-primary/40 transition-colors">
+          {/* Your imported workflows */}
+          {comfy.workflows.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <FileCode size={15} className="text-primary-light" />
+                <h3 className="font-bold text-sm">Your Imported Workflows</h3>
+                <span className="text-[11px] text-muted">({comfy.workflows.length})</span>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {comfy.workflows.map((wf) => {
+                  let modelCount = 0;
+                  try { modelCount = extractRequiredModels(JSON.parse(wf.json)).length; } catch {}
+                  return (
+                    <div key={wf.id} className="card p-4 flex flex-col justify-between border border-border bg-surface/80">
+                      <div>
+                        <div className="flex justify-between items-start mb-2 gap-2">
+                          <h4 className="font-bold text-sm text-text truncate">{wf.name}</h4>
+                          <button type="button" className="btn-ghost px-1.5 py-1 text-rose-400 shrink-0" title="Delete" onClick={() => comfy.deleteWorkflow(wf.id)}><Trash2 size={13} /></button>
+                        </div>
+                        <p className="text-xs text-muted leading-relaxed mb-3 line-clamp-2">{wf.description || "Imported workflow"}</p>
+                        <div className="text-[10px] text-muted-more bg-surface2/40 px-2.5 py-1.5 rounded-lg border border-border/20 mb-3">
+                          Requires <strong>{modelCount}</strong> model{modelCount === 1 ? "" : "s"}
+                        </div>
+                      </div>
+                      <button type="button" className="btn-primary w-full text-xs py-2 flex items-center justify-center gap-1.5 font-bold" onClick={() => useWorkflow(wf.id)}>
+                        <Send size={13} /> Use in ComfyUI
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Categories Filter */}
+          <div className="flex flex-wrap gap-1.5 border-b border-border/40 pb-3">
+            {categories.map((catName) => (
+              <button
+                key={catName}
+                type="button"
+                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  filterCat === catName
+                    ? "bg-primary text-primary-fg shadow"
+                    : "text-muted hover:text-text bg-surface2/40 hover:bg-surface2/80"
+                }`}
+                onClick={() => setFilterCat(catName)}
+              >
+                {catName}
+              </button>
+            ))}
+          </div>
+
+          {/* Workflows Grid */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredWorkflows.map((tpl) => (
+              <div
+                key={tpl.id}
+                className="card p-5 flex flex-col justify-between border border-border hover:border-primary/40 transition-colors bg-surface/80"
+              >
                 <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className={`chip text-[9px] uppercase tracking-wider font-semibold ${
-                      tpl.difficulty === "Beginner" ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30" : "bg-amber-500/10 text-amber-300 border-amber-500/30"
-                    }`}>
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="chip text-[9px] uppercase tracking-wider font-bold bg-primary/10 text-primary-light border-primary/20">
+                      {tpl.category}
+                    </span>
+                    <span
+                      className={`chip text-[9px] uppercase tracking-wider font-semibold ${
+                        tpl.difficulty === "Beginner"
+                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
+                          : tpl.difficulty === "Intermediate"
+                          ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
+                          : "bg-rose-500/10 text-rose-300 border-rose-500/30"
+                      }`}
+                    >
                       {tpl.difficulty}
                     </span>
-                    <span className="text-[10px] text-muted">{tpl.nodes} nodes</span>
                   </div>
-                  <h4 className="font-semibold text-sm mb-1.5">{tpl.name}</h4>
-                  <p className="text-xs text-muted leading-relaxed mb-4">{tpl.desc}</p>
+                  <h4 className="font-bold text-sm text-text mb-1.5">{tpl.name}</h4>
+                  <p className="text-xs text-muted leading-relaxed mb-4 min-h-[50px]">{tpl.desc}</p>
+
+                  <div className="flex items-center justify-between text-[10px] text-muted-more bg-surface2/40 px-2.5 py-1.5 rounded-lg border border-border/20 mb-4">
+                    <span>Nodes: <strong>{tpl.nodes}</strong></span>
+                    <span>Author: <strong>{tpl.author}</strong></span>
+                  </div>
                 </div>
+
                 <button
                   type="button"
-                  className="btn-primary w-full text-xs py-2 mt-2 flex items-center justify-center gap-1"
-                  onClick={() => router.push(`/studio/workflow?template=${tpl.id}`)}
+                  className="btn-primary w-full text-xs py-2 mt-2 flex items-center justify-center gap-1.5 font-bold shadow-sm"
+                  onClick={() => {
+                    // Save workflow into ComfyStore and load it
+                    comfy.addWorkflow({
+                      id: tpl.id,
+                      name: tpl.name,
+                      description: tpl.desc,
+                      json: JSON.stringify(tpl.json, null, 2),
+                      createdAt: Date.now(),
+                      updatedAt: Date.now()
+                    });
+                    router.push(`/studio/workflow?template=${tpl.id}`);
+                  }}
                 >
-                  <Import size={13} /> Import to Studio
+                  <Send size={13} /> Use in ComfyUI
                 </button>
               </div>
             ))}
           </div>
-
-          {/* GitHub References */}
-          <div className="card p-4">
-            <div className="font-semibold mb-1 flex items-center gap-2">
-              <Cpu size={18} className="text-primary-light" /> Important Repository Links
-            </div>
-            <p className="text-xs text-muted mb-3">Quick access to essential repositories for local hosting setup, custom nodes, and example libraries.</p>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              <a
-                href="https://github.com/Comfy-Org/ComfyUI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="card p-3 bg-surface2/30 hover:bg-surface2/50 border border-border/40 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="font-semibold text-xs text-text">ComfyUI Core</div>
-                  <p className="text-[10px] text-muted mt-1 leading-relaxed">The main backend repository for node-based stable diffusion interfaces.</p>
-                </div>
-                <div className="text-[10px] text-primary flex items-center gap-1 mt-3">
-                  GitHub Repository <ExternalLink size={10} />
-                </div>
-              </a>
-
-              <a
-                href="https://github.com/Comfy-Org/ComfyUI-Manager"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="card p-3 bg-surface2/30 hover:bg-surface2/50 border border-border/40 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="font-semibold text-xs text-text">ComfyUI Manager</div>
-                  <p className="text-[10px] text-muted mt-1 leading-relaxed">Manager node extension to install custom nodes, models, and run updates.</p>
-                </div>
-                <div className="text-[10px] text-primary flex items-center gap-1 mt-3">
-                  GitHub Repository <ExternalLink size={10} />
-                </div>
-              </a>
-
-              <a
-                href="https://github.com/comfyanonymous/ComfyUI_examples"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="card p-3 bg-surface2/30 hover:bg-surface2/50 border border-border/40 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="font-semibold text-xs text-text">ComfyUI Examples</div>
-                  <p className="text-[10px] text-muted mt-1 leading-relaxed">Standard workflow layouts for image to image, inpainting, ControlNet, and SDXL.</p>
-                </div>
-                <div className="text-[10px] text-primary flex items-center gap-1 mt-3">
-                  GitHub Repository <ExternalLink size={10} />
-                </div>
-              </a>
-
-              <a
-                href="https://github.com/Comfy-Org/ComfyUI/tree/desktop-release-may292025"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="card p-3 bg-surface2/30 hover:bg-surface2/50 border border-border/40 flex flex-col justify-between"
-              >
-                <div>
-                  <div className="font-semibold text-xs text-text">ComfyUI Desktop App</div>
-                  <p className="text-[10px] text-muted mt-1 leading-relaxed">Official Electron-based desktop release branches like <code>desktop-release-may292025</code>.</p>
-                </div>
-                <div className="text-[10px] text-primary flex items-center gap-1 mt-3">
-                  Desktop Branch <ExternalLink size={10} />
-                </div>
-              </a>
-            </div>
-          </div>
         </div>
       ) : (
-        <div className="grid lg:grid-cols-12 gap-5 items-start">
-          {/* Docs Contents Table (4 cols) */}
-          <div className="lg:col-span-3 card p-4 space-y-3">
-            <h4 className="font-semibold text-xs uppercase tracking-wider text-muted-more border-b border-border/40 pb-2">
+        <div className="grid lg:grid-cols-12 gap-6 items-start">
+          {/* Docs Table of Contents (3 cols) */}
+          <div className="lg:col-span-3 card p-4 space-y-2 border border-border bg-surface2/25">
+            <h4 className="font-bold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 mb-2">
               API Topics
             </h4>
-            <div className="flex flex-col gap-1 text-xs">
-              <a href="#intro" className="text-primary hover:underline py-1">1. Enabling API Mode</a>
-              <a href="#prompt" className="text-primary hover:underline py-1">2. POST /prompt Endpoint</a>
-              <a href="#ws" className="text-primary hover:underline py-1">3. WebSocket Monitoring</a>
-              <a href="#status" className="text-primary hover:underline py-1">4. GET Prompt Execution Status</a>
-              <a href="#model" className="text-primary hover:underline py-1">5. Model Enabler Concept</a>
-              <a href="#cloud" className="text-primary hover:underline py-1">6. ComfyUI Cloud Platform API</a>
-            </div>
+            <nav className="flex flex-col gap-1.5 text-xs">
+              <a href="#introduction" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                1. API Reference Introduction
+              </a>
+              <a href="#enabling-dev" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                2. Enabling Developer API Mode
+              </a>
+              <a href="#prompt-endpoint" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                3. POST /prompt (Queueing)
+              </a>
+              <a href="#ws-monitoring" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                4. WebSocket Event Stream
+              </a>
+              <a href="#history-retrieval" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                5. GET /history (Retrieving)
+              </a>
+              <a href="#hybrid-setup" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
+                6. Hybrid Remote GPU Node
+              </a>
+            </nav>
           </div>
 
-          {/* Docs Viewer (9 cols) */}
-          <div className="lg:col-span-9 card p-5 space-y-6 prose prose-invert max-w-none text-xs leading-relaxed text-zinc-300">
-            <section id="intro" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2 flex items-center gap-1.5">
-                1. Enabling ComfyUI API Mode
+          {/* Docs Content (9 cols) */}
+          <div className="lg:col-span-9 card p-6 space-y-8 prose prose-invert max-w-none text-xs leading-relaxed text-zinc-300 border border-border bg-surface/50">
+            
+            {/* Section 1 */}
+            <section id="introduction" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <Code className="text-primary-light" size={18} /> 1. API Reference Introduction
               </h3>
               <p>
-                By default, saving a workflow in ComfyUI outputs a UI-compatible layout. To send tasks remotely using our application, you must output an <strong>API formatted JSON</strong>.
+                The ComfyUI backend server acts as a powerful headless JSON execution engine. By sending workflow node specifications in API prompt formats, you can run complex Stable Diffusion and FLUX model chains programmatically.
               </p>
-              <ol className="list-decimal list-inside space-y-1 mt-1 pl-1">
-                <li>Open your local ComfyUI interface.</li>
-                <li>Click the <strong>Settings</strong> gear icon on the floating menu.</li>
-                <li>Enable the checkbox labeled <strong>"Enable Dev mode"</strong>.</li>
-                <li>Now, a new button labeled <strong>"Save (API Format)"</strong> will appear on the menu.</li>
-                <li>Click this button to save the minimized nodes JSON layout and paste it in our <strong>Workflow Studio</strong> tab.</li>
+              <p>
+                Our **Nexusaigear** platform supports standard local endpoints, hybrid offloading, and remote serverless clouds using places with ComfyUI API backend servers. We route execution triggers based on your active resource configuration switch.
+              </p>
+            </section>
+
+            {/* Section 2 */}
+            <section id="enabling-dev" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <FileCode className="text-primary-light" size={18} /> 2. Enabling Developer API Mode
+              </h3>
+              <p>
+                By default, saving a workflow in the ComfyUI web UI outputs a user interface layout JSON file containing visual placements. To retrieve the execution-compatible minimized JSON:
+              </p>
+              <ol className="list-decimal list-inside space-y-1.5 pl-1.5 mt-1.5">
+                <li>Open your local ComfyUI interface (usually at <code>http://localhost:8188</code>).</li>
+                <li>Click the **Settings** gear icon on the floating menu.</li>
+                <li>Check the box labeled **"Enable Dev mode"**.</li>
+                <li>A new button labeled **"Save (API Format)"** will appear on your side panel.</li>
+                <li>Click this button to save the api-compatible JSON. You can load this file into our **ComfyUI Gear** API panel.</li>
               </ol>
             </section>
 
-            <section id="prompt" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2">
-                2. POST /prompt (Queueing Prompts)
+            {/* Section 3 */}
+            <section id="prompt-endpoint" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <Code className="text-primary-light" size={18} /> 3. POST /prompt (Queueing Prompts)
               </h3>
               <p>
-                To run a workflow, send a POST request containing your API JSON nodes configuration under the <code>prompt</code> field.
+                To trigger a workflow execution, send a POST request with the API JSON structure placed under the <code>prompt</code> field.
               </p>
-              <div className="bg-black/90 p-3 rounded-lg border border-border/60 font-mono text-[10px]">
-                <div className="text-primary-light mb-1">POST http://localhost:8188/prompt</div>
-                <pre>{`{
+              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
+                <div className="text-primary-light">POST http://localhost:8188/prompt</div>
+                <pre className="text-zinc-400">{`{
   "client_id": "nexus_studio_client",
   "prompt": {
     "3": {
@@ -273,51 +301,61 @@ export default function ComfyHubPage() {
       "inputs": {
         "seed": 12345678,
         "steps": 20,
+        "cfg": 8,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "model": ["4", 0],
         "positive": ["6", 0],
-        ...
+        "negative": ["7", 0],
+        "latent_image": ["5", 0]
       }
-    }
+    },
+    "4": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": { "ckpt_name": "dreamshaper_8.safetensors" }
+    },
+    ...
   }
 }`}</pre>
               </div>
             </section>
 
-            <section id="ws" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2">
-                3. WebSocket /ws (Live Progress)
+            {/* Section 4 */}
+            <section id="ws-monitoring" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <Globe className="text-primary-light" size={18} /> 4. WebSocket Monitoring (/ws)
               </h3>
               <p>
-                Connect to the WebSocket endpoint to receive live updates about the executing nodes.
+                To listen to execution updates in real-time, connect to the WebSocket stream using the client ID passed during queueing.
               </p>
-              <ul className="list-disc list-inside space-y-1 mt-1 pl-1">
-                <li>URL: <code>ws://localhost:8188/ws?clientId=nexus_studio_client</code></li>
-                <li>Events:
-                  <ul className="list-disc list-inside pl-4 mt-1 text-muted">
-                    <li><code>status</code>: Current queue length and server status.</li>
-                    <li><code>execution_start</code>: Indicates which prompt ID started running.</li>
-                    <li><code>executing</code>: Tells you the currently executing node ID (e.g. <code>"node": "3"</code>).</li>
-                    <li><code>progress</code>: Steps progress in KSampler (e.g. <code>"value": 15, "max": 20</code>).</li>
-                    <li><code>executed</code>: Node output files generated (e.g., VAE outputs, image URLs).</li>
-                  </ul>
-                </li>
-              </ul>
+              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
+                <div className="text-primary-light">WebSocket URL: ws://localhost:8188/ws?clientId=nexus_studio_client</div>
+                <div className="text-muted-more mt-2">Key Event Messages:</div>
+                <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1">
+                  <li><code>{"{\"type\": \"status\", \"data\": {\"status\": {\"exec_info\": {\"queue_remaining\": 1}}}}"}</code></li>
+                  <li><code>{"{\"type\": \"execution_start\", \"data\": {\"prompt_id\": \"uuid\"}}"}</code></li>
+                  <li><code>{"{\"type\": \"executing\", \"data\": {\"node\": \"3\", \"prompt_id\": \"uuid\"}}"}</code></li>
+                  <li><code>{"{\"type\": \"progress\", \"data\": {\"value\": 10, \"max\": 20}}"}</code></li>
+                  <li><code>{"{\"type\": \"executed\", \"data\": {\"node\": \"9\", \"output\": {\"images\": [...]}}}"}</code></li>
+                </ul>
+              </div>
             </section>
 
-            <section id="status" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2">
-                4. GET /history/{`{prompt_id}`} (Prompt Execution status)
+            {/* Section 5 */}
+            <section id="history-retrieval" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <Code className="text-primary-light" size={18} /> 5. GET /history/{"{prompt_id}"} (History & Outputs)
               </h3>
               <p>
-                To poll for execution completion on serverless cloud providers (like Replicate, RunPod, or ComfyUI Cloud) without persistent WebSockets, query prompt information from the history cache.
+                For serverless architectures where long-running persistent WebSockets are not feasible, you can fetch completion details and media output URLs directly from the history cache.
               </p>
-              <div className="bg-black/90 p-3 rounded-lg border border-border/60 font-mono text-[10px]">
-                <div className="text-primary-light mb-1">GET /history/prompt_random_uuid</div>
-                <pre>{`{
-  "prompt_random_uuid": {
+              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
+                <div className="text-primary-light">GET http://localhost:8188/history/prompt-uuid-here</div>
+                <pre className="text-zinc-400">{`{
+  "prompt-uuid-here": {
     "status": {
       "status_str": "success",
-      "completed": true,
-      "messages": []
+      "completed": true
     },
     "outputs": {
       "9": {
@@ -335,73 +373,26 @@ export default function ComfyHubPage() {
               </div>
             </section>
 
-            <section id="model" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2">
-                5. Civitai & HuggingFace Model Enabler Mappings
+            {/* Section 6 */}
+            <section id="hybrid-setup" className="space-y-3">
+              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
+                <Layers className="text-primary-light" size={18} /> 6. Hybrid Remote GPU Node Configuration
               </h3>
               <p>
-                Since remote servers run headless workflows, checkpoint or LoRA files (e.g. <code>dreamshaper_8.safetensors</code>) referenced in nodes must be present on the remote file system.
+                To execute local workflow graphs using remote cloud GPUs, configure the **nathannlu/comfyui-cloud** custom node.
               </p>
-              <p>
-                Our <strong>Model Enabler</strong> maps local filenames to Civitai or HuggingFace API download links. When execution is requested, the application instructs the serverless worker to pull the model files from our mapped direct download links if they are not already cached.
-              </p>
-            </section>
-
-            <section id="cloud" className="space-y-2.5">
-              <h3 className="text-sm font-semibold text-text border-b border-border/40 pb-2">
-                6. ComfyUI Cloud Platform API Spec
-              </h3>
-              <p>
-                To run prompts remotely on the official **ComfyUI Cloud Platform** (<code>https://cloud.comfy.org</code>), you must authenticate using your personal API key passed via the <code>X-API-Key</code> request header.
-              </p>
-              <div className="bg-black/90 p-3 rounded-lg border border-border/60 font-mono text-[10px]">
-                <div className="text-primary-light mb-1">Queue Cloud Prompt Execution</div>
-                <div className="text-[10px] text-muted-more mb-1.5">POST https://cloud.comfy.org/api/prompt</div>
-                <pre>{`curl -X POST https://cloud.comfy.org/api/prompt \\
-  -H "Content-Type: application/json" \\
-  -H "X-API-Key: your_comfy_cloud_api_key_here" \\
-  -d '{
-    "prompt": {
-      "3": {
-        "class_type": "KSampler",
-        "inputs": {
-          "seed": 8632194305,
-          "steps": 20,
-          "cfg": 8,
-          "sampler_name": "euler",
-          "scheduler": "normal",
-          "model": ["4", 0],
-          "positive": ["6", 0],
-          "negative": ["7", 0],
-          "latent_image": ["5", 0]
-        }
-      }
-    }
-  }'`}</pre>
-              </div>
-
-              <div className="bg-black/90 p-3 rounded-lg border border-border/60 font-mono text-[10px] mt-3">
-                <div className="text-primary-light mb-1">Get Execution Information & Status</div>
-                <div className="text-[10px] text-muted-more mb-1.5">GET https://cloud.comfy.org/api/prompt?id={'{prompt_id}'}</div>
-                <pre>{`curl -X GET https://cloud.comfy.org/api/prompt?id=prompt_random_uuid \\
-  -H "X-API-Key: your_comfy_cloud_api_key_here"`}</pre>
-                <div className="text-primary-light mt-3 mb-1">Response Payload Format</div>
-                <pre>{`{
-  "prompt_id": "prompt_random_uuid",
-  "status": "success", // "pending" | "running" | "success" | "failed"
-  "completed": true,
-  "progress": 1.0,
-  "output": {
-    "images": [
-      {
-        "url": "https://api.comfy.org/files/output_image_uuid.png",
-        "filename": "output_image_uuid.png"
-      }
-    ]
-  }
-}`}</pre>
+              <div className="bg-surface2/50 border border-border/40 p-4 rounded-xl space-y-2.5">
+                <div className="flex items-center gap-2 text-primary-light font-semibold">
+                  <CheckCircle2 size={15} /> Setup Steps
+                </div>
+                <ol className="list-decimal list-inside space-y-1 text-muted">
+                  <li>Install the custom node repository: <code>https://github.com/nathannlu/comfyui-cloud</code>.</li>
+                  <li>In your local ComfyUI settings or config file, input your remote cloud worker URL and secret GPU authentication key.</li>
+                  <li>When you queue a prompt, the custom node will serialize your tensors and offload processing tasks seamlessly to the remote backend, returning completed outputs directly to your local UI.</li>
+                </ol>
               </div>
             </section>
+
           </div>
         </div>
       )}

@@ -5,7 +5,7 @@ import { Wand2, Dice5, Copy, CornerDownLeft } from "lucide-react";
 
 interface ModelDef { name: string; video: boolean; }
 const MODELS: ModelDef[] = [
-  { name: "Nexus AI", video: false },
+  { name: "Nexusai", video: false },
   { name: "Flux", video: false },
   { name: "MidJourney 7", video: false },
   { name: "SeeDream 4", video: false },

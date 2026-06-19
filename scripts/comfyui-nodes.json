@@ -1,0 +1,26 @@
+{
+  "_comment": "Custom nodes baked into the packaged ComfyUI at build time by scripts/prepare-comfyui.ps1. Add a node by appending to `nodes`. Each node is git-cloned into ComfyUI/custom_nodes/<name> and its requirements.txt (if any) is installed into the bundled embedded Python. `ref` optionally pins a tag/branch/commit. `pip` lists extra packages to install globally into the bundled Python.",
+  "nodes": [
+    {
+      "name": "comfyui-modal",
+      "repo": "https://github.com/JunnnnyWon/comfyui-modal",
+      "ref": "",
+      "note": "Cloud GPU offload via Modal (first provider)."
+    },
+    {
+      "name": "ComfyUI-Manager",
+      "repo": "https://github.com/ltdrdata/ComfyUI-Manager",
+      "ref": "",
+      "note": "Node/model manager UI inside ComfyUI."
+    },
+    {
+      "name": "ComfyUI-Workflow-Models-Downloader",
+      "repo": "https://github.com/slahiri/ComfyUI-Workflow-Models-Downloader",
+      "ref": "",
+      "note": "Auto-detects the models a loaded workflow needs and downloads missing ones from HuggingFace/CivitAI/Manager DB into the correct folder (honors extra_model_paths). HTTP API at /workflow-models/* — we trigger a scan on workflow load."
+    }
+  ],
+  "pip": [
+    "modal"
+  ]
+}

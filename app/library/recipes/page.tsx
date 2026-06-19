@@ -71,7 +71,7 @@ function PromptFillInner() {
   if (!mounted) return null;
 
   return (
-    <Page title="Recipe Library" subtitle={`${templates.length} recipes · ${banks.length} variable banks · build prompts visually (PromptFill-style)`}
+    <Page title="Recipe Gear" subtitle={`${templates.length} recipes · ${banks.length} variable banks · build prompts visually (PromptFill-style)`}
       actions={<>
         <label className="btn-outline cursor-pointer"><Upload size={15} /> Import<input type="file" accept="application/json" hidden onChange={onImport} /></label>
         <button className="btn-outline" onClick={() => downloadPF("promptfill.json", { templates, banks })}><Download size={15} /> Export</button>
@@ -189,9 +189,56 @@ function Editor({ template, banks, onSave, onSaveBanks, onUse, onDelete }: { tem
             <button className={`tab ${t.mediaType === "video" ? "tab-active" : "tab-idle"}`} onClick={() => update({ mediaType: "video" })}><Film size={13} /></button>
           </div>
         </div>
-        <div className="grid md:grid-cols-2 gap-2">
-          <input className="input text-xs" placeholder="Cover image URL (optional)" value={t.cover || ""} onChange={(e) => update({ cover: e.target.value })} />
-          <input className="input text-xs" placeholder="Tags (comma separated)" value={t.tags.join(", ")} onChange={(e) => update({ tags: e.target.value.split(",").map((x) => x.trim()).filter(Boolean) })} />
+        <div className="grid md:grid-cols-2 gap-3 items-start">
+          <div className="space-y-1.5">
+            <span className="label">Cover image</span>
+            <div className="flex gap-2 items-center">
+              <input
+                type="file"
+                id="recipe-cover-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                      update({ cover: reader.result as string });
+                    };
+                    reader.readAsDataURL(file);
+                  }
+                }}
+              />
+              <label htmlFor="recipe-cover-upload" className="btn-outline text-xs cursor-pointer py-2 px-3 flex items-center gap-1.5 shrink-0 h-9">
+                <Upload size={14} /> Upload Local
+              </label>
+              <input
+                className="input text-xs flex-1 h-9"
+                placeholder="Or paste cover URL..."
+                value={t.cover && !t.cover.startsWith("data:") ? t.cover : ""}
+                onChange={(e) => update({ cover: e.target.value })}
+              />
+            </div>
+            {t.cover && (
+              <div className="flex items-center gap-2 mt-1.5 bg-surface2/60 border border-border/40 p-1.5 rounded-lg">
+                <img src={t.cover} className="w-8 h-8 rounded object-cover border border-border" alt="Cover preview" />
+                <span className="text-[10px] text-muted truncate max-w-[150px]">
+                  {t.cover.startsWith("data:") ? "Local File Uploaded" : t.cover}
+                </span>
+                <button
+                  type="button"
+                  className="text-rose-400 hover:text-rose-300 text-[10px] ml-auto font-medium"
+                  onClick={() => update({ cover: "" })}
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+          <div>
+            <span className="label">Tags (comma separated)</span>
+            <input className="input text-xs h-9 mt-1.5" placeholder="e.g. landscape, cinematic" value={t.tags.join(", ")} onChange={(e) => update({ tags: e.target.value.split(",").map((x) => x.trim()).filter(Boolean) })} />
+          </div>
         </div>
 
         <div className="flex items-center gap-1.5 flex-wrap">

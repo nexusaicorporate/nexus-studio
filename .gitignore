@@ -7,3 +7,10 @@ next-env.d.ts
 /src-tauri/target
 /src-tauri/gen/schemas
 *.key
+
+# Bundled ComfyUI (fetched at build time by scripts/prepare-comfyui.ps1 — too large to commit)
+/src-tauri/resources/comfyui
+
+# Reference material
+/character-forge
+

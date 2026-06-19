@@ -108,7 +108,7 @@ export default function IngredientsPage() {
 
   if (!mounted) return null;
   return (
-    <Page title="Ingredient Library" subtitle={`${ingredients.length} reusable building blocks (materials) grouped by category — the parts you assemble recipes from`} actions={<><button className="btn-outline" onClick={() => downloadJSON("ingredients.json", { ingredients })}><Download size={15} /> Export</button><button className="btn-primary" onClick={() => setEdit(blank(cat === "All" ? "Subject" : cat))}><Plus size={15} /> New ingredient</button></>}>
+    <Page title="Ingredient Gear" subtitle={`${ingredients.length} reusable building blocks (materials) grouped by category — the parts you assemble recipes from`} actions={<><button className="btn-outline" onClick={() => downloadJSON("ingredients.json", { ingredients })}><Download size={15} /> Export</button><button className="btn-primary" onClick={() => setEdit(blank(cat === "All" ? "Subject" : cat))}><Plus size={15} /> New ingredient</button></>}>
       <div className="flex flex-wrap items-center gap-3 mb-4"><div className="relative flex-1 min-w-[220px]"><Search size={15} className="absolute left-3 top-2.5 text-muted" /><input className="input pl-9" placeholder="Search ingredients…" value={q} onChange={(e) => setQ(e.target.value)} /></div></div>
       <div className="flex flex-wrap gap-2 mb-5">{cats.map((c) => <button key={c} className={`tab ${cat === c ? "tab-active" : "tab-idle"}`} onClick={() => setCat(c)}>{c}</button>)}</div>
       <div className="mb-4 text-xs text-muted-more bg-surface1 border border-border/40 rounded-xl p-3 leading-relaxed">

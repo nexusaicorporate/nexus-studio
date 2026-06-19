@@ -12,7 +12,7 @@ export function Modal({ open, onClose, title, children, wide }: { open: boolean;
     </div>
   );
 }
-export function Field({ label, children }: { label: string; children: ReactNode }) { return (<div className="mb-3"><span className="label">{label}</span>{children}</div>); }
+export function Field({ label, children }: { label: ReactNode; children: ReactNode }) { return (<div className="mb-3"><span className="label">{label}</span>{children}</div>); }
 export function Toggle({ checked, onChange, label }: { checked: boolean; onChange: (b: boolean) => void; label?: string }) {
   return (<button onClick={() => onChange(!checked)} className="flex items-center gap-2 text-sm"><span className={`w-10 h-6 rounded-full p-0.5 transition-colors ${checked ? "bg-primary" : "bg-surface2 border border-border"}`}><span className={`block w-5 h-5 rounded-full bg-white transition-transform ${checked ? "translate-x-4" : ""}`} /></span>{label && <span className="text-muted">{label}</span>}</button>);
 }

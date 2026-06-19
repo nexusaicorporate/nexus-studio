@@ -19,7 +19,7 @@ function ModeTags({ modes }: { modes?: string[] }) {
 // Resolve the active system prompt body for a task.
 export function useTaskSystemPrompt(taskKey: string, currentMode?: string): string {
   const prompts = useLibrary((s) => s.prompts);
-  const { taskPrompts, autoSystemPrompt, systemPrompt } = useSettings();
+  const { taskPrompts, autoSystemPrompt } = useSettings();
   const sysPrompts = prompts.filter((p) => p.category === "System Prompt");
   if (autoSystemPrompt && currentMode) {
     const auto = sysPrompts.find((p) => p.modes?.includes(currentMode) && p.body.trim());
@@ -34,8 +34,7 @@ export function useTaskSystemPrompt(taskKey: string, currentMode?: string): stri
   const own = resolve(taskKey);
   if (own !== undefined) return own;
   const glob = resolve("global");
-  if (glob !== undefined) return glob;
-  return systemPrompt;
+  return glob || "";
 }
 
 export default function PromptPicker({ taskKey, label = "System prompt", filterModes }: { taskKey: string; label?: string; filterModes?: string[] }) {

@@ -4,8 +4,7 @@ import Page from "@/components/Page";
 import { Field, Toggle, useMounted } from "@/components/ui";
 import { useSettings } from "@/lib/store/settings";
 import { fetchModels } from "@/lib/providers";
-import { PROMPT_BUILDER } from "@/lib/data/promptbuilder";
-import { Eye, EyeOff, RefreshCw, Plus, Trash2, Check, BookmarkPlus } from "lucide-react";
+import { Check, Cpu, Eye, EyeOff, FolderCog, Lock, Plus, RefreshCw, Sparkles, Trash2, Zap } from "lucide-react";
 import PromptPicker, { useTaskSystemPrompt } from "@/components/PromptPicker";
 import { useLibrary, newId } from "@/lib/store/library";
 import type { PromptItem } from "@/lib/types";
@@ -19,8 +18,10 @@ export default function SettingsPage() {
   const s = useSettings();
   const reseed = useLibrary((x) => x.reseed);
   const [fetching, setFetching] = useState<string | null>(null);
-  const [tab, setTab] = useState<"providers" | "prompt" | "appearance" | "comfy">("providers");
+  const [tab, setTab] = useState<"providers" | "appearance" | "comfy">("providers");
   const [custom, setCustom] = useState({ name: "", baseUrl: "", apiKey: "" });
+  const [modalForm, setModalForm] = useState({ name: "", baseUrl: "", apiKey: "", models: "" });
+  const [devSel, setDevSel] = useState("");
 
   if (!mounted) return null;
 
@@ -36,13 +37,13 @@ export default function SettingsPage() {
   return (
     <Page title="Settings / Control Panel" subtitle="Configure providers, system prompt, comfyui workflow servers, and appearance.">
       <div className="flex gap-2 mb-5">
-        {(["providers", "prompt", "appearance", "comfy"] as const).map((t) => (
+        {(["providers", "appearance", "comfy"] as const).map((t) => (
           <button
             key={t}
             className={`tab ${tab === t ? "tab-active" : "tab-idle"}`}
             onClick={() => setTab(t)}
           >
-            {t === "providers" ? "Providers & Models" : t === "prompt" ? "System Prompt" : t === "appearance" ? "Appearance" : "ComfyUI API Settings"}
+            {t === "providers" ? "Providers & Models" : t === "appearance" ? "Appearance" : "ComfyUI API Settings"}
           </button>
         ))}
       </div>
@@ -62,14 +63,23 @@ export default function SettingsPage() {
           </div>
           <div className="grid gap-3">
             {s.providers.map((p) => {
-              const isActive = s.activeProviderId === p.id;
+              const isImageActive = s.activeImageProviderId === p.id;
+              const isVideoActive = s.activeVideoProviderId === p.id;
               return (
-                <div key={p.id} className={`card p-4 ${isActive ? "shadow-glow" : ""}`}>
+                <div key={p.id} className={`card p-4 ${isImageActive || isVideoActive ? "shadow-glow" : ""}`}>
                   <div className="flex items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <button onClick={() => s.setActiveProvider(p.id)} className={`btn ${isActive ? "btn-primary" : "btn-outline"} px-3 py-1.5`}>
-                        {isActive ? <><Check size={14} /> Active</> : "Use"}
-                      </button>
+                      <div className="flex flex-col gap-1">
+                        <button onClick={() => s.setActiveProvider(p.id)} className={`btn text-[10px] py-1 px-2 ${s.activeProviderId === p.id ? "btn-primary" : "btn-outline"}`}>
+                          {s.activeProviderId === p.id ? <><Check size={12} /> Chat</> : "Set Chat"}
+                        </button>
+                        <button onClick={() => s.setActiveImageProvider(p.id)} className={`btn text-[10px] py-1 px-2 ${isImageActive ? "btn-primary" : "btn-outline"}`}>
+                          {isImageActive ? <><Check size={12} /> Image</> : "Set Image"}
+                        </button>
+                        <button onClick={() => s.setActiveVideoProvider(p.id)} className={`btn text-[10px] py-1 px-2 ${isVideoActive ? "btn-primary" : "btn-outline"}`}>
+                          {isVideoActive ? <><Check size={12} /> Video</> : "Set Video"}
+                        </button>
+                      </div>
                       <div>
                         <div className="font-medium">{p.name}</div>
                         <div className="text-[11px] text-muted">{p.kind}{p.builtIn ? "" : " · custom"}</div>
@@ -109,10 +119,64 @@ export default function SettingsPage() {
             </div>
             <button className="btn-primary mt-3" onClick={() => { if (custom.baseUrl) { s.addCustomProvider(custom); setCustom({ name: "", baseUrl: "", apiKey: "" }); } }}>Add provider</button>
           </div>
+
+          {(() => {
+            const modalBackends = s.providers.filter((p) => p.kind === "modal");
+            const devBackendId = devSel || s.devTest.backendId || modalBackends[0]?.id || "";
+            return (
+              <div className="card p-4 border border-primary/20 bg-primary/5">
+                <div className="font-semibold text-sm mb-1 flex items-center gap-2 text-text"><Sparkles size={16} className="text-primary-light" /> Managed / Modal Backend</div>
+                <p className="text-xs text-muted mb-3 max-w-2xl leading-relaxed">
+                  Register a self-hosted compute endpoint (e.g. a Modal app running HF models). Image calls <code>POST /generate/image</code>, video calls <code>/generate/video</code> (async). LLM endpoints are OpenAI-compatible — add those as a custom provider above. Select a backend per modality below, or flip the Dev/Test switch to route everything here.
+                </p>
+                <div className="grid md:grid-cols-2 gap-3">
+                  <input className="input" placeholder="Name (e.g. My Modal)" value={modalForm.name} onChange={(e) => setModalForm({ ...modalForm, name: e.target.value })} />
+                  <input className="input" placeholder="https://…modal.run" value={modalForm.baseUrl} onChange={(e) => setModalForm({ ...modalForm, baseUrl: e.target.value })} />
+                  <input className="input" type="password" placeholder="Secret (sent as Bearer)" value={modalForm.apiKey} onChange={(e) => setModalForm({ ...modalForm, apiKey: e.target.value })} />
+                  <input className="input" placeholder="Models (comma-separated)" value={modalForm.models} onChange={(e) => setModalForm({ ...modalForm, models: e.target.value })} />
+                </div>
+                <button className="btn-primary mt-3" onClick={() => { if (modalForm.baseUrl) { s.addModalProvider({ name: modalForm.name, baseUrl: modalForm.baseUrl, apiKey: modalForm.apiKey, models: modalForm.models.split(",").map((m) => m.trim()).filter(Boolean) }); setModalForm({ name: "", baseUrl: "", apiKey: "", models: "" }); } }}>Add Modal backend</button>
+
+                {modalBackends.length > 0 && (
+                  <div className="mt-4 border-t border-border/40 pt-3 space-y-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-medium">Dev/Test backend (route everything to Modal)</div>
+                        <div className="text-[11px] text-muted">One switch points Chat, Image &amp; Video at the chosen backend; turning it off restores your previous providers.</div>
+                      </div>
+                      <Toggle checked={s.devTest.enabled} onChange={(on) => s.setDevTest(on, devBackendId)} />
+                    </div>
+                    <select className="input text-xs" value={devBackendId} disabled={s.devTest.enabled} onChange={(e) => setDevSel(e.target.value)}>
+                      {modalBackends.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
+                    </select>
+                    {s.devTest.enabled && <div className="text-[11px] text-emerald-400">Dev/Test on — all modalities are using <strong>{modalBackends.find((b) => b.id === s.devTest.backendId)?.name || "Modal"}</strong>.</div>}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          <div className="card p-4 border border-border/60 bg-surface2/20">
+            <div className="font-semibold text-sm mb-2.5 flex items-center gap-2 text-text">
+              <Sparkles size={16} className="text-primary-light" /> FAL.ai LoRA Training Settings
+            </div>
+            <p className="text-xs text-muted mb-4 max-w-2xl leading-relaxed">
+              Configure your FAL.ai API key to enable Flux LoRA training. This allows you to generate high-fidelity, download-ready custom LoRAs (.safetensors file) of your characters directly from your reference images.
+            </p>
+            <div className="max-w-md">
+              <Field label={<span><Lock size={13} className="inline mr-1 text-primary-light" /> FAL.ai API Key (FAL_KEY)</span>}>
+                <input 
+                  className="input text-xs" 
+                  type="password" 
+                  placeholder="fal_..." 
+                  value={s.falKey || ""} 
+                  onChange={(e) => s.setFalKey(e.target.value)} 
+                />
+              </Field>
+            </div>
+          </div>
         </div>
       )}
-
-      {tab === "prompt" && <SystemPromptPanel />}
 
       {tab === "appearance" && (
         <div className="space-y-4">
@@ -158,85 +222,6 @@ export default function SettingsPage() {
   );
 }
 
-function SystemPromptPanel() {
-  const s = useSettings();
-  const prompts = useLibrary((x) => x.prompts);
-  const setKey = useLibrary((x) => x.set);
-  const [b, setB] = useState({ caption: PROMPT_BUILDER.captionTypes[0], length: PROMPT_BUILDER.lengths[3], extras: [] as string[] });
-  const globalDefault = useTaskSystemPrompt("global");
-
-  function built() {
-    const extras = b.extras.length ? " " + b.extras.join(" ") : "";
-    return `${b.caption.prompt} Aim for a ${b.length.toLowerCase()} description.${extras}`.trim();
-  }
-
-  function saveToLibrary() {
-    const item: PromptItem = { id: newId(), title: `${b.caption.name} (${b.length})`, category: "System Prompt", subcategory: "Custom", body: built(), tags: [], modes: ["T2T"], nsfw: false, mediaType: "text", createdAt: Date.now(), updatedAt: Date.now() };
-    setKey("prompts", [item, ...prompts]);
-    alert("Saved to Prompt Library → System Prompt → Custom");
-  }
-
-  return (
-    <div className="space-y-4">
-      <div className="card p-4">
-        <div className="font-medium mb-1">Default system prompt</div>
-        <p className="text-xs text-muted mb-3">The fallback used by any task where you haven't picked a prompt with its gear button. Pick one from your Prompt Library:</p>
-        <PromptPicker taskKey="global" label="Choose default" />
-        <div className="mt-3">
-          <span className="label">Currently active default</span>
-          <div className="text-sm bg-surface2 rounded-xl p-3 whitespace-pre-wrap min-h-[60px]">{globalDefault || <span className="text-muted">None selected - tasks fall back to the text below.</span>}</div>
-        </div>
-      </div>
-
-      <div className="card p-4">
-        <div className="font-medium mb-1">System Prompt Builder</div>
-        <p className="text-xs text-muted mb-3">Compose a prompt, then save it into your Prompt Library (it appears under System Prompt → Custom and in every task picker).</p>
-        <div className="grid md:grid-cols-2 gap-3">
-          <Field label="Caption type">
-            <select className="input" value={b.caption.name} onChange={(e) => setB({ ...b, caption: PROMPT_BUILDER.captionTypes.find((c) => c.name === e.target.value)! })}>
-              {PROMPT_BUILDER.captionTypes.map((c) => <option key={c.name}>{c.name}</option>)}
-            </select>
-          </Field>
-          <Field label="Length">
-            <select className="input" value={b.length} onChange={(e) => setB({ ...b, length: e.target.value })}>
-              {PROMPT_BUILDER.lengths.map((l) => <option key={l}>{l}</option>)}
-            </select>
-          </Field>
-        </div>
-        <div className="label">Extra options</div>
-        <div className="flex flex-wrap gap-2 mb-3">
-          {PROMPT_BUILDER.extras.map((x) => {
-            const on = b.extras.includes(x);
-            return (
-              <button
-                key={x}
-                className={`chip ${on ? "border-primary text-primary" : ""}`}
-                onClick={() => setB({ ...b, extras: on ? b.extras.filter((e) => e !== x) : [...b.extras, x] })}
-              >
-                {x}
-              </button>
-            );
-          })}
-        </div>
-        <div className="card p-3 bg-surface2 mb-3">
-          <span className="label mb-1">Preview</span>
-          <p className="text-sm">{built()}</p>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          <button className="btn-primary" onClick={saveToLibrary}><BookmarkPlus size={15} /> Save to Library</button>
-          <button className="btn-outline" onClick={() => s.setSystemPrompt(built())}>Set as fallback text</button>
-        </div>
-      </div>
-
-      <div className="card p-4">
-        <div className="font-medium mb-1">Fallback text</div>
-        <p className="text-xs text-muted mb-2">Used only when no default and no per-task prompt is selected.</p>
-        <textarea className="input min-h-[80px]" value={s.systemPrompt} onChange={(e) => s.setSystemPrompt(e.target.value)} />
-      </div>
-    </div>
-  );
-}
-
 function ComfySettingsPanel() {
   const comfy = useComfyStore();
   const [nodeUrl, setNodeUrl] = useState("");
@@ -249,6 +234,7 @@ function ComfySettingsPanel() {
     downloadUrl: ""
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [newExtraModelPath, setNewExtraModelPath] = useState("");
 
   function addMapping() {
     const errs: Record<string, string> = {};
@@ -278,6 +264,226 @@ function ComfySettingsPanel() {
 
   return (
     <div className="space-y-5">
+      {/* Local ComfyUI Runtime (app-managed; fixed subfolder, no path setting) */}
+      <div className="card p-4">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Cpu size={15} className="text-primary-light" /> Local ComfyUI Runtime</div>
+        <p className="text-xs text-muted mb-4">
+          ComfyUI is installed and managed by the app inside its own subfolder — there’s no path to configure.
+          It boots <strong>CPU-only by default</strong> so it always starts; cloud generation runs on GPUs (e.g. Modal) via the
+          provider tab inside the ComfyUI canvas.
+        </p>
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          {([
+            { id: 'cpu', label: 'CPU-only', icon: Cpu, desc: 'Always boots. The local instance just hosts the UI; generation offloads to the cloud GPU provider.' },
+            { id: 'gpu', label: 'Local GPU', icon: Zap, desc: 'Use your own NVIDIA GPU for local generation. Requires a compatible CUDA setup.' },
+          ] as const).map((d) => {
+            const Icon = d.icon;
+            const active = comfy.deviceMode === d.id;
+            return (
+              <button
+                key={d.id}
+                type="button"
+                className={`card p-4 text-left border transition-all ${active ? "border-primary bg-primary/5 shadow-glow" : "border-border hover:border-primary/40"}`}
+                onClick={() => comfy.set("deviceMode", d.id)}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <div className="font-semibold text-sm flex items-center gap-1.5"><Icon size={14} className="text-primary-light" /> {d.label}</div>
+                  {active && <Check size={15} className="text-primary" />}
+                </div>
+                <p className="text-[11px] text-muted leading-relaxed">{d.desc}</p>
+              </button>
+            );
+          })}
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-border px-4 py-3">
+          <div className="flex items-center gap-2"><FolderCog size={15} className="text-primary-light" /><div><div className="text-sm">Auto-start ComfyUI</div><div className="text-[11px] text-muted">Launch the managed instance when you open the ComfyUI gear (desktop)</div></div></div>
+          <Toggle checked={comfy.autoStartComfy} onChange={(b) => comfy.set("autoStartComfy", b)} />
+        </div>
+      </div>
+
+      {/* GPU Hardware Type & Installation Options */}
+      <div className="card p-4">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Cpu size={15} className="text-primary-light" /> Local Hardware Configuration</div>
+        <p className="text-xs text-muted mb-4">
+          Select your GPU type. This is required before ComfyUI can be installed locally, so it uses the correct backend archive.
+        </p>
+        <Field label="System GPU Type">
+          <select
+            className="input text-xs"
+            value={comfy.gpuType || ""}
+            onChange={(e) => comfy.set("gpuType", e.target.value as any || null)}
+          >
+            <option value="" disabled>Select GPU type...</option>
+            <option value="nvidia">NVIDIA (CUDA)</option>
+            <option value="amd">AMD (ROCm)</option>
+            <option value="intel">Intel (OpenVINO / ARC)</option>
+            <option value="cpu">CPU Only</option>
+          </select>
+        </Field>
+
+        <div className="border-t border-border/40 pt-4 mt-4 space-y-3">
+          <div className="font-semibold text-xs uppercase tracking-wider text-primary">Extra Model Paths</div>
+          <p className="text-[11px] text-muted">
+            Configure external drive locations for models (saved to `extra_model_paths.yaml`).
+          </p>
+          <div className="flex gap-2">
+            <input
+              className="input text-xs flex-1"
+              placeholder="e.g. D:\AI_Models\StableDiffusion"
+              value={newExtraModelPath}
+              onChange={(e) => setNewExtraModelPath(e.target.value)}
+            />
+            <button
+              type="button"
+              className="btn-primary px-3 text-xs flex items-center gap-1"
+              onClick={() => {
+                if (newExtraModelPath.trim()) {
+                  comfy.set("extraModelPaths", [...comfy.extraModelPaths, newExtraModelPath.trim()]);
+                  setNewExtraModelPath("");
+                }
+              }}
+            >
+              <Plus size={14} /> Add
+            </button>
+          </div>
+          {comfy.extraModelPaths.length > 0 && (
+            <div className="space-y-1.5 mt-2 max-h-[120px] overflow-y-auto pr-1">
+              {comfy.extraModelPaths.map((path, i) => (
+                <div key={i} className="flex items-center justify-between p-2 bg-surface2/60 border border-border/40 rounded-lg text-xs">
+                  <span className="font-mono text-muted truncate">{path}</span>
+                  <button type="button" className="btn-ghost px-2 py-1 text-rose-400" onClick={() => comfy.set("extraModelPaths", comfy.extraModelPaths.filter((_, idx) => idx !== i))}><Trash2 size={13} /></button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        <div className="border-t border-border/40 pt-4 mt-4 space-y-3">
+          <div className="font-semibold text-xs uppercase tracking-wider text-primary">Command Line Arguments</div>
+          <p className="text-[11px] text-muted">Startup flags passed to ComfyUI.</p>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-3">
+            <Toggle label="--listen" checked={comfy.cliArgs.listen} onChange={(b) => comfy.updateCliArgs({ listen: b })} />
+            <Toggle label="--highvram" checked={comfy.cliArgs.highvram} onChange={(b) => comfy.updateCliArgs({ highvram: b })} />
+            <Toggle label="--normalvram" checked={comfy.cliArgs.normalvram} onChange={(b) => comfy.updateCliArgs({ normalvram: b })} />
+            <Toggle label="--lowvram" checked={comfy.cliArgs.lowvram} onChange={(b) => comfy.updateCliArgs({ lowvram: b })} />
+            <Toggle label="--cpu" checked={comfy.cliArgs.cpu} onChange={(b) => comfy.updateCliArgs({ cpu: b })} />
+            <div className="flex items-center gap-2">
+              <span className="text-xs">Port:</span>
+              <input type="number" className="input text-xs w-20 py-1" value={comfy.cliArgs.port} onChange={(e) => comfy.updateCliArgs({ port: parseInt(e.target.value) || 8188 })} />
+            </div>
+          </div>
+          <Field label="Extra Arguments">
+            <input className="input text-xs" placeholder="--disable-xformers" value={comfy.cliArgs.extra} onChange={(e) => comfy.updateCliArgs({ extra: e.target.value })} />
+          </Field>
+        </div>
+      </div>
+
+      {/* Model Provider API Keys */}
+      <div className="card p-4">
+        <div className="font-semibold mb-1 flex items-center gap-1.5"><Lock size={15} className="text-primary-light" /> Model Provider API Keys</div>
+        <p className="text-xs text-muted mb-4">
+          Entered once here and auto-filled into ComfyUI and every node that needs them (e.g. the workflow model downloader)
+          when the local instance launches — you won’t re-enter them in the workspace. Needed for gated models (HF) and CivitAI downloads.
+        </p>
+        <div className="space-y-3">
+          <Field label="CivitAI API Key">
+            <input type="password" className="input text-sm" placeholder="CivitAI API key" value={comfy.apiKeys.civitai} onChange={(e) => comfy.set("apiKeys", { ...comfy.apiKeys, civitai: e.target.value })} />
+          </Field>
+          <Field label="Hugging Face Token">
+            <input type="password" className="input text-sm" placeholder="hf_..." value={comfy.apiKeys.huggingface} onChange={(e) => comfy.set("apiKeys", { ...comfy.apiKeys, huggingface: e.target.value })} />
+          </Field>
+          <Field label={<span>Tavily API Key <span className="text-muted">(optional — AI model source search)</span></span>}>
+            <input type="password" className="input text-sm" placeholder="tvly-..." value={comfy.apiKeys.tavily} onChange={(e) => comfy.set("apiKeys", { ...comfy.apiKeys, tavily: e.target.value })} />
+          </Field>
+        </div>
+      </div>
+
+      {/* ComfyUI Execution Mode Configuration */}
+      <div className="card p-4">
+        <div className="font-semibold mb-1">ComfyUI Execution & Resource Mode</div>
+        <p className="text-xs text-muted mb-4">
+          Choose how ComfyUI workflows are executed: entirely local, hybrid (local UI with remote cloud GPU offloading), or fully in the cloud.
+        </p>
+        <div className="grid sm:grid-cols-3 gap-3 mb-4">
+          {(['local', 'hybrid', 'cloud'] as const).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              className={`card p-4 text-left border flex flex-col justify-between transition-all ${
+                comfy.runMode === mode
+                  ? "border-primary bg-primary/5 shadow-glow"
+                  : "border-border hover:border-primary/40"
+              }`}
+              onClick={() => comfy.set("runMode", mode)}
+            >
+              <div>
+                <div className="font-semibold capitalize text-sm mb-1">{mode} Mode</div>
+                <p className="text-[11px] text-muted leading-relaxed">
+                  {mode === 'local' && "Run interface and GPU node execution completely on your local computer."}
+                  {mode === 'hybrid' && "Run node interface locally, but offload the intensive GPU execution to a remote cloud worker."}
+                  {mode === 'cloud' && "Execute API workflows entirely in the cloud on managed serverless environments."}
+                </p>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <span className={`text-[10px] uppercase font-bold tracking-wider ${
+                  comfy.runMode === mode ? "text-primary" : "text-muted"
+                }`}>
+                  {comfy.runMode === mode ? "✓ Selected" : "Select"}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        <div className="border-t border-border/40 pt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="text-xs font-semibold">Lock Run Mode Choice</div>
+              <p className="text-[11px] text-muted">When locked, the startup resource selection dialog will not prompt you when loading ComfyUI Gears.</p>
+            </div>
+            <Toggle
+              checked={comfy.runModeLocked}
+              onChange={(b) => comfy.set("runModeLocked", b)}
+            />
+          </div>
+        </div>
+
+        {comfy.runMode === 'hybrid' && (
+          <div className="border-t border-border/40 pt-4 mt-3 space-y-3">
+            <div className="text-xs font-semibold text-primary">Hybrid Mode Settings (nathannlu/comfyui-cloud)</div>
+            <p className="text-[11px] text-muted">
+              Configure details for the `nathannlu/comfyui-cloud` custom node settings to offload execution to a remote GPU server.
+            </p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <Field label="Custom Node Repo">
+                <input
+                  className="input text-xs"
+                  value={comfy.hybridConfig.customNodeRepo}
+                  onChange={(e) => comfy.updateHybridConfig({ customNodeRepo: e.target.value })}
+                />
+              </Field>
+              <Field label="Remote GPU URL">
+                <input
+                  className="input text-xs"
+                  placeholder="https://remote-gpu-server.com"
+                  value={comfy.hybridConfig.remoteGpuUrl}
+                  onChange={(e) => comfy.updateHybridConfig({ remoteGpuUrl: e.target.value })}
+                />
+              </Field>
+              <Field label="Remote Auth Key / Secret">
+                <input
+                  className="input text-xs"
+                  type="password"
+                  placeholder="Enter remote auth key..."
+                  value={comfy.hybridConfig.remoteGpuKey}
+                  onChange={(e) => comfy.updateHybridConfig({ remoteGpuKey: e.target.value })}
+                />
+              </Field>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* 1. ComfyUI API Providers */}
       <div className="card p-4">
         <div className="font-semibold mb-1">ComfyUI Cloud & API Providers</div>
