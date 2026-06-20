@@ -14,3 +14,12 @@ next-env.d.ts
 # Reference material
 /character-forge
 
+# Python build artifacts (custom nodes + modal scripts)
+__pycache__/
+*.pyc
+
+# Local secrets / env (never commit API keys like csk-, hf_, ghp_)
+.env
+.env.*
+!.env.example
+
