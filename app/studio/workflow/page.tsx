@@ -69,6 +69,7 @@ export default function WorkflowStudioPage() {
   const [launchElapsed, setLaunchElapsed] = useState(0);
   const [launchError, setLaunchError] = useState<string | null>(null);
   const [launchPhase, setLaunchPhase] = useState<string>("");
+  const [connecting, setConnecting] = useState(false); // web: waiting for an externally-started ComfyUI
 
   const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
   const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
@@ -104,11 +105,31 @@ export default function WorkflowStudioPage() {
 
   // Tick an elapsed-seconds counter while launching so the boot screen feels alive.
   useEffect(() => {
-    if (!launching) { setLaunchElapsed(0); return; }
+    if (!launching && !connecting) { setLaunchElapsed(0); return; }
     const start = Date.now();
     const t = setInterval(() => setLaunchElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
     return () => clearInterval(t);
-  }, [launching]);
+  }, [launching, connecting]);
+
+  // Web build: poll for an externally-started ComfyUI (npm run comfyui) and show
+  // the loading animation until it answers.
+  async function connectWeb() {
+    setLaunchError(null);
+    setConnecting(true);
+    setLaunchPhase("Connecting to ComfyUI…");
+    const deadline = Date.now() + 60000;
+    const poll = async () => {
+      const ok = await checkComfyReachable(localUrl);
+      if (ok) { setServerOnline(true); setConnecting(false); return; }
+      if (Date.now() > deadline) {
+        setConnecting(false);
+        setLaunchError(`Couldn't reach ComfyUI at ${localUrl}. Make sure \`npm run comfyui\` is running and has finished starting, then click Connect again.`);
+        return;
+      }
+      setTimeout(poll, 2000);
+    };
+    poll();
+  }
 
   async function handleLaunchComfy() {
     if (provisioned === false && !comfy.gpuType) {
@@ -674,10 +695,15 @@ export default function WorkflowStudioPage() {
               <span className="text-muted">Open the <strong>Workflow Models</strong> panel in the canvas → <strong>Download All Missing</strong> (API keys auto-filled).</span>
             </div>
           )}
-          {serverOnline === false ? (
+          {serverOnline !== true ? (
             <div className="flex-1 grid place-items-center p-6 text-center bg-surface/50">
               <div className="max-w-2xl w-full">
-                {launching ? (
+                {serverOnline === null && !launching && !connecting ? (
+                  <div className="py-12">
+                    <Loader2 size={28} className="animate-spin mx-auto mb-3 text-primary-light" />
+                    <div className="text-sm text-muted">Checking for ComfyUI…</div>
+                  </div>
+                ) : (launching || connecting) ? (
                   <div className="animate-in fade-in zoom-in duration-500 py-10">
                     <div className="relative w-24 h-24 mx-auto mb-6">
                       <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
@@ -702,7 +728,7 @@ export default function WorkflowStudioPage() {
                     <button
                       type="button"
                       className="btn-ghost text-[11px] mt-4 inline-flex items-center justify-center gap-1.5 text-muted"
-                      onClick={() => checkComfyReachable(localUrl).then((ok) => { if (ok) { setServerOnline(true); setLaunching(false); } })}
+                      onClick={() => checkComfyReachable(localUrl).then((ok) => { if (ok) { setServerOnline(true); setLaunching(false); setConnecting(false); } })}
                     >
                       <RotateCw size={12} /> Check now
                     </button>
@@ -760,8 +786,17 @@ export default function WorkflowStudioPage() {
                       </button>
                     ) : (
                       <div className="text-xs text-muted bg-surface2/60 border border-border/50 rounded-xl p-3 text-left leading-relaxed">
-                        <div className="font-bold text-text mb-1">Web build — start ComfyUI manually:</div>
-                        launch your local ComfyUI on <code className="text-accent">{localUrl}</code>, then this workspace connects automatically. See the Modal setup guide in the Docs gear.
+                        <div className="font-bold text-text mb-1">Browser mode — start ComfyUI in a terminal:</div>
+                        <div className="mb-2.5">Run <code className="text-accent">npm run comfyui</code> in the project folder. It launches the bundled ComfyUI on <code className="text-accent">{localUrl}</code> (CPU, CORS enabled). When it finishes starting, click Connect.</div>
+                        <button
+                          type="button"
+                          className="btn-primary text-xs py-1.5 px-4 inline-flex items-center gap-1.5"
+                          disabled={connecting}
+                          onClick={connectWeb}
+                        >
+                          {connecting ? <><Loader2 size={13} className="animate-spin" /> Connecting…</> : <><Power size={13} /> Connect to ComfyUI</>}
+                        </button>
+                        <div className="mt-2.5 opacity-70">For one-click start + GPU config, run <code className="text-accent">npm run desktop:dev</code> (the desktop window) instead.</div>
                       </div>
                     )}
                     <button type="button" className="btn-ghost text-xs mt-3 inline-flex items-center justify-center gap-1.5 w-full" onClick={() => checkComfyReachable(localUrl).then(setServerOnline)}>

@@ -13,6 +13,7 @@
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
     "prepare:comfyui": "powershell -ExecutionPolicy Bypass -File scripts/prepare-comfyui.ps1",
+    "comfyui": "node scripts/run-comfyui.mjs",
     "desktop:build:bundled": "npm run prepare:comfyui && tauri build",
     "tauri": "tauri"
   },

@@ -290,6 +290,10 @@ fn launch_comfyui(
         cmd.env("TAVILY_API_KEY", &keys.tavily);
     }
     if args.listen { cmd.arg("--listen").arg("127.0.0.1"); }
+    // The desktop webview is a different origin, so the app's fetch probes
+    // (/system_stats), the model scan, /prompt POSTs and the WebSocket all need
+    // CORS — without this the app can't even detect that ComfyUI is running.
+    cmd.arg("--enable-cors-header").arg("*");
     if use_cpu {
         cmd.arg("--cpu");
     } else if gpu == "amd" {
@@ -302,11 +306,22 @@ fn launch_comfyui(
         cmd.arg(tok);
     }
 
+    // Capture ComfyUI's stdout+stderr to a log file in the managed dir so startup
+    // failures (bad import, missing DLL, port in use, etc.) are visible instead of
+    // the process silently dying and the app just showing "isn't running".
+    let log_path = comfy_dir.join("nexus-comfy.log");
+    if let Ok(f) = std::fs::File::create(&log_path) {
+        if let Ok(f2) = f.try_clone() {
+            cmd.stdout(std::process::Stdio::from(f));
+            cmd.stderr(std::process::Stdio::from(f2));
+        }
+    }
+
     match cmd.spawn() {
         Ok(child) => {
             let pid = child.id();
             *state.child.lock().unwrap() = Some(child);
-            LaunchResult { ok: true, pid: Some(pid), message: None }
+            LaunchResult { ok: true, pid: Some(pid), message: Some(format!("Launched (pid {pid}). Log: {}", log_path.display())) }
         }
         Err(e) => LaunchResult { ok: false, pid: None, message: Some(format!("Failed to launch ComfyUI: {e}")) },
     }
