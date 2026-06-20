@@ -23,12 +23,18 @@ import os
 import subprocess
 import modal
 
-# ── set your uncensored HF model here (vision-capable also works for image analysis) ──
-LLM_MODEL = "TheBloke/dolphin-2.6-mistral-7B-AWQ"   # placeholder — swap for your choice
+# ── model + hardware come from env so the Settings "Deploy" button can set them
+#    at `modal deploy` time (falling back to these defaults if run by hand). The
+#    chosen model is baked into the image env below so the container sees it. ──
+LLM_MODEL = os.environ.get("LLM_MODEL", "TheBloke/dolphin-2.6-mistral-7B-AWQ")
 PORT = 8000
-GPU = "A10G"
-MAX_LEN = 8192
+GPU = os.environ.get("NEXUS_GPU", "A10G")
+GPU_COUNT = int(os.environ.get("NEXUS_GPU_COUNT", "1"))   # >1 = tensor-parallel
+CPU = float(os.environ.get("NEXUS_CPU", "8"))
+RAM_MB = int(os.environ["NEXUS_RAM_MB"]) if os.environ.get("NEXUS_RAM_MB") else None
+MAX_LEN = int(os.environ.get("NEXUS_MAX_LEN", "8192"))
 CACHE_DIR = "/cache"
+GPU_SPEC = f"{GPU}:{GPU_COUNT}" if GPU_COUNT > 1 else GPU
 
 app = modal.App("nexus-llm")
 
@@ -42,6 +48,7 @@ image = (
         "HF_HUB_ENABLE_HF_TRANSFER": "1",
         "HF_HOME": CACHE_DIR,                 # HF + vLLM read/write weights here (the Volume)
         "VLLM_USE_V1": "0",
+        "LLM_MODEL": LLM_MODEL,               # bake the chosen model into the container
     })
 )
 
@@ -61,7 +68,9 @@ def download():
 
 @app.function(
     image=image,
-    gpu=GPU,
+    gpu=GPU_SPEC,                     # e.g. "L40S" or "T4:2" for tensor-parallel
+    cpu=CPU,
+    memory=RAM_MB,                    # MB request; None = Modal default
     volumes={CACHE_DIR: cache_vol},   # mount the cached weights
     timeout=3600,
     min_containers=0,                 # scale to zero → spins up when you connect
@@ -73,6 +82,7 @@ def download():
 def serve():
     model = os.environ.get("LLM_MODEL", LLM_MODEL)
     key = os.environ["NEXUS_SECRET"]
+    tp = f"--tensor-parallel-size {GPU_COUNT} " if GPU_COUNT > 1 else ""
     cmd = (
         f"vllm serve {model} "
         f"--host 0.0.0.0 --port {PORT} "
@@ -80,6 +90,7 @@ def serve():
         f"--served-model-name {model} "
         f"--download-dir {CACHE_DIR} "
         f"--max-model-len {MAX_LEN} "
+        f"{tp}"
         f"--gpu-memory-utilization 0.92"
     )
     subprocess.Popen(cmd, shell=True)

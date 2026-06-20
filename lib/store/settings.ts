@@ -24,11 +24,24 @@ export interface SettingsState {
   falKey: string;
   // Dev/Test: route every modality to one self-hosted Modal backend with a single switch.
   devTest: { enabled: boolean; backendId: string; prev: { text: string; image: string; video: string } };
+  // Remembered one-click deploys, keyed by modality (llm/image/video), so the
+  // Start/Stop panel can re-deploy or stop each backend.
+  modalDeploys: Record<string, { gpu: string; gpuCount: number; cpu: number; ramGb: number; model: string; secret: string; hfToken: string; url: string; stopped: boolean }>;
+  setModalDeploy: (modality: string, data: SettingsState["modalDeploys"][string]) => void;
+  setModalDeployStopped: (modality: string, stopped: boolean) => void;
+  removeModalDeploy: (modality: string) => void;
+  // Cost tracking: a user-set budget and an app-accumulated ESTIMATE of spend
+  // (Modal's billing dashboard is authoritative; we can't read it via CLI).
+  modalBudget: number; modalSpend: number;
+  setModalBudget: (n: number) => void;
+  addModalSpend: (usd: number) => void;
+  resetModalSpend: () => void;
   setMode: (m: "dark" | "light") => void; setPalette: (p: string) => void;
   setActiveProvider: (id: string) => void;
   setActiveImageProvider: (id: string) => void; setActiveVideoProvider: (id: string) => void;
   updateProvider: (id: string, patch: Partial<ProviderConfig>) => void; addCustomProvider: (p: Partial<ProviderConfig>) => void;
   addModalProvider: (p: Partial<ProviderConfig>) => string;
+  addOpenAIProvider: (p: Partial<ProviderConfig>) => string;
   setDevTest: (on: boolean, backendId?: string) => void;
   removeProvider: (id: string) => void; setUncensored: (b: boolean) => void; setTaskPrompt: (key: string, promptId: string) => void; setAutoSystemPrompt: (b: boolean) => void;
   setFalKey: (key: string) => void;
@@ -43,6 +56,14 @@ export const useSettings = create<SettingsState>()(persist((set, get) => ({
   taskPrompts: {}, autoSystemPrompt: false,
   falKey: "",
   devTest: { enabled: false, backendId: "", prev: { text: "", image: "", video: "" } },
+  modalDeploys: {},
+  modalBudget: 0, modalSpend: 0,
+  setModalBudget: (n) => set({ modalBudget: Math.max(0, n || 0) }),
+  addModalSpend: (usd) => { if (usd > 0) set({ modalSpend: get().modalSpend + usd }); },
+  resetModalSpend: () => set({ modalSpend: 0 }),
+  setModalDeploy: (modality, data) => set({ modalDeploys: { ...get().modalDeploys, [modality]: data } }),
+  setModalDeployStopped: (modality, stopped) => { const cur = get().modalDeploys[modality]; if (cur) set({ modalDeploys: { ...get().modalDeploys, [modality]: { ...cur, stopped } } }); },
+  removeModalDeploy: (modality) => { const m = { ...get().modalDeploys }; delete m[modality]; set({ modalDeploys: m }); },
   setMode: (m) => { applyTheme(m, get().palette); set({ mode: m }); },
   setPalette: (p) => { applyTheme(get().mode, p); set({ palette: p }); },
   setActiveProvider: (id) => set({ activeProviderId: id }),
@@ -53,6 +74,12 @@ export const useSettings = create<SettingsState>()(persist((set, get) => ({
   addModalProvider: (p) => {
     const id = "modal-" + Date.now();
     set({ providers: [...get().providers, { id, name: p.name || "Modal Backend", kind: "modal", baseUrl: p.baseUrl || "", apiKey: p.apiKey, models: p.models || [], selectedModel: (p.models || [])[0], visible: true, builtIn: false }] });
+    return id;
+  },
+  addOpenAIProvider: (p) => {
+    const id = "openai-" + Date.now();
+    const models = p.models || [];
+    set({ providers: [...get().providers, { id, name: p.name || "OpenAI-compatible", kind: "custom", baseUrl: p.baseUrl || "", apiKey: p.apiKey, models, selectedModel: p.selectedModel || models[0], visible: true, builtIn: false }] });
     return id;
   },
   setDevTest: (on, backendId) => {
@@ -81,8 +108,11 @@ export const useSettings = create<SettingsState>()(persist((set, get) => ({
   name: "nexus-settings", 
   storage: createJSONStorage(() => localStorage), 
   onRehydrateStorage: () => (state) => { 
-    if (state) { 
-      applyTheme(state.mode, state.palette); 
+    if (state) {
+      applyTheme(state.mode, state.palette);
+      if (!state.modalDeploys) state.modalDeploys = {};
+      if (typeof state.modalBudget !== "number") state.modalBudget = 0;
+      if (typeof state.modalSpend !== "number") state.modalSpend = 0;
       // If client has migrated settings with empty models list, hydrate with defaults
       state.providers = state.providers.map((p) => {
         const def = DEFAULT_PROVIDERS.find((d) => d.id === p.id);

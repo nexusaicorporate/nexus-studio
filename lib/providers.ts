@@ -1,5 +1,24 @@
 "use client";
 import type { ProviderConfig, ChatMessage } from "@/lib/types";
+import { useSettings } from "@/lib/store/settings";
+
+// Best-effort estimated-spend tracking for Modal generations. Uses the GPU of
+// the deployed backend for that modality × elapsed seconds. Modal's billing
+// page is authoritative; this is only an in-app estimate for the dashboard.
+const _MODAL_RATES: Record<string, number> = {
+  T4: 0.59, L4: 0.80, A10G: 1.10, L40S: 1.95, A100: 2.10, "A100-80GB": 2.50, H100: 3.95,
+};
+function recordModalSpend(modality: "image" | "video", seconds: number) {
+  try {
+    const st: any = useSettings.getState();
+    const gpu = st.modalDeploys?.[modality]?.gpu;
+    const rate = (gpu && _MODAL_RATES[gpu]) || 1.5;
+    const usd = rate * (Math.max(0, seconds) / 3600);
+    if (usd > 0) st.addModalSpend(usd);
+  } catch {
+    /* spend tracking is best-effort; never block a generation */
+  }
+}
 
 export async function fetchModels(p: ProviderConfig): Promise<string[]> {
   try {
@@ -295,6 +314,7 @@ export async function generateImage(o: ImageOpts): Promise<string> {
   // Self-hosted / managed compute backend (e.g. a Modal endpoint running an HF model).
   // Contract: POST {baseUrl}/generate/image  -> { image: <b64> } | { url } | { images:[...] }
   if (o.provider.kind === "modal") {
+    const _t0 = Date.now();
     const base = o.provider.baseUrl.replace(/\/$/, "");
     const r = await fetch(base + "/generate/image", {
       method: "POST",
@@ -312,6 +332,7 @@ export async function generateImage(o: ImageOpts): Promise<string> {
     const j = await r.json();
     const out = j.url || j.image || (Array.isArray(j.images) ? j.images[0] : "");
     if (!out) throw new Error("Modal image endpoint returned no image.");
+    recordModalSpend("image", (Date.now() - _t0) / 1000);
     return out.startsWith("http") || out.startsWith("data:") ? out : "data:image/png;base64," + out;
   }
   if (o.provider.kind === "openai" && o.provider.id === "openai" && o.provider.apiKey) {
@@ -349,6 +370,7 @@ export async function generateVideo(o: VideoOpts): Promise<string> {
   }
   const base = o.provider.baseUrl.replace(/\/$/, "");
   const auth: Record<string, string> = o.provider.apiKey ? { Authorization: "Bearer " + o.provider.apiKey } : {};
+  const _t0 = Date.now();
 
   const submit = await fetch(base + "/generate/video", {
     method: "POST",
@@ -366,7 +388,7 @@ export async function generateVideo(o: VideoOpts): Promise<string> {
   if (!submit.ok) throw new Error(`Modal video error: ${submit.status} ${await submit.text()}`);
   const sj = await submit.json();
   // Some backends return the URL synchronously; otherwise poll the job.
-  if (sj.url) { o.onProgress?.(100, "done"); return sj.url; }
+  if (sj.url) { o.onProgress?.(100, "done"); recordModalSpend("video", (Date.now() - _t0) / 1000); return sj.url; }
   const jobId = sj.job_id || sj.id;
   if (!jobId) throw new Error("Modal video endpoint returned neither a url nor a job id.");
 
@@ -379,7 +401,7 @@ export async function generateVideo(o: VideoOpts): Promise<string> {
     if (!r.ok) continue;
     const j = await r.json();
     o.onProgress?.(typeof j.progress === "number" ? j.progress : 0, j.status || "running");
-    if (j.status === "done" && j.url) return j.url;
+    if (j.status === "done" && j.url) { recordModalSpend("video", (Date.now() - _t0) / 1000); return j.url; }
     if (j.status === "error") throw new Error(j.error || "Video job failed.");
   }
   throw new Error("Video job timed out.");

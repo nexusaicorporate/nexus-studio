@@ -386,6 +386,173 @@ fn restore_comfy_env(app: tauri::AppHandle) -> InstallResult {
     }
 }
 
+// ── One-click Modal backend deploy ───────────────────────────────────
+// Shells `modal deploy` for one of the bundled scripts with the chosen
+// hardware/model baked into env, optionally (re)creating the shared secret
+// first, then parses the printed .modal.run URL out of the output.
+
+#[derive(serde::Serialize)]
+struct DeployResult {
+    ok: bool,
+    url: Option<String>,
+    message: String,
+    log: String,
+}
+
+// Find a modal/<file>.py script: bundled resource, next to the exe, or cwd (dev).
+fn resolve_modal_script(app: &tauri::AppHandle, file: &str) -> Option<PathBuf> {
+    if let Ok(res) = app.path().resource_dir() {
+        for cand in [
+            res.join("modal").join(file),
+            res.join("resources").join("modal").join(file),
+            res.join(file),               // some Tauri layouts flatten the glob
+            res.join("_up_").join("modal").join(file),  // Tauri encodes ".." as _up_
+        ] {
+            if cand.exists() { return Some(cand); }
+        }
+    }
+    if let Ok(exe) = std::env::current_exe() {
+        if let Some(parent) = exe.parent() {
+            let c = parent.join("modal").join(file);
+            if c.exists() { return Some(c); }
+        }
+    }
+    let c = std::env::current_dir().ok()?.join("modal").join(file);
+    if c.exists() { Some(c) } else { None }
+}
+
+// Pull the first https://….modal.run URL out of `modal deploy` output.
+fn scan_modal_url(s: &str) -> Option<String> {
+    for token in s.split(|c: char| c.is_whitespace()) {
+        let t = token.trim_matches(|c: char| !c.is_ascii_graphic());
+        if t.starts_with("https://") && t.contains(".modal.run") {
+            return Some(t.trim_end_matches(|c| c == ')' || c == '.' || c == ',' || c == '"' || c == '\'').to_string());
+        }
+    }
+    None
+}
+
+// Run a `modal …` subcommand, falling back to `python -m modal` if the CLI
+// isn't directly on PATH.
+fn run_modal(args: &[&str], envs: &[(&str, String)]) -> std::io::Result<std::process::Output> {
+    let mut c = Command::new("modal");
+    c.args(args);
+    for (k, v) in envs { c.env(k, v); }
+    match c.output() {
+        Ok(o) => Ok(o),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            let py = if cfg!(windows) { "python" } else { "python3" };
+            let mut c2 = Command::new(py);
+            c2.arg("-m").arg("modal").args(args);
+            for (k, v) in envs { c2.env(k, v); }
+            c2.output()
+        }
+        Err(e) => Err(e),
+    }
+}
+
+#[tauri::command]
+#[allow(clippy::too_many_arguments)]
+fn deploy_modal_backend(
+    app: tauri::AppHandle,
+    modality: String,
+    gpu: String,
+    gpu_count: Option<u32>,
+    cpu: Option<f64>,
+    ram_mb: Option<u64>,
+    model: String,
+    secret: String,
+    hf_token: String,
+    modal_token_id: Option<String>,
+    modal_token_secret: Option<String>,
+) -> DeployResult {
+    let (file, model_env) = match modality.as_str() {
+        "llm" | "chat" => ("llm_vllm.py", "LLM_MODEL"),
+        "image" => ("image_diffusers.py", "IMAGE_MODEL"),
+        "video" => ("video_ltx.py", "VIDEO_MODEL"),
+        other => return DeployResult { ok: false, url: None, message: format!("Unknown modality '{other}'"), log: String::new() },
+    };
+    let Some(script) = resolve_modal_script(&app, file) else {
+        return DeployResult { ok: false, url: None,
+            message: format!("Couldn't find modal/{file}. Run the desktop dev build from the project root, or bundle the modal/ folder as a resource."),
+            log: String::new() };
+    };
+
+    // Tokens (optional — if omitted, the CLI uses ~/.modal.toml from `modal setup`).
+    let mut envs: Vec<(&str, String)> = Vec::new();
+    if let Some(id) = &modal_token_id { if !id.is_empty() { envs.push(("MODAL_TOKEN_ID", id.clone())); } }
+    if let Some(sec) = &modal_token_secret { if !sec.is_empty() { envs.push(("MODAL_TOKEN_SECRET", sec.clone())); } }
+
+    let mut log = String::new();
+
+    // 1) (Re)create the shared `nexus-secret` if a NEXUS_SECRET was provided.
+    if !secret.is_empty() {
+        let kv_secret = format!("NEXUS_SECRET={secret}");
+        let kv_hf = format!("HF_TOKEN={hf_token}");
+        let mut args = vec!["secret", "create", "nexus-secret", kv_secret.as_str()];
+        if !hf_token.is_empty() { args.push(kv_hf.as_str()); }
+        args.push("--force");
+        match run_modal(&args, &envs) {
+            Ok(o) => log.push_str(&format!("[secret] {}\n{}\n", o.status, String::from_utf8_lossy(&o.stderr))),
+            Err(e) => return DeployResult { ok: false, url: None,
+                message: format!("`modal` CLI not available: {e}. Install it (pip install modal) and run `modal setup`."), log },
+        }
+    }
+
+    // 2) Deploy with the chosen hardware + model baked into env.
+    let mut deploy_envs = envs.clone();
+    deploy_envs.push(("NEXUS_GPU", gpu.clone()));
+    deploy_envs.push(("NEXUS_GPU_COUNT", gpu_count.unwrap_or(1).to_string()));
+    deploy_envs.push(("NEXUS_CPU", cpu.unwrap_or(8.0).to_string()));
+    if let Some(r) = ram_mb { deploy_envs.push(("NEXUS_RAM_MB", r.to_string())); }
+    if !model.is_empty() { deploy_envs.push((model_env, model.clone())); }
+
+    let script_str = script.to_string_lossy().to_string();
+    let args = vec!["deploy", script_str.as_str()];
+    match run_modal(&args, &deploy_envs) {
+        Ok(o) => {
+            let out = format!("{}{}", String::from_utf8_lossy(&o.stdout), String::from_utf8_lossy(&o.stderr));
+            log.push_str(&out);
+            if o.status.success() {
+                match scan_modal_url(&out) {
+                    Some(url) => DeployResult { ok: true, url: Some(url), message: "Deployed.".into(), log },
+                    None => DeployResult { ok: true, url: None, message: "Deployed, but couldn't parse the URL — copy the .modal.run URL from the log.".into(), log },
+                }
+            } else {
+                DeployResult { ok: false, url: None, message: "modal deploy failed — see log.".into(), log }
+            }
+        }
+        Err(e) => DeployResult { ok: false, url: None,
+            message: format!("`modal` CLI not available: {e}. Install it (pip install modal) and run `modal setup`."), log },
+    }
+}
+
+// Stop a deployed Modal app entirely (`modal app stop <name>`) — kills its
+// containers and stops all billing. The deployment is recreated by re-running
+// deploy_modal_backend (the "Start" action) at the same URL.
+#[tauri::command]
+fn stop_modal_app(
+    app_name: String,
+    modal_token_id: Option<String>,
+    modal_token_secret: Option<String>,
+) -> DeployResult {
+    let mut envs: Vec<(&str, String)> = Vec::new();
+    if let Some(id) = &modal_token_id { if !id.is_empty() { envs.push(("MODAL_TOKEN_ID", id.clone())); } }
+    if let Some(sec) = &modal_token_secret { if !sec.is_empty() { envs.push(("MODAL_TOKEN_SECRET", sec.clone())); } }
+    match run_modal(&["app", "stop", app_name.as_str()], &envs) {
+        Ok(o) => {
+            let log = format!("{}{}", String::from_utf8_lossy(&o.stdout), String::from_utf8_lossy(&o.stderr));
+            if o.status.success() {
+                DeployResult { ok: true, url: None, message: format!("Stopped {app_name}."), log }
+            } else {
+                DeployResult { ok: false, url: None, message: format!("Couldn't stop {app_name} — see log."), log }
+            }
+        }
+        Err(e) => DeployResult { ok: false, url: None,
+            message: format!("`modal` CLI not available: {e}."), log: String::new() },
+    }
+}
+
 fn main() {
     let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -405,7 +572,9 @@ fn main() {
             launch_comfyui,
             stop_comfyui,
             install_modal_node,
-            restore_comfy_env
+            restore_comfy_env,
+            deploy_modal_backend,
+            stop_modal_app
         ])
         .setup(|app| {
             #[cfg(desktop)]

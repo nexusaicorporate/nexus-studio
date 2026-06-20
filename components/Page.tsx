@@ -1,6 +1,6 @@
 "use client";
 import { ReactNode } from "react";
-export default function Page({ title, subtitle, actions, children }: { title: string; subtitle?: string; actions?: ReactNode; children: ReactNode }) {
+export default function Page({ title, subtitle, actions, children }: { title: ReactNode; subtitle?: string; actions?: ReactNode; children: ReactNode }) {
   return (
     <div className="max-w-7xl mx-auto px-6 py-6 fade-in">
       <div className="flex items-start justify-between gap-4 mb-5">

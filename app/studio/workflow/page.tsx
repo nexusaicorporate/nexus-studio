@@ -18,6 +18,16 @@ interface DynamicInput {
   type: "text" | "number" | "image";
 }
 
+// Rotating "what's happening" lines shown during boot, advanced by elapsed time.
+const BOOT_MSGS = [
+  "Copying the bundled ComfyUI into place…",
+  "Starting the Python server…",
+  "Loading core nodes…",
+  "Loading custom nodes (Nexus Cloud, Manager, model downloader)…",
+  "Warming up the workspace…",
+  "First run installs a few dependencies — hang tight…",
+];
+
 export default function WorkflowStudioPage() {
   const mounted = useMounted();
   const comfy = useComfyStore();
@@ -54,6 +64,11 @@ export default function WorkflowStudioPage() {
   const [provisioned, setProvisioned] = useState<boolean | null>(null);
   const [repairing, setRepairing] = useState(false);
   const [modelScan, setModelScan] = useState<{ total: number; missing: number } | null>(null);
+  // Live startup feedback so the user can see what's happening during the
+  // 10–60s boot (and a clear reason if it fails) instead of a blank revert.
+  const [launchElapsed, setLaunchElapsed] = useState(0);
+  const [launchError, setLaunchError] = useState<string | null>(null);
+  const [launchPhase, setLaunchPhase] = useState<string>("");
 
   const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
   const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
@@ -87,22 +102,48 @@ export default function WorkflowStudioPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comfy.autoStartComfy, serverOnline]);
 
+  // Tick an elapsed-seconds counter while launching so the boot screen feels alive.
+  useEffect(() => {
+    if (!launching) { setLaunchElapsed(0); return; }
+    const start = Date.now();
+    const t = setInterval(() => setLaunchElapsed(Math.floor((Date.now() - start) / 1000)), 1000);
+    return () => clearInterval(t);
+  }, [launching]);
+
   async function handleLaunchComfy() {
     if (provisioned === false && !comfy.gpuType) {
       alert("Please select your GPU type before setting up ComfyUI.");
       return;
     }
+    setLaunchError(null);
     setLaunching(true);
+    const firstRun = provisioned === false;
+    setLaunchPhase(firstRun ? "Setting up ComfyUI (first run)…" : "Starting ComfyUI…");
     const res = await launchComfy(comfy.deviceMode === "cpu", 8188, comfy.gpuType || "cpu", comfy.extraModelPaths, comfy.cliArgs, comfy.apiKeys);
-    if (!res.ok && res.message) alert(res.message);
-    const deadline = Date.now() + 90000;
+    // A failed spawn (not desktop, no bundle, etc.) — show why, don't silently revert.
+    if (!res.ok) {
+      setLaunching(false);
+      setLaunchError(res.message || "ComfyUI failed to start.");
+      return;
+    }
+    setLaunchPhase("Waiting for the server to respond…");
+    // First run may install dependencies, so give it longer before giving up.
+    const deadline = Date.now() + (firstRun ? 180000 : 90000);
     const poll = async () => {
       const ok = await checkComfyReachable(localUrl);
-      if (ok) { setServerOnline(true); setLaunching(false); return; }
-      if (Date.now() > deadline) { setLaunching(false); return; }
-      setTimeout(poll, 3000);
+      if (ok) { setServerOnline(true); setLaunching(false); setLaunchError(null); return; }
+      if (Date.now() > deadline) {
+        setLaunching(false);
+        setLaunchError(
+          firstRun
+            ? "ComfyUI didn't respond within 3 minutes. First run can be slow while it installs dependencies — wait a moment and click Re-check, or use Repair environment if it's stuck."
+            : "ComfyUI didn't respond within 90 seconds. Click Re-check, or try Repair environment."
+        );
+        return;
+      }
+      setTimeout(poll, 2500);
     };
-    setTimeout(poll, 3000);
+    setTimeout(poll, 2500);
   }
 
   // Automatically load selected workflow if any is query-parameterized (e.g. from Comfy Hub)
@@ -636,27 +677,48 @@ export default function WorkflowStudioPage() {
           {serverOnline === false ? (
             <div className="flex-1 grid place-items-center p-6 text-center bg-surface/50">
               <div className="max-w-2xl w-full">
-                {launching && provisioned === false ? (
-                  <ComfyInstallHowto />
-                ) : launching && provisioned === true ? (
-                  <div className="animate-in fade-in zoom-in duration-500 py-12">
+                {launching ? (
+                  <div className="animate-in fade-in zoom-in duration-500 py-10">
                     <div className="relative w-24 h-24 mx-auto mb-6">
                       <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
-                      <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin-[reverse] delay-150"></div>
+                      <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin delay-150"></div>
                       <div className="absolute inset-4 rounded-full border-b-2 border-emerald-400 animate-spin delay-300"></div>
                       <Cpu size={32} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
                     </div>
-                    <div className="text-lg font-bold mb-2">Booting ComfyUI...</div>
-                    <p className="text-xs text-muted">
-                      Initializing local server and loading custom nodes. This usually takes 10-20 seconds.
+                    <div className="text-lg font-bold mb-1">{launchPhase || "Starting ComfyUI…"}</div>
+                    <div className="text-xs text-muted mb-3">
+                      {BOOT_MSGS[Math.min(BOOT_MSGS.length - 1, Math.floor(launchElapsed / 5))]}
+                      <span className="font-mono ml-2 opacity-70">{launchElapsed}s</span>
+                    </div>
+                    <div className="w-56 h-1 mx-auto bg-surface2 rounded-full overflow-hidden border border-border/40 mb-3">
+                      <div className="h-full w-1/3 bg-primary/80 animate-pulse" style={{ marginLeft: `${(launchElapsed * 7) % 66}%` }} />
+                    </div>
+                    <p className="text-[11px] text-muted max-w-sm mx-auto">
+                      {provisioned === false
+                        ? "First run copies the bundled ComfyUI into place and installs dependencies — this can take a minute or two. You can leave this open."
+                        : "Initializing the local server and loading nodes. This usually takes 10–20 seconds."}
                     </p>
+                    {provisioned === false && <div className="mt-6"><ComfyInstallHowto /></div>}
+                    <button
+                      type="button"
+                      className="btn-ghost text-[11px] mt-4 inline-flex items-center justify-center gap-1.5 text-muted"
+                      onClick={() => checkComfyReachable(localUrl).then((ok) => { if (ok) { setServerOnline(true); setLaunching(false); } })}
+                    >
+                      <RotateCw size={12} /> Check now
+                    </button>
                   </div>
                 ) : (
                   <div className="max-w-md mx-auto">
                     <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 grid place-items-center mx-auto mb-4">
                       <Cpu size={26} className="text-primary-light" />
                     </div>
-                    <div className="text-lg font-bold mb-1">ComfyUI isn’t running yet</div>
+                    <div className="text-lg font-bold mb-1">{launchError ? "ComfyUI didn’t start" : "ComfyUI isn’t running yet"}</div>
+                    {launchError && (
+                      <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 mb-3 text-left text-[11px] text-rose-200 flex gap-2">
+                        <AlertTriangle size={14} className="text-rose-400 shrink-0 mt-0.5" />
+                        <span>{launchError}</span>
+                      </div>
+                    )}
                     <p className="text-xs text-muted leading-relaxed mb-4">
                       The app-managed ComfyUI lives in <strong>{managedDir || "the app’s ComfyUI subfolder"}</strong>.
                       It starts in <strong>{comfy.deviceMode === "cpu" ? "CPU-only" : "GPU"}</strong> mode so it always boots —

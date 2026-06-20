@@ -27,6 +27,19 @@ Both use the **same Modal account**; the credentials/config are separate.
 
 ## Path A — Dev/Test backends (Studios on Modal, no ComfyUI)
 
+### A0. Easiest: one-click Deploy from Settings (desktop app)
+Settings → Providers & Models → **One-click Deploy (Modal)**. Pick the modality
+(Chat/LLM, Image, or Video), choose **GPU / GPU count / CPU / RAM**, enter the HF
+**model id**, a **NEXUS_SECRET**, and (optional) **HF token**, then **Deploy & set
+active**. It runs `modal deploy` for you with your hardware baked in, (re)creates the
+`nexus-secret`, and on success registers the backend and sets it active for that
+modality automatically — no terminal, no copy-paste.
+
+Requirements: the desktop app (not the browser build), the `modal` CLI installed
+(`pip install modal`) and `modal setup` done once so it's authenticated. The first
+deploy builds the image and can take a few minutes. The manual steps below are the
+terminal equivalent, and explain what the button does under the hood.
+
 ### A1. Create the shared secret (once)
 ```bash
 modal secret create nexus-secret NEXUS_SECRET=pick-a-long-random-string HF_TOKEN=hf_xxx
@@ -63,8 +76,35 @@ modal deploy modal/video_ltx.py         # https://<you>--nexus-video-web.modal.r
 - **Image Studio** (+ Character previews) → your image endpoint.
 - **Video Studio** → shows **Render Video**; submits to your video endpoint and polls until the clip is ready.
 
-> First request to each cold endpoint takes ~1–3 min to warm up, then it's fast (`min_containers=1`
-> keeps it warm; set to `0` in the script to scale to zero and save cost between sessions).
+> First request to each cold endpoint takes ~1–3 min to warm up, then it's fast.
+
+### A6. Start / Stop (controlling cost)
+All three scripts now use `min_containers=0` (**scale-to-zero**): a *deployed* backend
+costs **nothing while idle** — the GPU only spins up (and bills) on a request, then
+shuts down after the idle window. So you do **not** need to stop it just to avoid idle
+charges; leaving it deployed is free between generations (cold start is the only cost,
+~30–60 s for image as the checkpoint reloads).
+
+For full control, Settings → Providers → **One-click Deploy** shows a **Deployed
+backends** list with **Start / Stop** per modality:
+- **Stop** runs `modal app stop <name>` — tears the app down entirely and halts all
+  billing/containers immediately. The endpoint goes offline.
+- **Start** re-deploys it (same config, same URL) and marks it running again.
+- **✕** just forgets the entry in the app (does not stop the remote app).
+
+Equivalent by hand: `modal app stop nexus-llm` / `nexus-image` / `nexus-video`, and
+`modal deploy modal/<script>.py` to bring one back.
+
+### A7. Compute dashboard + cost estimate
+The same card shows a **Compute dashboard**: a status row per modality (running /
+stopped / not deployed, GPU + $/hr) with Start/Stop, plus a **budget tracker**.
+Set a monthly **budget**; the app accumulates an **estimated spend** (GPU rate ×
+generation time, for image + video runs) and shows **remaining = budget − spent**
+with a progress bar. This is an **estimate only** — Modal's own
+[usage & billing page](https://modal.com/settings/usage) is authoritative (exact
+balance/spend isn't available via the CLI). Use **Reset** to zero the estimate
+(e.g. at the start of a billing cycle). Stop works even for backends you deployed
+from a terminal, since it targets the fixed app names.
 
 ---
 

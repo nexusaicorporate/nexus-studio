@@ -23,9 +23,13 @@
 import os
 import modal
 
-# ── set your video model here ──
-VIDEO_MODEL = "Lightricks/LTX-Video"   # placeholder — swap for your choice
-GPU = "A100"                            # video needs a big GPU
+# ── model + hardware come from env so the Settings "Deploy" button can set them
+#    at `modal deploy` time (defaults apply if run by hand). The chosen model is
+#    baked into the image env so the container sees it. ──
+VIDEO_MODEL = os.environ.get("VIDEO_MODEL", "Lightricks/LTX-Video")
+GPU = os.environ.get("NEXUS_GPU", "A100")    # video needs a big GPU
+CPU = float(os.environ.get("NEXUS_CPU", "8"))
+RAM_MB = int(os.environ["NEXUS_RAM_MB"]) if os.environ.get("NEXUS_RAM_MB") else None
 
 app = modal.App("nexus-video")
 vol = modal.Volume.from_name("nexus-video-outputs", create_if_missing=True)
@@ -47,12 +51,12 @@ image = (
         "fastapi[standard]",
         "huggingface_hub[hf_transfer]",
     )
-    .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
+    .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "VIDEO_MODEL": VIDEO_MODEL})
 )
 
 
 # ── the actual render runs as its own Modal function so it can be spawned async ──
-@app.function(image=image, gpu=GPU, timeout=1800, volumes={OUT: vol},
+@app.function(image=image, gpu=GPU, cpu=CPU, memory=RAM_MB, timeout=1800, volumes={OUT: vol},
               secrets=[modal.Secret.from_name("nexus-secret")])
 def render(body: dict) -> str:
     import base64
@@ -86,7 +90,7 @@ def render(body: dict) -> str:
 
 
 @app.function(image=image, timeout=600, volumes={OUT: vol},
-              secrets=[modal.Secret.from_name("nexus-secret")], min_containers=1)
+              secrets=[modal.Secret.from_name("nexus-secret")], min_containers=0)
 @modal.concurrent(max_inputs=20)
 @modal.asgi_app()
 def web():

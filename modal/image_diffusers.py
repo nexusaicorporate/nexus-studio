@@ -22,9 +22,13 @@
 import os
 import modal
 
-# ── set your image checkpoint here (SDXL/Pony id, or a FLUX id — see note in load()) ──
-IMAGE_MODEL = "stabilityai/stable-diffusion-xl-base-1.0"   # placeholder — swap for your NSFW checkpoint
-GPU = "A10G"
+# ── model + hardware come from env so the Settings "Deploy" button can set them
+#    at `modal deploy` time (defaults apply if run by hand). The chosen checkpoint
+#    is baked into the image env so the container sees it. ──
+IMAGE_MODEL = os.environ.get("IMAGE_MODEL", "stabilityai/stable-diffusion-xl-base-1.0")
+GPU = os.environ.get("NEXUS_GPU", "A10G")
+CPU = float(os.environ.get("NEXUS_CPU", "8"))
+RAM_MB = int(os.environ["NEXUS_RAM_MB"]) if os.environ.get("NEXUS_RAM_MB") else None
 
 app = modal.App("nexus-image")
 
@@ -41,16 +45,18 @@ image = (
         "fastapi[standard]",
         "huggingface_hub[hf_transfer]",
     )
-    .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
+    .env({"HF_HUB_ENABLE_HF_TRANSFER": "1", "IMAGE_MODEL": IMAGE_MODEL})
 )
 
 
 @app.cls(
     image=image,
     gpu=GPU,
+    cpu=CPU,
+    memory=RAM_MB,           # MB request; None = Modal default
     timeout=600,
-    min_containers=1,        # keep warm so the checkpoint stays resident in VRAM
-    scaledown_window=300,
+    min_containers=0,        # scale to zero → no idle billing (cold start reloads the checkpoint, ~30–60s)
+    scaledown_window=300,    # stay warm 5 min after the last request, then shut down
     secrets=[modal.Secret.from_name("nexus-secret")],
 )
 @modal.concurrent(max_inputs=2)

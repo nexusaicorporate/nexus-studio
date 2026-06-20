@@ -1,122 +1,197 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Modal, copy } from "@/components/ui";
-import { Wand2, Dice5, Copy, CornerDownLeft } from "lucide-react";
+import { Wand2, Dice5, Copy, CornerDownLeft, Sparkles, BookOpen, Users, Image as ImageIcon } from "lucide-react";
+import { useLibrary } from "@/lib/store/library";
+import { assembleTemplate, templateTokens } from "@/lib/promptfill";
 
-interface ModelDef { name: string; video: boolean; }
-const MODELS: ModelDef[] = [
-  { name: "Nexusai", video: false },
-  { name: "Flux", video: false },
-  { name: "MidJourney 7", video: false },
-  { name: "SeeDream 4", video: false },
-  { name: "Z-Image", video: false },
-  { name: "Qwen", video: false },
-  { name: "Wan 2.2 Video", video: true },
-  { name: "Wan 2.1 Video", video: true },
-  { name: "LTX-2 Video", video: true },
-  { name: "Veo 3", video: true },
-  { name: "Kling 2.0", video: true },
-];
-
-type Group = { title: string; video?: boolean; fields: { key: string; label: string; options: string[] }[] };
-const GROUPS: Group[] = [
-  { title: "Style & Look", fields: [
-    { key: "artStyle", label: "Art Style", options: ["photorealistic", "cinematic", "anime", "oil painting", "3D render", "watercolor", "film noir", "concept art"] },
-    { key: "filmLook", label: "Film Look / LUT", options: ["Kodak Portra", "teal and orange grade", "bleach bypass", "vintage film", "high-key", "low-key"] },
-    { key: "palette", label: "Color Palette", options: ["warm pastel", "muted earth tones", "vibrant neon", "monochrome", "complementary blue/orange"] },
-    { key: "texture", label: "Texture / Detail", options: ["ultra-detailed", "subtle film grain", "smooth and clean", "gritty texture", "8k sharp"] },
-  ]},
-  { title: "World & Environment", fields: [
-    { key: "location", label: "Location", options: ["a sunlit beach", "a city rooftop at dusk", "a misty forest", "a studio backdrop", "a cozy bedroom", "a neon-lit alley"] },
-    { key: "weather", label: "Weather / Atmosphere", options: ["golden hour", "foggy morning", "rainy night", "overcast", "harsh midday sun", "blue hour"] },
-  ]},
-  { title: "Camera Gear", fields: [
-    { key: "body", label: "Camera Body", options: ["Sony A7 IV", "Canon EOS R5", "ARRI Alexa", "Hasselblad", "smartphone"] },
-    { key: "focal", label: "Focal Length", options: ["24mm", "35mm", "50mm", "85mm", "135mm"] },
-    { key: "format", label: "Film Format", options: ["full frame", "medium format", "Super 35", "anamorphic"] },
-    { key: "lens", label: "Lens", options: ["prime lens", "zoom lens", "macro lens", "anamorphic lens"] },
-    { key: "aperture", label: "Aperture", options: ["f/1.4", "f/1.8", "f/2.8", "f/4", "f/8"] },
-  ]},
-  { title: "Composition", fields: [
-    { key: "shot", label: "Shot Size", options: ["extreme close-up", "close-up", "medium shot", "full body", "wide shot"] },
-    { key: "angle", label: "Camera Angle", options: ["eye level", "low angle", "high angle", "Dutch angle", "overhead"] },
-    { key: "framing", label: "Framing", options: ["rule of thirds", "centered", "leading lines", "symmetrical"] },
-  ]},
-  { title: "Lighting & Mood", fields: [
-    { key: "lighting", label: "Lighting", options: ["soft rim lighting", "golden hour light", "studio softbox", "neon glow", "hard dramatic shadow", "window light"] },
-    { key: "mood", label: "Mood", options: ["dreamy", "bold and powerful", "intimate", "moody and cinematic", "playful"] },
-  ]},
-  { title: "Video Movement", video: true, fields: [
-    { key: "camMove", label: "Camera Movement", options: ["static shot", "slow pan", "dolly in", "tracking shot", "crane up", "handheld"] },
-    { key: "pacing", label: "Pacing", options: ["slow and contemplative", "medium pace", "fast and energetic"] },
-    { key: "motion", label: "Subject Motion", options: ["walking toward camera", "turning to look back", "subtle idle motion", "dynamic action"] },
-  ]},
-];
-
-export default function PromptDirector({ onInsert }: { onInsert: (text: string) => void }) {
+export default function PromptDirector({ 
+  onInsert,
+  asComponent = false,
+  onSaveScene
+}: { 
+  onInsert?: (text: string) => void;
+  asComponent?: boolean;
+  onSaveScene?: (data: { prompt: string; templateId?: string; characterIds: string[]; ingredientIds: string[] }) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [subject, setSubject] = useState("");
-  const [model, setModel] = useState(MODELS[0]);
-  const [sel, setSel] = useState<Record<string, string>>({});
+  
+  // Library data
+  const templates = useLibrary(s => s.templates);
+  const ingredients = useLibrary(s => s.ingredients);
+  const characters = useLibrary(s => s.characters);
+  const banks = useLibrary(s => s.banks);
 
-  const groups = useMemo(() => GROUPS.filter((g) => !g.video || model.video), [model]);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const [selections, setSelections] = useState<Record<string, string>>({});
+  
+  // Track metadata for the scene
+  const [characterIds, setCharacterIds] = useState<string[]>([]);
+  const [ingredientIds, setIngredientIds] = useState<string[]>([]);
+
+  const activeTemplate = useMemo(() => templates.find(t => t.id === selectedTemplateId), [templates, selectedTemplateId]);
+  
+  // Extract tokens from the template content
+  const tokens = useMemo(() => {
+    if (!activeTemplate) return [];
+    return templateTokens(activeTemplate.content);
+  }, [activeTemplate]);
+
+  // Handle Token Selection
+  function handleSelect(token: string, value: string, meta?: { type: "character" | "ingredient", id: string }) {
+    setSelections(prev => ({ ...prev, [token]: value }));
+    
+    // Update linked items
+    if (meta) {
+      if (meta.type === "character") {
+        if (!characterIds.includes(meta.id)) setCharacterIds([...characterIds, meta.id]);
+      } else if (meta.type === "ingredient") {
+        if (!ingredientIds.includes(meta.id)) setIngredientIds([...ingredientIds, meta.id]);
+      }
+    }
+  }
+
+  // Pre-fill selections when a template is chosen
+  useEffect(() => {
+    if (activeTemplate) {
+      const init: Record<string, string> = { ...activeTemplate.selections };
+      setSelections(init);
+    } else {
+      setSelections({});
+      setCharacterIds([]);
+      setIngredientIds([]);
+    }
+  }, [activeTemplate]);
+
   const assembled = useMemo(() => {
-    const parts: string[] = [];
-    if (subject.trim()) parts.push(subject.trim());
-    for (const g of groups) for (const f of g.fields) if (sel[f.key]) parts.push(sel[f.key]);
-    parts.push(`for ${model.name}`);
-    return parts.join(", ");
-  }, [subject, sel, groups, model]);
+    if (!activeTemplate) return "";
+    return assembleTemplate(activeTemplate.content, selections, banks);
+  }, [activeTemplate, selections, banks]);
 
   function randomize() {
+    if (!activeTemplate) return;
     const s: Record<string, string> = {};
-    for (const g of groups) for (const f of g.fields) s[f.key] = f.options[Math.floor(Math.random() * f.options.length)];
-    setSel(s);
+    for (const t of tokens) {
+      const key = t.token;
+      // Find options across ingredients, banks, characters
+      const matches = [
+        ...ingredients.filter(i => i.category.toLowerCase().includes(key.toLowerCase())).map(i => i.value),
+        ...banks.filter(b => b.category.toLowerCase().includes(key.toLowerCase())).flatMap(b => b.options),
+        ...(key.toLowerCase() === "subject" || key.toLowerCase() === "character" ? characters.map(c => c.triggerWord || c.name) : [])
+      ];
+      if (matches.length > 0) {
+        s[key] = matches[Math.floor(Math.random() * matches.length)];
+      }
+    }
+    setSelections(s);
   }
+
+  const content = (
+    <div className="space-y-4">
+      <div>
+        <span className="label">Select Recipe (Template)</span>
+        <select className="input" value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)}>
+          <option value="">— Select a Recipe —</option>
+          {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+        </select>
+      </div>
+
+      {activeTemplate && (
+        <div className="space-y-3">
+          <div className="text-sm font-medium border-b border-border/40 pb-2 mb-2">Recipe Slots</div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {tokens.map(tk => {
+              const token = tk.token;
+              // Find matching ingredients
+              const matchingIngredients = ingredients.filter(i => i.category.toLowerCase().includes(token.toLowerCase()) || token.toLowerCase().includes(i.category.toLowerCase()));
+              const matchingBanks = banks.filter(b => b.category.toLowerCase().includes(token.toLowerCase()) || b.name.toLowerCase().includes(token.toLowerCase()));
+              const isSubject = token.toLowerCase().includes("subject") || token.toLowerCase().includes("character");
+
+              return (
+                <div key={token} className="flex flex-col gap-1">
+                  <span className="label capitalize text-xs">{token.replace(/_/g, ' ')}</span>
+                  
+                  {/* Select Dropdown prioritizing matching categories */}
+                  <select 
+                    className="input text-xs" 
+                    value={selections[token] || ""} 
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      // Detect if we picked a character or ingredient based on a prefix convention in the value, or just trust the string.
+                      // For true relational mapping we would look up the ID. Here we just set the string directly.
+                      handleSelect(token, val);
+                    }}
+                  >
+                    <option value="">— Type Custom Below —</option>
+                    
+                    {isSubject && characters.length > 0 && (
+                      <optgroup label="Characters">
+                        {characters.map(c => <option key={c.id} value={c.triggerWord || c.name}>{c.name}</option>)}
+                      </optgroup>
+                    )}
+
+                    {matchingIngredients.length > 0 && (
+                      <optgroup label="Ingredients">
+                        {matchingIngredients.map(i => <option key={i.id} value={i.value}>{i.name}</option>)}
+                      </optgroup>
+                    )}
+
+                    {matchingBanks.length > 0 && (
+                      <optgroup label="Bank Options">
+                        {matchingBanks.flatMap(b => b.options.map(o => <option key={o} value={o}>{o}</option>))}
+                      </optgroup>
+                    )}
+                  </select>
+                  
+                  <input 
+                    className="input text-xs" 
+                    placeholder="Or type custom..." 
+                    value={selections[token] || ""} 
+                    onChange={e => handleSelect(token, e.target.value)} 
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="card p-3 bg-surface2">
+        <span className="label mb-1 flex items-center gap-1"><Sparkles size={12}/> Live Preview</span>
+        <p className="text-sm font-medium leading-relaxed">
+          {assembled || <span className="text-muted">Select a recipe to build your prompt...</span>}
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <button className="btn-ghost text-xs" onClick={randomize} disabled={!activeTemplate}><Dice5 size={14} /> Randomize Fill</button>
+        <div className="flex gap-2">
+          <button className="btn-outline text-xs" onClick={() => copy(assembled)} disabled={!assembled}><Copy size={14} /> Copy</button>
+          {onInsert && (
+            <button className="btn-primary text-xs" onClick={() => { onInsert(assembled); setOpen(false); }} disabled={!assembled}>
+              <CornerDownLeft size={14} /> Insert
+            </button>
+          )}
+          {onSaveScene && (
+            <button className="btn-primary text-xs" onClick={() => { 
+              onSaveScene({ prompt: assembled, templateId: selectedTemplateId, characterIds, ingredientIds });
+              setOpen(false);
+            }} disabled={!assembled}>
+              Save Scene
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (asComponent) return content;
 
   return (
     <>
       <button type="button" className="btn-ghost h-10 px-2.5" title="Prompt Director Pro" onClick={() => setOpen(true)}><Wand2 size={17} /></button>
       <Modal open={open} onClose={() => setOpen(false)} title="Prompt Director Pro" wide>
-        <div className="space-y-4">
-          <div>
-            <span className="label">Core Subject</span>
-            <textarea className="input min-h-[70px]" placeholder="Describe your scene… (e.g. A futuristic samurai in neon rain)" value={subject} onChange={(e) => setSubject(e.target.value)} />
-          </div>
-          <div>
-            <span className="label">Select AI Model</span>
-            <select className="input" value={model.name} onChange={(e) => setModel(MODELS.find((m) => m.name === e.target.value)!)}>
-              {MODELS.map((m) => <option key={m.name} value={m.name}>{m.name}{m.video ? " (video)" : ""}</option>)}
-            </select>
-          </div>
-          {groups.map((g) => (
-            <div key={g.title}>
-              <div className="text-sm font-medium mb-2">{g.title}</div>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                {g.fields.map((f) => (
-                  <div key={f.key}>
-                    <span className="label">{f.label}</span>
-                    <select className="input" value={sel[f.key] || ""} onChange={(e) => setSel({ ...sel, [f.key]: e.target.value })}>
-                      <option value="">—</option>
-                      {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
-                    </select>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="card p-3 bg-surface2">
-            <span className="label mb-1">Live preview</span>
-            <p className="text-sm">{assembled || <span className="text-muted">Add a subject and pick options…</span>}</p>
-          </div>
-          <div className="flex items-center justify-between">
-            <button className="btn-ghost text-xs" onClick={randomize}><Dice5 size={14} /> Randomize</button>
-            <div className="flex gap-2">
-              <button className="btn-outline text-xs" onClick={() => copy(assembled)}><Copy size={14} /> Copy</button>
-              <button className="btn-primary text-xs" onClick={() => { onInsert(assembled); setOpen(false); }}><CornerDownLeft size={14} /> Insert into chat</button>
-            </div>
-          </div>
-        </div>
+        {content}
       </Modal>
     </>
   );

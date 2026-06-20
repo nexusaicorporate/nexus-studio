@@ -140,3 +140,24 @@ export interface ComfyWorkflow {
   createdAt: number;
   updatedAt: number;
 }
+
+export interface CinemaScene {
+  id: string;
+  order: number;
+  templateId?: string;       // The recipe/template used
+  prompt: string;            // The final assembled prompt
+  characterIds: string[];    // Linked characters
+  ingredientIds: string[];   // Linked ingredients
+  duration?: number;
+  assetId?: string;          // If rendered
+}
+
+export interface CinemaProject {
+  id: string;
+  title: string;
+  description: string;
+  scenes: CinemaScene[];
+  createdAt: number;
+  updatedAt: number;
+}
+

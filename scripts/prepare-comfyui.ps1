@@ -88,14 +88,18 @@ $pinned = foreach ($line in (Get-Content (Join-Path $tmp "base-freeze.txt"))) {
   $name = (($line -split "==")[0]).Trim().ToLower()
   if ($protected -contains $name) { $line }
 }
-"# Nexus AI Studio — protected core (custom nodes must not change these versions)" | Out-File -Encoding ascii $constraints
+"# Nexus AI Studio - protected core (custom nodes must not change these versions)" | Out-File -Encoding ascii $constraints
 $pinned | Out-File -Encoding ascii -Append $constraints
 $env:PIP_CONSTRAINT = $constraints
 Write-Host "==> Pinned $(@($pinned).Count) core packages in constraints.txt"
 
 # 3. Install every custom node from the manifest + its requirements (constrained).
-#    Two source kinds: `local` (a path in this repo — nodes we own, copied) and
-#    `repo` (a git URL — third-party, cloned/updated).
+#    Two source kinds: 'local' (a path in this repo - nodes we own, copied) and
+#    'repo' (a git URL - third-party, cloned/updated).
+# Native commands (git/pip) write progress to stderr; under -ErrorAction Stop
+# that aborts the build even on success, so relax to Continue here and rely on
+# each command's exit code ($LASTEXITCODE) instead.
+$ErrorActionPreference = 'Continue'
 $spec = Get-Content $manifest -Raw | ConvertFrom-Json
 foreach ($node in $spec.nodes) {
   $nodeDir = Join-Path $customNodes $node.name
@@ -110,11 +114,12 @@ foreach ($node in $spec.nodes) {
       -Exclude @("__pycache__", "*.pyc", ".git")
   } elseif (Test-Path $nodeDir) {
     Write-Host "==> Updating node $($node.name)"
-    git -C $nodeDir pull --ff-only 2>$null
+    git -C $nodeDir pull --ff-only 2>&1 | Out-Null   # stderr is just progress; ignore
   } else {
     Write-Host "==> Cloning node $($node.name) <- $($node.repo)"
-    git clone --depth 1 $node.repo $nodeDir
-    if ($node.ref) { git -C $nodeDir fetch --depth 1 origin $node.ref; git -C $nodeDir checkout $node.ref }
+    git clone --depth 1 $node.repo $nodeDir 2>&1 | Write-Host
+    if ($LASTEXITCODE -ne 0) { throw "git clone failed for $($node.name) ($($node.repo))" }
+    if ($node.ref) { git -C $nodeDir fetch --depth 1 origin $node.ref 2>&1 | Write-Host; git -C $nodeDir checkout $node.ref 2>&1 | Write-Host }
   }
   $req = Join-Path $nodeDir "requirements.txt"
   if (Test-Path $req) {

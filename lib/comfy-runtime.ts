@@ -123,6 +123,72 @@ export async function stopComfy(): Promise<ComfyLaunchResult> {
   catch (e: any) { return { ok: false, message: e?.message || String(e) }; }
 }
 
+// One-click deploy of a Modal backend (LLM / image / video) with chosen hardware.
+// Desktop-only: it shells the `modal` CLI, which can't run in the static browser
+// build. On success returns the live https://….modal.run URL to wire into a
+// provider. `model` is the HF id; `secret` (NEXUS_SECRET) + `hfToken` optionally
+// (re)create the shared Modal secret so this is truly one-click.
+export interface ModalDeployArgs {
+  modality: "llm" | "image" | "video";
+  gpu: string;            // e.g. "L40S", "A10G", "T4"
+  gpuCount?: number;      // >1 = tensor-parallel (LLM)
+  cpu?: number;           // physical cores
+  ramMb?: number;         // system RAM request in MB
+  model: string;          // HF model id
+  secret?: string;        // NEXUS_SECRET (Bearer)
+  hfToken?: string;       // HF token for gated models
+  modalTokenId?: string;  // optional; else uses ~/.modal.toml from `modal setup`
+  modalTokenSecret?: string;
+}
+export interface ModalDeployResult { ok: boolean; url?: string; message: string; log?: string; }
+
+export async function deployModalBackend(args: ModalDeployArgs): Promise<ModalDeployResult> {
+  if (!isDesktop()) {
+    return { ok: false, message: "Desktop build only — run `modal deploy modal/<script>.py` from a terminal (see setup), then paste the URL." };
+  }
+  try {
+    return await invoke<ModalDeployResult>("deploy_modal_backend", { ...args });
+  } catch (e: any) {
+    return { ok: false, message: e?.message || String(e) };
+  }
+}
+
+// Stop a deployed Modal app entirely (`modal app stop`) — kills containers and
+// stops all billing. Restart by deploying again (deployModalBackend). Desktop-only.
+export async function stopModalApp(appName: string, modalTokenId?: string, modalTokenSecret?: string): Promise<ModalDeployResult> {
+  if (!isDesktop()) return { ok: false, message: "Desktop build only — run `modal app stop` from a terminal." };
+  try {
+    return await invoke<ModalDeployResult>("stop_modal_app", { appName, modalTokenId, modalTokenSecret });
+  } catch (e: any) {
+    return { ok: false, message: e?.message || String(e) };
+  }
+}
+
+// Fixed Modal app names per modality (must match the scripts' modal.App(...) names).
+export const MODAL_APP_NAMES: Record<string, string> = {
+  llm: "nexus-llm",
+  image: "nexus-image",
+  video: "nexus-video",
+};
+
+// Rough Modal GPU list prices ($/hr) for cost ESTIMATES only — Modal's billing
+// dashboard is the source of truth. Used to estimate active-generation spend.
+export const MODAL_GPU_RATES: Record<string, number> = {
+  T4: 0.59,
+  L4: 0.80,
+  A10G: 1.10,
+  L40S: 1.95,
+  A100: 2.10,
+  "A100-80GB": 2.50,
+  H100: 3.95,
+};
+
+// Estimate USD for a generation given the GPU and elapsed seconds.
+export function estimateModalCost(gpu: string, seconds: number, gpuCount = 1): number {
+  const rate = MODAL_GPU_RATES[gpu] ?? 1.5;
+  return (rate * Math.max(0, gpuCount)) * (Math.max(0, seconds) / 3600);
+}
+
 // Install / update the Modal cloud-GPU custom node into the managed ComfyUI,
 // and install the `modal` package into ComfyUI's Python.
 export async function installModalNode(repoUrl: string): Promise<ComfyInstallResult> {

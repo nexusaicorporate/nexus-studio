@@ -10,6 +10,14 @@ import { useLibrary, newId } from "@/lib/store/library";
 import type { PromptItem } from "@/lib/types";
 import { useComfyStore } from "@/lib/store/comfy";
 import type { ComfyModelMapping } from "@/lib/types";
+import { deployModalBackend, stopModalApp, MODAL_APP_NAMES, MODAL_GPU_RATES, isDesktop } from "@/lib/comfy-runtime";
+
+const DEPLOY_GPUS = ["T4", "L4", "A10G", "L40S", "A100", "A100-80GB", "H100"];
+const DEPLOY_MODALITIES = [
+  { id: "llm", label: "Chat / LLM (vLLM)", ph: "e.g. TheBloke/dolphin-2.6-mistral-7B-AWQ" },
+  { id: "image", label: "Image (diffusers)", ph: "e.g. stabilityai/stable-diffusion-xl-base-1.0" },
+  { id: "video", label: "Video (LTX)", ph: "e.g. Lightricks/LTX-Video" },
+] as const;
 
 const PALETTES = ["stitch", "ocean", "forest", "sunset", "rose", "slate", "corporate", "amoled"];
 
@@ -22,8 +30,70 @@ export default function SettingsPage() {
   const [custom, setCustom] = useState({ name: "", baseUrl: "", apiKey: "" });
   const [modalForm, setModalForm] = useState({ name: "", baseUrl: "", apiKey: "", models: "" });
   const [devSel, setDevSel] = useState("");
+  const [deploy, setDeploy] = useState({ modality: "image", gpu: "L40S", gpuCount: 1, cpu: 8, ramGb: 48, model: "", secret: "", hfToken: "" });
+  const [deploying, setDeploying] = useState(false);
+  const [deployMsg, setDeployMsg] = useState<{ ok: boolean; text: string; log?: string } | null>(null);
 
   if (!mounted) return null;
+
+  async function runDeploy() {
+    if (!deploy.model.trim()) { setDeployMsg({ ok: false, text: "Enter a model id first." }); return; }
+    setDeploying(true); setDeployMsg(null);
+    const r = await deployModalBackend({
+      modality: deploy.modality as "llm" | "image" | "video",
+      gpu: deploy.gpu, gpuCount: deploy.gpuCount, cpu: deploy.cpu,
+      ramMb: deploy.ramGb ? deploy.ramGb * 1024 : undefined,
+      model: deploy.model.trim(), secret: deploy.secret.trim(), hfToken: deploy.hfToken.trim(),
+    });
+    setDeploying(false);
+    if (r.ok && r.url) {
+      const name = `Modal ${deploy.modality} · ${deploy.gpu}`;
+      if (deploy.modality === "llm") {
+        const id = s.addOpenAIProvider({ name, baseUrl: r.url.replace(/\/$/, "") + "/v1", apiKey: deploy.secret.trim(), models: [deploy.model.trim()], selectedModel: deploy.model.trim() });
+        s.setActiveProvider(id);
+      } else {
+        const id = s.addModalProvider({ name, baseUrl: r.url, apiKey: deploy.secret.trim(), models: [deploy.model.trim()] });
+        if (deploy.modality === "image") s.setActiveImageProvider(id); else s.setActiveVideoProvider(id);
+      }
+      // Remember the config so Start/Stop can redeploy or stop this backend.
+      s.setModalDeploy(deploy.modality, {
+        gpu: deploy.gpu, gpuCount: deploy.gpuCount, cpu: deploy.cpu, ramGb: deploy.ramGb,
+        model: deploy.model.trim(), secret: deploy.secret.trim(), hfToken: deploy.hfToken.trim(),
+        url: r.url, stopped: false,
+      });
+      setDeployMsg({ ok: true, text: `Deployed and set active for ${deploy.modality}: ${r.url}`, log: r.log });
+    } else {
+      setDeployMsg({ ok: false, text: r.message, log: r.log });
+    }
+  }
+
+  async function startBackend(modality: string) {
+    const d = s.modalDeploys[modality];
+    if (!d) return;
+    setDeploying(true); setDeployMsg(null);
+    const r = await deployModalBackend({
+      modality: modality as "llm" | "image" | "video",
+      gpu: d.gpu, gpuCount: d.gpuCount, cpu: d.cpu, ramMb: d.ramGb ? d.ramGb * 1024 : undefined,
+      model: d.model, secret: d.secret, hfToken: d.hfToken,
+    });
+    setDeploying(false);
+    if (r.ok) { s.setModalDeploy(modality, { ...d, url: r.url || d.url, stopped: false }); setDeployMsg({ ok: true, text: `Started ${modality}.`, log: r.log }); }
+    else setDeployMsg({ ok: false, text: r.message, log: r.log });
+  }
+
+  async function stopBackend(modality: string) {
+    const appName = MODAL_APP_NAMES[modality];
+    if (!appName) return;
+    setDeploying(true); setDeployMsg(null);
+    const r = await stopModalApp(appName);
+    setDeploying(false);
+    if (r.ok) {
+      // Ensure a status row exists even for backends deployed from a terminal.
+      if (s.modalDeploys[modality]) s.setModalDeployStopped(modality, true);
+      else s.setModalDeploy(modality, { gpu: "", gpuCount: 1, cpu: 0, ramGb: 0, model: "", secret: "", hfToken: "", url: "", stopped: true });
+      setDeployMsg({ ok: true, text: `Stopped ${modality} — billing halted.`, log: r.log });
+    } else setDeployMsg({ ok: false, text: r.message, log: r.log });
+  }
 
   async function refresh(id: string) {
     const p = s.providers.find((x) => x.id === id);
@@ -118,6 +188,113 @@ export default function SettingsPage() {
               <input className="input" placeholder="API key (optional)" value={custom.apiKey} onChange={(e) => setCustom({ ...custom, apiKey: e.target.value })} />
             </div>
             <button className="btn-primary mt-3" onClick={() => { if (custom.baseUrl) { s.addCustomProvider(custom); setCustom({ name: "", baseUrl: "", apiKey: "" }); } }}>Add provider</button>
+          </div>
+
+          <div className="card p-4 border border-primary/30 bg-primary/5">
+            <div className="font-semibold text-sm mb-1 flex items-center gap-2 text-text"><Zap size={16} className="text-primary-light" /> One-click Deploy (Modal)</div>
+            <p className="text-xs text-muted mb-3 max-w-2xl leading-relaxed">
+              Spin up a Modal GPU backend for one modality with the hardware you choose — no terminal. On success it registers the backend and sets it active for that modality automatically. Desktop app only (it runs the <code>modal</code> CLI); requires <code>modal setup</code> done once.
+            </p>
+            <div className="grid md:grid-cols-3 gap-3">
+              <label className="text-xs text-muted">Modality
+                <select className="input mt-1" value={deploy.modality} onChange={(e) => setDeploy({ ...deploy, modality: e.target.value, model: "" })}>
+                  {DEPLOY_MODALITIES.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                </select>
+              </label>
+              <label className="text-xs text-muted">GPU
+                <select className="input mt-1" value={deploy.gpu} onChange={(e) => setDeploy({ ...deploy, gpu: e.target.value })}>
+                  {DEPLOY_GPUS.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </label>
+              <label className="text-xs text-muted">{deploy.modality === "llm" ? "GPU count (tensor-parallel)" : "GPU count"}
+                <input className="input mt-1" type="number" min={1} max={8} value={deploy.gpuCount} onChange={(e) => setDeploy({ ...deploy, gpuCount: Math.max(1, +e.target.value || 1) })} />
+              </label>
+              <label className="text-xs text-muted">CPU cores
+                <input className="input mt-1" type="number" min={1} value={deploy.cpu} onChange={(e) => setDeploy({ ...deploy, cpu: Math.max(1, +e.target.value || 1) })} />
+              </label>
+              <label className="text-xs text-muted">RAM (GB)
+                <input className="input mt-1" type="number" min={0} value={deploy.ramGb} onChange={(e) => setDeploy({ ...deploy, ramGb: Math.max(0, +e.target.value || 0) })} />
+              </label>
+              <label className="text-xs text-muted">Model (HF id)
+                <input className="input mt-1" placeholder={DEPLOY_MODALITIES.find((m) => m.id === deploy.modality)?.ph} value={deploy.model} onChange={(e) => setDeploy({ ...deploy, model: e.target.value })} />
+              </label>
+              <label className="text-xs text-muted">NEXUS_SECRET (Bearer)
+                <input className="input mt-1" type="password" placeholder="pick a long random string" value={deploy.secret} onChange={(e) => setDeploy({ ...deploy, secret: e.target.value })} />
+              </label>
+              <label className="text-xs text-muted">HF token (gated models)
+                <input className="input mt-1" type="password" placeholder="hf_… (optional)" value={deploy.hfToken} onChange={(e) => setDeploy({ ...deploy, hfToken: e.target.value })} />
+              </label>
+            </div>
+            <div className="flex items-center gap-3 mt-3">
+              <button className="btn-primary" disabled={deploying || !isDesktop()} onClick={runDeploy}>
+                {deploying ? "Deploying… (can take a few min)" : "Deploy & set active"}
+              </button>
+              {!isDesktop() && <span className="text-[11px] text-amber-400">Desktop app only — in the browser, deploy from a terminal.</span>}
+            </div>
+            {deployMsg && (
+              <div className={`mt-3 text-xs ${deployMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+                {deployMsg.text}
+                {deployMsg.log && <details className="mt-1"><summary className="cursor-pointer text-muted">deploy log</summary><pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap text-[10px] text-muted">{deployMsg.log}</pre></details>}
+              </div>
+            )}
+
+            {/* Compute dashboard: per-backend status + Start/Stop + budget tracker */}
+            <div className="mt-4 border-t border-border/40 pt-3">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-xs font-medium">Compute dashboard</div>
+                <a href="https://modal.com/settings/usage" target="_blank" rel="noreferrer" className="text-[10px] text-primary hover:underline">Modal usage &amp; billing ↗</a>
+              </div>
+
+              {/* Budget / estimated spend / remaining */}
+              <div className="rounded-lg border border-border/40 p-3 mb-3">
+                <div className="flex items-end justify-between gap-3 flex-wrap">
+                  <label className="text-[11px] text-muted">Monthly budget (USD)
+                    <input type="number" min={0} className="input mt-1 w-32" value={s.modalBudget || ""} placeholder="e.g. 50" onChange={(e) => s.setModalBudget(+e.target.value || 0)} />
+                  </label>
+                  <div className="text-[11px] text-right leading-relaxed">
+                    <div className="text-muted">Estimated spent: <span className="font-mono text-text">${s.modalSpend.toFixed(2)}</span></div>
+                    <div className="text-muted">Remaining: <span className={`font-mono ${s.modalBudget > 0 && s.modalSpend > s.modalBudget ? "text-rose-400" : "text-emerald-400"}`}>${Math.max(0, (s.modalBudget || 0) - s.modalSpend).toFixed(2)}</span>{s.modalBudget > 0 ? "" : " — set a budget"}</div>
+                  </div>
+                </div>
+                {s.modalBudget > 0 && (
+                  <div className="w-full bg-surface2 h-1.5 rounded-full overflow-hidden border border-border/40 mt-2">
+                    <div className={`h-full ${s.modalSpend > s.modalBudget ? "bg-rose-500" : "bg-primary"}`} style={{ width: `${Math.min(100, (s.modalSpend / s.modalBudget) * 100)}%` }} />
+                  </div>
+                )}
+                <div className="flex items-center justify-between mt-2 gap-2">
+                  <div className="text-[10px] text-muted">Estimate only (GPU rate × generation time). Modal's billing page is the source of truth.</div>
+                  <button className="btn-ghost text-[10px] px-2 py-0.5 text-muted shrink-0" onClick={() => { if (confirm("Reset the estimated spend counter to $0?")) s.resetModalSpend(); }}>Reset</button>
+                </div>
+              </div>
+
+              {/* Per-modality backend status + Start / Stop */}
+              <div className="space-y-2">
+                {(["llm", "image", "video"] as const).map((m) => {
+                  const d = s.modalDeploys[m];
+                  const rate = d?.gpu ? MODAL_GPU_RATES[d.gpu] : undefined;
+                  const status = !d ? "not deployed in app" : d.stopped ? "stopped" : "running · scales to zero";
+                  const statusCls = !d ? "bg-surface2 text-muted" : d.stopped ? "bg-rose-500/15 text-rose-400" : "bg-emerald-500/15 text-emerald-400";
+                  return (
+                    <div key={m} className="flex items-center justify-between gap-2 rounded-lg border border-border/40 px-3 py-2">
+                      <div className="min-w-0">
+                        <div className="text-xs font-medium capitalize flex items-center gap-2">
+                          {m} <span className="text-[10px] text-muted font-normal">{MODAL_APP_NAMES[m]}</span>
+                          <span className={`text-[10px] px-1.5 py-0.5 rounded ${statusCls}`}>{status}</span>
+                        </div>
+                        <div className="text-[10px] text-muted truncate">
+                          {d?.gpu ? `${d.gpu}${rate ? ` · ~$${rate}/hr` : ""}` : "—"}{d?.url ? ` · ${d.url}` : ""}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button className="btn-outline text-xs px-2 py-1" disabled={deploying || !isDesktop() || !d?.model} title={!d?.model ? "Deploy this modality with the card above first" : "Re-deploy at the same URL"} onClick={() => startBackend(m)}>Start</button>
+                        <button className="btn-outline text-xs px-2 py-1 text-rose-400" disabled={deploying || !isDesktop()} onClick={() => stopBackend(m)}>Stop</button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="text-[10px] text-muted mt-2">With scale-to-zero, a deployed backend costs nothing while idle — it only bills while generating. <strong>Stop</strong> tears it down entirely; <strong>Start</strong> re-deploys it. Stop works even for backends you deployed from a terminal.</div>
+            </div>
           </div>
 
           {(() => {
