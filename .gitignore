@@ -10,6 +10,8 @@ next-env.d.ts
 
 # Bundled ComfyUI (fetched at build time by scripts/prepare-comfyui.ps1 — too large to commit)
 /src-tauri/resources/comfyui
+# Bundled tools (e.g. comfyui-mcp-server) fetched at build time
+/src-tauri/resources/comfyui-mcp-server
 
 # Reference material
 /character-forge

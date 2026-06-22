@@ -40,7 +40,9 @@ image = (
     .apt_install("ffmpeg")
     .pip_install(
         "torch==2.4.0",
-        "diffusers==0.31.0",
+        # 0.32.x has LTXPipeline but predates the newer attention_dispatch code
+        # that needs torch>=2.5 (which crashes import on torch 2.4).
+        "diffusers>=0.32.0,<0.33.0",
         "transformers==4.46.0",
         "accelerate",
         "safetensors",
@@ -97,8 +99,16 @@ def web():
     import os as _os
     from fastapi import FastAPI, Request, HTTPException
     from fastapi.responses import FileResponse
+    from fastapi.middleware.cors import CORSMiddleware
 
     api = FastAPI()
+    # Allow the desktop app / browser (a different origin) to call this endpoint.
+    # Without this, the browser's CORS preflight (OPTIONS) gets 405 and the POST
+    # is blocked before it ever runs.
+    api.add_middleware(
+        CORSMiddleware, allow_origins=["*"], allow_credentials=False,
+        allow_methods=["*"], allow_headers=["*"],
+    )
     SECRET = _os.environ["NEXUS_SECRET"]
 
     def auth(request: Request):

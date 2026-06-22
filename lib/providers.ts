@@ -316,6 +316,9 @@ export async function generateImage(o: ImageOpts): Promise<string> {
   if (o.provider.kind === "modal") {
     const _t0 = Date.now();
     const base = o.provider.baseUrl.replace(/\/$/, "");
+    if (!/^https?:\/\//i.test(base)) {
+      throw new Error(`The active image backend "${o.provider.name}" has no valid URL, so the request hit the app itself. Set its Modal image endpoint (https://…modal.run) in Settings → the image provider. (Got: "${o.provider.baseUrl || "empty"}")`);
+    }
     const r = await fetch(base + "/generate/image", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...(o.provider.apiKey ? { Authorization: "Bearer " + o.provider.apiKey } : {}) },
@@ -369,6 +372,9 @@ export async function generateVideo(o: VideoOpts): Promise<string> {
     throw new Error(`Video rendering needs a Modal/compute backend. "${o.provider.name}" can't render video — add one in Settings.`);
   }
   const base = o.provider.baseUrl.replace(/\/$/, "");
+  if (!/^https?:\/\//i.test(base)) {
+    throw new Error(`The active video backend "${o.provider.name}" has no valid URL, so the request hit the app itself. Set its Modal video endpoint (https://…modal.run) in Settings → the video provider, or deploy one with the one-click Deploy. (Got: "${o.provider.baseUrl || "empty"}")`);
+  }
   const auth: Record<string, string> = o.provider.apiKey ? { Authorization: "Bearer " + o.provider.apiKey } : {};
   const _t0 = Date.now();
 

@@ -1,10 +1,10 @@
 {
-  "_comment": "Custom nodes baked into the packaged ComfyUI at build time by scripts/prepare-comfyui.ps1. Each node is either git-cloned (`repo`) into ComfyUI/custom_nodes/<name>, or copied from the repo (`local`, a path relative to the project root) for nodes we own. `ref` optionally pins a tag/branch/commit for cloned nodes. `pip` lists extra packages to install globally into the bundled Python; requirements.txt inside each node is also installed.",
+  "_comment": "Custom nodes + tools baked into the packaged ComfyUI at build time by scripts/prepare-comfyui.ps1. `nodes` are git-cloned (`repo`) into ComfyUI/custom_nodes/<name> or copied from the repo (`local`). `tools` are standalone processes cloned into src-tauri/resources/<name> (NOT custom_nodes) with their requirements installed into the bundled Python. `ref` optionally pins a tag/branch/commit. `pip` lists extra packages for the bundled Python.",
   "nodes": [
     {
       "name": "comfyui-nexus-cloud",
       "local": "comfyui-nodes/comfyui-nexus-cloud",
-      "note": "OUR cloud-GPU node. Provider dropdown (Modal, Beam, Cerebrium, RunPod, Vast) in the sidebar; routes /prompt to the active provider with models on a persistent volume. Modal adapter is the working reference; others are declared stubs."
+      "note": "OUR cloud-GPU node. Provider dropdown (Modal, Beam, Cerebrium, RunPod, Vast) in the sidebar; routes /prompt to the active provider with models on a persistent volume."
     },
     {
       "name": "ComfyUI-Manager",
@@ -16,7 +16,34 @@
       "name": "ComfyUI-Workflow-Models-Downloader",
       "repo": "https://github.com/slahiri/ComfyUI-Workflow-Models-Downloader",
       "ref": "",
-      "note": "Auto-detects the models a loaded workflow needs and downloads missing ones from HuggingFace/CivitAI/Manager DB into the correct folder (honors extra_model_paths). HTTP API at /workflow-models/* — we trigger a scan on workflow load."
+      "note": "Auto-detects + downloads a workflow's missing models from HF/CivitAI into the correct folder (honors extra_model_paths). HTTP API at /workflow-models/*."
+    },
+    {
+      "name": "ComfyUI-LTXVideo",
+      "repo": "https://github.com/Lightricks/ComfyUI-LTXVideo",
+      "ref": "",
+      "note": "Official Lightricks nodes for LTX-2.3 (the latest 22B audio-video model). Required base for the LTX Director stack below."
+    },
+    {
+      "name": "ComfyUI-KJNodes",
+      "repo": "https://github.com/kijai/ComfyUI-KJNodes",
+      "ref": "",
+      "note": "Kijai's utility nodes — a dependency of WhatDreamsCost LTX Director (and broadly useful)."
+    },
+    {
+      "name": "WhatDreamsCost-ComfyUI",
+      "repo": "https://github.com/WhatDreamsCost/WhatDreamsCost-ComfyUI",
+      "ref": "",
+      "note": "LTX Director: a full timeline editor for LTX-2.3 (first/middle/last keyframes, custom audio, Prompt Relay, t2v/i2v). Requires ComfyUI-LTXVideo + ComfyUI-KJNodes (above). Example workflows in its example_workflows/."
+    }
+  ],
+  "tools": [
+    {
+      "name": "comfyui-mcp-server",
+      "repo": "https://github.com/joenorton/comfyui-mcp-server",
+      "ref": "",
+      "run": "server.py",
+      "note": "Optional control layer: an MCP server (streamable-http on :9000) that wraps a running ComfyUI (:8188) and exposes generate_image / run_workflow / regenerate / job + asset tools with PARAM_* workflow templating. Standalone process, NOT a custom node. Run with: npm run comfyui:mcp."
     }
   ],
   "pip": [

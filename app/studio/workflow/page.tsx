@@ -704,13 +704,40 @@ export default function WorkflowStudioPage() {
                     <div className="text-sm text-muted">Checking for ComfyUI…</div>
                   </div>
                 ) : (launching || connecting) ? (
-                  <div className="animate-in fade-in zoom-in duration-500 py-10">
-                    <div className="relative w-24 h-24 mx-auto mb-6">
-                      <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
-                      <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin delay-150"></div>
-                      <div className="absolute inset-4 rounded-full border-b-2 border-emerald-400 animate-spin delay-300"></div>
-                      <Cpu size={32} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
-                    </div>
+                  <div className="animate-in fade-in zoom-in duration-500 py-6 max-w-3xl mx-auto w-full">
+                    {provisioned === false ? (
+                      <div className="mb-6 rounded-xl overflow-hidden border-2 border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.1)] relative w-full pt-[56.25%] bg-black">
+                        <iframe 
+                          src="https://www.youtube.com/embed/AbBVDjiETmE?autoplay=1&mute=1&loop=1&playlist=AbBVDjiETmE&controls=0&showinfo=0&rel=0" 
+                          title="ComfyUI Setup Overview"
+                          className="absolute top-0 left-0 w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-light flex items-center gap-2 border border-primary/30">
+                          <Loader2 size={12} className="animate-spin" /> Setting up ComfyUI Workspace
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative w-full max-w-sm mx-auto mb-6 rounded-xl overflow-hidden border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.05)] pt-[56.25%] bg-black">
+                        <iframe 
+                          src="https://www.youtube.com/embed/hjei8lC1oE4?autoplay=1&mute=1&loop=1&playlist=hjei8lC1oE4&controls=0&showinfo=0&rel=0" 
+                          title="ComfyUI Tips"
+                          className="absolute top-0 left-0 w-full h-full border-0 opacity-80"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        ></iframe>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
+                          <div className="relative w-16 h-16 mb-2">
+                            <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
+                            <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin delay-150"></div>
+                            <Cpu size={24} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
+                          </div>
+                          <div className="text-[10px] font-bold text-primary-light uppercase tracking-wider bg-black/60 px-2 py-1 rounded">Booting Core Engine...</div>
+                        </div>
+                      </div>
+                    )}
+                    
                     <div className="text-lg font-bold mb-1">{launchPhase || "Starting ComfyUI…"}</div>
                     <div className="text-xs text-muted mb-3">
                       {BOOT_MSGS[Math.min(BOOT_MSGS.length - 1, Math.floor(launchElapsed / 5))]}
@@ -721,16 +748,24 @@ export default function WorkflowStudioPage() {
                     </div>
                     <p className="text-[11px] text-muted max-w-sm mx-auto">
                       {provisioned === false
-                        ? "First run copies the bundled ComfyUI into place and installs dependencies — this can take a minute or two. You can leave this open."
+                        ? "First run copies the bundled ComfyUI into place and installs dependencies — this can take a minute or two. Check out the overview above while you wait."
                         : "Initializing the local server and loading nodes. This usually takes 10–20 seconds."}
                     </p>
-                    {provisioned === false && <div className="mt-6"><ComfyInstallHowto /></div>}
+                    
+                    {/* Fallback to standard carousel if they disable videos or the iframe fails. */}
+                    {provisioned === false && (
+                      <div className="mt-8 pt-6 border-t border-border/40">
+                        <div className="text-xs font-bold uppercase tracking-wider text-muted-more mb-4">What's Happening Under The Hood</div>
+                        <ComfyInstallHowto />
+                      </div>
+                    )}
+
                     <button
                       type="button"
-                      className="btn-ghost text-[11px] mt-4 inline-flex items-center justify-center gap-1.5 text-muted"
+                      className="btn-ghost text-[11px] mt-6 inline-flex items-center justify-center gap-1.5 text-muted"
                       onClick={() => checkComfyReachable(localUrl).then((ok) => { if (ok) { setServerOnline(true); setLaunching(false); setConnecting(false); } })}
                     >
-                      <RotateCw size={12} /> Check now
+                      <RotateCw size={12} /> Check connection now
                     </button>
                   </div>
                 ) : (

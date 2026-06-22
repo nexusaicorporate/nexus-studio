@@ -84,9 +84,16 @@ class ImageModel:
         import io
         import torch
         from fastapi import FastAPI, Request, HTTPException
+        from fastapi.middleware.cors import CORSMiddleware
         from PIL import Image as PILImage
 
         api = FastAPI()
+        # Allow cross-origin calls from the desktop app / browser (else the
+        # browser's CORS preflight OPTIONS gets 405 and blocks the POST).
+        api.add_middleware(
+            CORSMiddleware, allow_origins=["*"], allow_credentials=False,
+            allow_methods=["*"], allow_headers=["*"],
+        )
         SECRET = os.environ["NEXUS_SECRET"]
 
         @api.post("/generate/image")

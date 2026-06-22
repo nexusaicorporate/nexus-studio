@@ -112,9 +112,11 @@ foreach ($node in $spec.nodes) {
     # Copy node source, excluding any dev cruft.
     Copy-Item -Path (Join-Path $srcDir "*") -Destination $nodeDir -Recurse -Force `
       -Exclude @("__pycache__", "*.pyc", ".git")
-  } elseif (Test-Path $nodeDir) {
+  } elseif (Test-Path (Join-Path $nodeDir ".git")) {
     Write-Host "==> Updating node $($node.name)"
     git -C $nodeDir pull --ff-only 2>&1 | Out-Null   # stderr is just progress; ignore
+  } elseif (Test-Path $nodeDir) {
+    Write-Host "    $($node.name) already present (no .git, stripped); leaving as-is"
   } else {
     Write-Host "==> Cloning node $($node.name) <- $($node.repo)"
     git clone --depth 1 $node.repo $nodeDir 2>&1 | Write-Host
@@ -125,6 +127,31 @@ foreach ($node in $spec.nodes) {
   if (Test-Path $req) {
     Write-Host "    installing requirements for $($node.name)"
     & $python -m pip install --no-warn-script-location -r $req
+  }
+}
+
+# 3c. Standalone tools (e.g. comfyui-mcp-server) - cloned into resources/<name>,
+#     NOT custom_nodes (they are separate processes that talk to ComfyUI). Their
+#     requirements install into the bundled Python so they ship self-contained.
+if ($spec.tools) {
+  foreach ($tool in $spec.tools) {
+    $toolDir = Join-Path $resources $tool.name
+    if (Test-Path (Join-Path $toolDir ".git")) {
+      Write-Host "==> Updating tool $($tool.name)"
+      git -C $toolDir pull --ff-only 2>&1 | Out-Null
+    } elseif (Test-Path $toolDir) {
+      Write-Host "    $($tool.name) already present (no .git, stripped); leaving as-is"
+    } else {
+      Write-Host "==> Cloning tool $($tool.name) <- $($tool.repo)"
+      git clone --depth 1 $tool.repo $toolDir 2>&1 | Write-Host
+      if ($LASTEXITCODE -ne 0) { throw "git clone failed for tool $($tool.name)" }
+      if ($tool.ref) { git -C $toolDir fetch --depth 1 origin $tool.ref 2>&1 | Write-Host; git -C $toolDir checkout $tool.ref 2>&1 | Write-Host }
+    }
+    $treq = Join-Path $toolDir "requirements.txt"
+    if (Test-Path $treq) {
+      Write-Host "    installing requirements for tool $($tool.name)"
+      & $python -m pip install --no-warn-script-location -r $treq
+    }
   }
 }
 
@@ -149,5 +176,30 @@ if (Test-Path $configSrc) {
   }
 }
 
-Write-Host "==> Done. Bundled ComfyUI + nodes + config ready at $dest"
+# 6. Bundle the Modal backend scripts (for the one-click Deploy button) into
+#    resources/modal so they ship in the installer. Referenced by tauri.conf.json
+#    as "resources/modal/*.py" (no path traversal).
+$modalSrc = Join-Path $root "modal"
+$modalDest = Join-Path $resources "modal"
+if (Test-Path $modalSrc) {
+  New-Item -ItemType Directory -Force -Path $modalDest | Out-Null
+  Copy-Item -Path (Join-Path $modalSrc "*.py") -Destination $modalDest -Force
+  Write-Host "==> Copied Modal scripts into resources/modal"
+}
+
+# 7. Strip .git directories from the bundled resources. Tauri bundles + watches
+#    every file under resources/, and the cloned repos' .git folders are huge and
+#    contain read-only pack files that make the build fail with "Access is denied".
+Write-Host "==> Stripping .git directories from bundled resources"
+$gitDirs = Get-ChildItem -Path $resources -Recurse -Force -Directory -ErrorAction SilentlyContinue |
+  Where-Object { $_.Name -eq ".git" }
+foreach ($g in $gitDirs) {
+  # Clear read-only on contained files (git pack files are read-only) then remove.
+  Get-ChildItem -LiteralPath $g.FullName -Recurse -Force -File -ErrorAction SilentlyContinue |
+    ForEach-Object { try { $_.IsReadOnly = $false } catch {} }
+  Remove-Item -LiteralPath $g.FullName -Recurse -Force -ErrorAction SilentlyContinue
+}
+Write-Host "    Removed $(@($gitDirs).Count) .git directories"
+
+Write-Host "==> Done. Bundled ComfyUI + nodes + config + modal scripts ready at $dest"
 Write-Host "    Now run: npm run desktop:build"

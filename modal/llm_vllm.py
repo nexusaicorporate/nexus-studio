@@ -35,8 +35,11 @@ RAM_MB = int(os.environ["NEXUS_RAM_MB"]) if os.environ.get("NEXUS_RAM_MB") else 
 MAX_LEN = int(os.environ.get("NEXUS_MAX_LEN", "8192"))
 CACHE_DIR = "/cache"
 GPU_SPEC = f"{GPU}:{GPU_COUNT}" if GPU_COUNT > 1 else GPU
+# App name is env-driven so you can run MULTIPLE models side by side, each its
+# own deploy + URL (e.g. NEXUS_LLM_APP=nexus-llm-qwen). Default keeps one app.
+APP_NAME = os.environ.get("NEXUS_LLM_APP", "nexus-llm")
 
-app = modal.App("nexus-llm")
+app = modal.App(APP_NAME)
 
 # Persistent weight cache — survives across cold starts / deploys.
 cache_vol = modal.Volume.from_name("nexus-llm-cache", create_if_missing=True)

@@ -14,10 +14,12 @@
     "desktop:build": "tauri build",
     "prepare:comfyui": "powershell -ExecutionPolicy Bypass -File scripts/prepare-comfyui.ps1",
     "comfyui": "node scripts/run-comfyui.mjs",
+    "comfyui:mcp": "node scripts/run-comfyui-mcp.mjs",
     "desktop:build:bundled": "npm run prepare:comfyui && tauri build",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.4",
     "exifr": "^7.1.3",
     "idb-keyval": "^6.2.1",
     "jszip": "^3.10.1",
