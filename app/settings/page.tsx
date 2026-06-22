@@ -872,6 +872,19 @@ function ComfySettingsPanel() {
           </p>
         )}
       </div>
+
+      {/* Dependency Reality Check Explanation */}
+      <div className="card p-4 bg-primary/5 border border-primary/20">
+        <div className="font-bold mb-2 flex items-center gap-1.5 text-primary-light">
+          <ShieldCheck size={16} /> Dependency Isolation & Custom Nodes
+        </div>
+        <p className="text-xs text-muted leading-relaxed mb-3">
+          ComfyUI operates as a single Python process where all custom nodes share the same environment. This means <strong>individual virtual environments per custom node are technically impossible</strong>—all nodes must share the same installed dependencies (like PyTorch).
+        </p>
+        <p className="text-xs text-muted leading-relaxed">
+          Because installing a custom node through the manager can sometimes break your setup by overwriting a shared dependency, we guarantee stability by snapshotting the base environment. If a new node breaks your installation, open the ComfyUI Gear and click <strong className="text-text font-semibold">Repair ComfyUI environment</strong> to roll back to the known-good state.
+        </p>
+      </div>
     </div>
   );
 }
