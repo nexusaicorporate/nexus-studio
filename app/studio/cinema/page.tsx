@@ -7,10 +7,14 @@ import { useCinema } from "@/lib/store/cinema";
 import { newId } from "@/lib/store/library";
 import PromptDirector from "@/components/PromptDirector";
 import type { CinemaProject, CinemaScene } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
+import { canUseFeature } from "@/lib/entitlements";
+import UpgradePrompt from "@/components/UpgradePrompt";
 
 export default function CinemaStudio() {
   const { projects, loaded, load, saveProject, deleteProject } = useCinema();
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
+  const { plan } = useAuth();
 
   useEffect(() => { if (!loaded) load(); }, [loaded, load]);
 
@@ -111,6 +115,16 @@ export default function CinemaStudio() {
               </div>
             </div>
           </div>
+        </div>
+      </Page>
+    );
+  }
+
+  if (!canUseFeature(plan, "cinema")) {
+    return (
+      <Page title="Cinema Studio" subtitle="Storyboard, assemble, and render multi-scene movies.">
+        <div className="py-20 flex flex-col items-center justify-center">
+          <UpgradePrompt title="Studio Feature" message="The Cinema Studio is for professional multi-scene movie creation and requires the Studio subscription." planNeeded="Studio" />
         </div>
       </Page>
     );

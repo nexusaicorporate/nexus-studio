@@ -6,24 +6,28 @@ import { useSettings } from "@/lib/store/settings";
 import { newId } from "@/lib/store/library";
 import { chat } from "@/lib/providers";
 import type { ChatMessage } from "@/lib/types";
-import { Send, ImagePlus, Trash2, RefreshCw, Copy, Bot, User } from "lucide-react";
+import { Send, ImagePlus, Trash2, RefreshCw, Copy, Bot, User, X, Loader2 } from "lucide-react";
 import PromptPicker, { useTaskSystemPrompt } from "@/components/PromptPicker";
+import { useAuth } from "@/components/AuthProvider";
+import { canUseModel } from "@/lib/entitlements";
+import UpgradePrompt from "@/components/UpgradePrompt";
 import PromptDirector from "@/components/PromptDirector";
 
 export default function ChatPage() {
   const mounted = useMounted();
   const settings = useSettings();
   const provider = settings.providers.find((p) => p.id === settings.activeProviderId)!;
+  const { plan } = useAuth();
+  const model = provider.selectedModel || provider.models[0] || "openai";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [input, setInput] = useState(""); const [images, setImages] = useState<string[]>([]); const [busy, setBusy] = useState(false);
+  const [input, setInput] = useState(""); const [attach, setAttach] = useState<string | null>(null); const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
-  const taskSystem = useTaskSystemPrompt("chat", images.length ? "I2T" : "T2T");
-  function addImage(e: React.ChangeEvent<HTMLInputElement>) { const files = Array.from(e.target.files || []); files.forEach((f) => { const r = new FileReader(); r.onload = () => setImages((x) => [...x, r.result as string]); r.readAsDataURL(f); }); e.target.value = ""; }
-  async function send() {
-    if (!input.trim() && images.length === 0) return;
-    const userMsg: ChatMessage = { id: newId(), role: "user", content: input || "Analyze the image(s).", images: images.length ? images : undefined };
-    const next = [...messages, userMsg]; setMessages(next); setInput(""); setImages([]); setBusy(true);
-    const model = provider.selectedModel || provider.models[0] || "openai";
+  const taskSystem = useTaskSystemPrompt("chat", attach ? "I2T" : "T2T");
+  async function send(e?: React.FormEvent) {
+    e?.preventDefault();
+    if (!input.trim() && !attach) return;
+    const userMsg: ChatMessage = { id: newId(), role: "user", content: input || "Analyze the image.", images: attach ? [attach] : undefined };
+    const next = [...messages, userMsg]; setMessages(next); setInput(""); setAttach(null); setBusy(true);
     const placeholder: ChatMessage = { id: newId(), role: "assistant", content: "", model };
     setMessages([...next, placeholder]);
     
@@ -50,7 +54,7 @@ export default function ChatPage() {
   }
   if (!mounted) return null;
   return (
-    <Page title="Chat & Analyze" subtitle={`${provider?.name} · ${provider?.selectedModel || provider?.models[0] || "no model"} · system prompt active`} actions={<><PromptPicker taskKey="chat" label="Analysis prompt" /><button className="btn-outline" onClick={() => setMessages([])}><Trash2 size={15} /> New chat</button></>}>
+    <Page title="Chat & Analyze" subtitle={`${provider?.name} · ${model} · system prompt active`} actions={<><PromptPicker taskKey="chat" label="Analysis prompt" /><button className="btn-outline" onClick={() => setMessages([])}><Trash2 size={15} /> New chat</button></>}>
       <div className="card flex flex-col h-[calc(100vh-180px)]">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (<div className="h-full grid place-items-center text-center text-muted"><div><Bot size={40} className="mx-auto mb-3 opacity-50" /><p className="max-w-md">Upload an image to caption or analyze it, or just chat. Uses your active provider, model and system prompt from Settings. Local/uncensored endpoints fully supported.</p></div></div>)}
@@ -66,15 +70,21 @@ export default function ChatPage() {
           ))}
           <div ref={endRef} />
         </div>
-        <div className="border-t border-border p-3">
-          {images.length > 0 && (<div className="flex gap-2 mb-2 flex-wrap">{images.map((img, i) => (<div key={i} className="relative w-14 h-14"><img src={img} className="w-full h-full rounded-lg object-cover" alt="" /><button className="absolute -top-1 -right-1 bg-black/70 rounded-full w-4 h-4 text-[10px]" onClick={() => setImages(images.filter((_, j) => j !== i))}>✕</button></div>))}</div>)}
-          <div className="flex items-end gap-2">
-            <label className="btn-ghost cursor-pointer h-10"><ImagePlus size={17} /><input type="file" accept="image/*" multiple hidden onChange={addImage} /></label>
-            <PromptDirector onInsert={(txt) => setInput((v) => (v ? v + " " + txt : txt))} />
-            <textarea className="input flex-1 min-h-[44px] max-h-40 resize-none" value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} placeholder="Type a message or analyze an image… (Enter to send)" />
-            <button className="btn-primary h-10" onClick={send} disabled={busy}>{busy ? <RefreshCw size={16} className="animate-spin" /> : <Send size={16} />}</button>
+        {!canUseModel(plan, model) ? (
+          <div className="p-4 bg-surface2 border-t border-border">
+            <UpgradePrompt title="Pro LLM Selected" message={`The ${model} model requires an active Pro subscription to chat.`} planNeeded="Pro" inline />
           </div>
-        </div>
+        ) : (
+          <form className="p-3 bg-surface2 border-t border-border relative" onSubmit={send}>
+            {attach && (<div className="absolute bottom-[calc(100%+10px)] left-3 bg-surface border border-border p-2 rounded-lg flex items-center gap-3 shadow-lg max-w-sm"><img src={attach} className="w-12 h-12 object-cover rounded-md" alt="" /><div className="flex-1 min-w-0"><div className="text-xs font-semibold truncate">Attached Image</div><div className="text-[10px] text-muted">Ready for Vision analysis</div></div><button type="button" className="btn-ghost p-1.5" onClick={() => setAttach(null)}><X size={14} /></button></div>)}
+            <div className="flex gap-2 items-end">
+              <label className="btn-ghost p-3 shrink-0 cursor-pointer h-[42px]"><ImagePlus size={18} /><input type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) { const r = new FileReader(); r.onload = () => setAttach(r.result as string); r.readAsDataURL(f); } }} /></label>
+              <PromptDirector onInsert={(txt) => setInput((v) => (v ? v + " " + txt : txt))} />
+              <textarea value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} className="input flex-1 max-h-32 min-h-[42px] py-2.5 resize-none" placeholder={attach ? "Ask about this image..." : "Type your message..."} disabled={busy} rows={1} />
+              <button type="submit" disabled={busy || (!input.trim() && !attach)} className="btn-primary p-3 shrink-0 h-[42px]">{busy ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}</button>
+            </div>
+          </form>
+        )}
       </div>
     </Page>
   );

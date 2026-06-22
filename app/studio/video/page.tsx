@@ -13,12 +13,16 @@ import { RecipeLoader } from "@/components/RecipeLoader";
 import { VisualRecipeBuilder } from "@/components/VisualRecipeBuilder";
 import { assembleTemplate } from "@/lib/promptfill";
 import type { Template, Recipe } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
+import { canUseModel } from "@/lib/entitlements";
+import UpgradePrompt from "@/components/UpgradePrompt";
 type Mode = "t2v" | "i2v" | "r2v" | "v2v";
 const MODE_LABEL: Record<Mode, string> = { t2v: "Text → Video", i2v: "Image → Video", r2v: "Reference → Video", v2v: "Video → Video" };
 const RATIOS = ["16:9", "9:16", "1:1"]; const RES = ["720p", "1080p", "4K"];
 function VideoInner() {
   const mounted = useMounted(); const sp = useSearchParams(); const settings = useSettings(); const library = useLibrary();
   const provider = settings.providers.find((p) => p.id === settings.activeVideoProviderId)!;
+  const { plan } = useAuth();
   const [mode, setMode] = useState<Mode>("t2v"); const [op, setOp] = useState<"create" | "edit" | "extend">("create");
   const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("16:9"); const [res, setRes] = useState("1080p"); const [engine, setEngine] = useState("Veo 3");
   const providerModels = provider?.models && provider.models.length > 0 ? provider.models : ["Veo 3", "Kling 2.0", "Seedance 2.0", "Wan 2.2", "LTX-2", "Runway Gen-4"];
@@ -96,8 +100,10 @@ function VideoInner() {
             )}
           </Field>
 
-          <div className="grid grid-cols-3 gap-2"><Field label="Engine"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{providerModels.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
-          {provider?.kind === "modal" ? (
+          <div className="grid grid-cols-3 gap-2"><Field label="Engine"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{providerModels.map((x) => <option key={x} value={x}>{x} {!canUseModel(plan, x) ? "(Pro)" : ""}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
+          {!canUseModel(plan, provider?.selectedModel || engine) ? (
+            <UpgradePrompt title="Pro Model Selected" message="This video model requires an active Pro subscription to render." planNeeded="Pro" inline />
+          ) : provider?.kind === "modal" ? (
             <button className="btn-primary w-full" onClick={render} disabled={rendering || busy}>
               {rendering ? <><Loader2 size={15} className="animate-spin" /> Rendering… {renderPct > 0 ? `${renderPct}%` : ""} {renderStatus}</> : <><Clapperboard size={15} /> Render Video ({provider.selectedModel || engine})</>}
             </button>

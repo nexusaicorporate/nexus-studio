@@ -4,7 +4,7 @@ import Page from "@/components/Page";
 import { Field, Toggle, useMounted } from "@/components/ui";
 import { useSettings } from "@/lib/store/settings";
 import { fetchModels } from "@/lib/providers";
-import { Check, Cpu, Eye, EyeOff, FolderCog, Lock, Plus, RefreshCw, Sparkles, Trash2, Zap } from "lucide-react";
+import { Check, Cpu, Eye, EyeOff, FolderCog, Lock, Plus, RefreshCw, Sparkles, Trash2, Zap, FolderOpen, ShieldCheck } from "lucide-react";
 import PromptPicker, { useTaskSystemPrompt } from "@/components/PromptPicker";
 import { useLibrary, newId } from "@/lib/store/library";
 import type { PromptItem } from "@/lib/types";

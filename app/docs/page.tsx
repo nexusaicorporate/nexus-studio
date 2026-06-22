@@ -201,10 +201,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         ]} />
         <H3>Prompt Director Pro</H3>
         <P>
-          The wand button opens <b>Prompt Director Pro</b> — a guided builder. Enter a core subject, choose a target model
-          (image or video), then pick from grouped dropdowns: Style &amp; Look, World &amp; Environment, Camera Gear, Composition,
-          Lighting &amp; Mood, and (for video models) Video Movement. A live preview assembles the full prompt; Randomize fills
-          every field, and Insert drops the result into the chat box.
+          The wand button opens <b>Prompt Director Pro</b> — a guided builder that completely overhauls prompt creation. Enter a core subject and choose a target model, then use the dynamic <b>Ingredients</b> and <b>Recipes</b> engine. Ingredients are typed, weighted building blocks (Style, World, Lighting), while Recipes are pre-configured structures. A live preview assembles the full prompt, allowing you to seamlessly link Characters and environments together. Insert drops the result into the chat box or the Cinema Gear.
         </P>
         <H3>Engineering notes</H3>
         <UL items={[
@@ -343,6 +340,23 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           The Video Gear builds and stores specs; actual rendering requires the chosen engine's own API key. Add it as a custom provider in
           Settings, or take the saved spec to your renderer.
         </Note>
+      </>
+    ),
+  },
+  {
+    id: "cinema", label: "Cinema Gear", group: "Studio Gears", icon: Clapperboard,
+    keywords: "cinema studio storyboard scenes prompt director recipes script",
+    body: (
+      <>
+        <H2>Cinema Gear</H2>
+        <Lede>Create comprehensive storyboards and script sequences by linking scenes together, powered by the Prompt Director.</Lede>
+        <H3>How to use it</H3>
+        <Steps items={[
+          <>Create a new <b>Cinema Project</b>.</>,
+          <>Add sequential <b>Scenes</b> to your storyboard timeline.</>,
+          <>For each scene, open the embedded <b>Prompt Director</b> to dynamically load Recipes, tie in Characters, and mix Ingredients to craft the perfect shot.</>,
+          <>Reorder scenes and track the flow of your visual story before sending them to the Video Gear for rendering.</>,
+        ]} />
       </>
     ),
   },
@@ -580,11 +594,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <Lede>Configure where and how ComfyUI workflows execute, plus the nodes and models they depend on.</Lede>
         <H3>Sections</H3>
         <UL items={[
-          <><b>Execution &amp; Resource Mode</b> — choose local / hybrid / cloud, and optionally lock the choice so the startup dialog doesn't prompt.</>,
-          <><b>Hybrid Mode</b> — set the custom node repo (<Code>nathannlu/comfyui-cloud</Code>), remote GPU URL and auth key.</>,
-          <><b>Cloud &amp; API Providers</b> — enable/disable providers (ComfyUI Cloud, OpenArt, ViewComfy, RunComfy, RunPod, Replicate, RunDiffusion, ComfyICU, Local) and set their endpoint + key.</>,
-          <><b>Custom Nodes Hub</b> — register custom node Git repos.</>,
-          <><b>Civitai &amp; Hugging Face Model Enablers</b> — map a checkpoint/LoRA filename to a source (Civitai/HF), repo/model ID, version and download URL.</>,
+          <><b>Execution &amp; Resource Mode</b> — choose local, hybrid, cloud, or the <b>Modal Serverless Backend</b> (<Code>comfyui-modal</Code>), and optionally lock the choice.</>,
+          <><b>Hardware &amp; CLI Options</b> — configure GPU type and toggle <b>CLI Startup Arguments</b> like <Code>--highvram</Code>, <Code>--lowvram</Code>, and custom flags.</>,
+          <><b>Extra Model Locations</b> — add absolute paths to external drives containing your models (e.g., <Code>D:\AI\Models</Code>) to be scanned on startup.</>,
+          <><b>Dependency Reality Check</b> — snapshot and rollback your ComfyUI environment because individual venvs for custom nodes are technically impossible.</>,
+          <><b>Civitai &amp; Hugging Face Model Enablers</b> — map a checkpoint/LoRA filename to a source, repo/model ID, version and download URL.</>,
         ]} />
         <P>These settings persist in their own Zustand store (<Code>nexus-comfy-settings</Code>) and are consumed by both the Workflow Gear and Comfy Hub.</P>
       </>
@@ -690,6 +704,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <UL items={[
           <><Code>src-tauri/</Code> holds the Rust shell. <Code>main.rs</Code> wires the shell, process and updater plugins and checks for updates on launch.</>,
           <><Code>tauri.conf.json</Code> builds from the static <Code>../out</Code> export, sets the window, bundle targets ("all") and the updater endpoint + public key.</>,
+          <><b>ComfyUI Auto-Provisioning</b>: The desktop bundle extracts a portable ComfyUI ZIP to <Code>AppData\Roaming\comfy-studio</Code> on first run, managed as a child process via Rust.</>,
           <>Auto-update: desktop apps fetch the GitHub <Code>latest.json</Code> on launch and install signed updates silently.</>,
         ]} />
         <H3>GitHub Actions</H3>

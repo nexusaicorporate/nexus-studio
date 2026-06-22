@@ -11,8 +11,12 @@ import {
   Lock, Eye, Ruler, Dumbbell, Droplet, Download, Layers, Bone, Brain, RotateCw,
   Zap, AlertCircle, Loader2, AlertTriangle, Play, CheckCircle2, XCircle
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { generateImage } from "@/lib/providers";
 import { characterPrompt } from "@/lib/character";
+import { useAuth } from "@/components/AuthProvider";
+import { canUseNsfw } from "@/lib/entitlements";
+import UpgradePrompt from "@/components/UpgradePrompt";
+import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/store/settings";
 import { chat } from "@/lib/providers";
 import JSZip from "jszip";
@@ -61,6 +65,7 @@ const blank = (): Character => ({
 export default function CharacterPage() {
   const mounted = useMounted(); 
   const router = useRouter();
+  const { addons } = useAuth();
   const characters = useLibrary((s) => s.characters); 
   const setKey = useLibrary((s) => s.set);
   const [edit, setEdit] = useState<Character | null>(null);
@@ -318,6 +323,7 @@ function renderTattooSVG(id: string) {
 }
 
 function Form({ item, onSave }: { item: Character; onSave: (c: Character) => void }) {
+  const { addons } = useAuth();
   const [c, setC] = useState<any>({
     ...item,
     hairColor: item.hairColor || "brunette",
@@ -741,18 +747,26 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
 
       {/* 5. NSFW / Toggle & Sub-fields */}
       <div className="border-t border-border/40 pt-4 space-y-4">
-        <div className="flex items-center justify-between bg-rose-500/5 border border-rose-500/10 p-3 rounded-xl">
-          <div className="flex gap-2.5 items-center">
-            <ShieldAlert className="text-rose-400" size={18} />
-            <div>
-              <div className="text-xs font-semibold text-rose-400">Adult / 18+ Persona</div>
-              <p className="text-[10px] text-muted leading-tight mt-0.5">Unlock explicit physical details and erotic demeanor generation tags.</p>
+        {!canUseNsfw(addons) ? (
+          <UpgradePrompt 
+            title="NSFW Unlock Required" 
+            message="Explicit and 18+ persona details require the NSFW Unlock add-on." 
+            planNeeded="NSFW Addon" 
+          />
+        ) : (
+          <div className="flex items-center justify-between bg-rose-500/5 border border-rose-500/10 p-3 rounded-xl">
+            <div className="flex gap-2.5 items-center">
+              <ShieldAlert className="text-rose-400" size={18} />
+              <div>
+                <div className="text-xs font-semibold text-rose-400">Adult / 18+ Persona</div>
+                <p className="text-[10px] text-muted leading-tight mt-0.5">Unlock explicit physical details and erotic demeanor generation tags.</p>
+              </div>
             </div>
+            <Toggle checked={c.nsfw} onChange={(b) => setC({ ...c, nsfw: b })} />
           </div>
-          <Toggle checked={c.nsfw} onChange={(b) => setC({ ...c, nsfw: b })} />
-        </div>
+        )}
 
-        {c.nsfw && (
+        {c.nsfw && canUseNsfw(addons) && (
           <div className="bg-rose-500/5 border border-rose-500/10 p-4 rounded-xl space-y-4">
             <h4 className="font-bold text-xs text-rose-400 uppercase tracking-widest flex items-center gap-1.5 border-b border-rose-500/20 pb-2">
               <Flame size={14} /> Explicit Body Details (18+ NSFW)

@@ -14,10 +14,14 @@ import { RecipeLoader } from "@/components/RecipeLoader";
 import { VisualRecipeBuilder } from "@/components/VisualRecipeBuilder";
 import { assembleTemplate } from "@/lib/promptfill";
 import type { Template, Recipe } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
+import { canUseModel } from "@/lib/entitlements";
+import UpgradePrompt from "@/components/UpgradePrompt";
 const RATIOS: Record<string, [number, number]> = { "1:1": [1024, 1024], "16:9": [1280, 720], "9:16": [720, 1280], "4:5": [896, 1120], "3:2": [1152, 768] };
 function ImageStudioInner() {
   const mounted = useMounted(); const sp = useSearchParams(); const settings = useSettings(); const library = useLibrary();
   const provider = settings.providers.find((p) => p.id === settings.activeImageProviderId)!;
+  const { plan } = useAuth();
   const [mode, setMode] = useState<"t2i" | "i2i">("t2i"); const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("1:1"); const [model, setModel] = useState("flux");
   const providerModels = provider?.models && provider.models.length > 0 ? provider.models : ["flux", "flux-realism", "flux-anime", "turbo"];
   const [refs, setRefs] = useState<string[]>([]); const [busy, setBusy] = useState(false); const [result, setResult] = useState<string | null>(null);
@@ -49,9 +53,13 @@ function ImageStudioInner() {
             )}
           </Field>
           <div className="flex gap-2"><button className="btn-ghost flex-1 text-xs" onClick={enhance} disabled={busy}><Wand2 size={14} /> Improve</button><button className="btn-ghost flex-1 text-xs" onClick={surprise} disabled={busy}><Sparkles size={14} /> Surprise me</button></div>
-          <div className="grid grid-cols-2 gap-3"><Field label="Aspect ratio"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{Object.keys(RATIOS).map((r) => <option key={r}>{r}</option>)}</select></Field><Field label="Model"><select className="input" value={model} onChange={(e) => setModel(e.target.value)}>{providerModels.map((m) => <option key={m}>{m}</option>)}</select></Field></div>
+          <div className="grid grid-cols-2 gap-3"><Field label="Aspect ratio"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{Object.keys(RATIOS).map((r) => <option key={r}>{r}</option>)}</select></Field><Field label="Model"><select className="input" value={model} onChange={(e) => setModel(e.target.value)}>{providerModels.map((m) => <option key={m} value={m}>{m} {!canUseModel(plan, m) ? "(Pro)" : ""}</option>)}</select></Field></div>
           <Field label="Seed"><div className="flex gap-2"><input className="input" type="number" value={seed} onChange={(e) => setSeed(+e.target.value)} /><button className="btn-ghost px-3" onClick={() => setSeed(Math.floor(Math.random() * 1e9))}><Dice5 size={15} /></button></div></Field>
-          <button className="btn-primary w-full" onClick={run} disabled={busy}>{busy ? <RefreshCw size={15} className="animate-spin" /> : <Sparkles size={15} />} Generate</button>
+          {!canUseModel(plan, provider?.selectedModel || model) ? (
+            <UpgradePrompt title="Pro Model Selected" message="This image model requires an active Pro subscription to generate." planNeeded="Pro" inline />
+          ) : (
+            <button className="btn-primary w-full" onClick={run} disabled={busy}>{busy ? <RefreshCw size={15} className="animate-spin" /> : <Sparkles size={15} />} Generate</button>
+          )}
         </div>
         <div className="space-y-4">
           <div className="card p-4 min-h-[420px] grid place-items-center">

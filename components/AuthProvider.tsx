@@ -10,6 +10,8 @@ interface AuthCtx {
   configured: boolean;      // Supabase env present (web build)
   user: User | null;
   session: Session | null;
+  plan: string;
+  addons: string[];
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
@@ -17,7 +19,7 @@ interface AuthCtx {
 
 const noop = async (): Promise<AuthResult> => ({ error: "Auth is not configured." });
 const Ctx = createContext<AuthCtx>({
-  ready: true, configured: false, user: null, session: null,
+  ready: true, configured: false, user: null, session: null, plan: "free", addons: [],
   signIn: noop, signUp: noop, signOut: async () => {},
 });
 
@@ -25,18 +27,41 @@ export function useAuth() { return useContext(Ctx); }
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const [plan, setPlan] = useState("free");
+  const [addons, setAddons] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const sb = getSupabase();
     if (!sb) { setReady(true); return; }
     let alive = true;
+    
+    async function fetchProfile(userId: string) {
+      if (!sb) return;
+      const { data } = await sb.from("profiles").select("plan, addons").eq("id", userId).single();
+      if (alive && data) {
+        setPlan(data.plan || "free");
+        setAddons(data.addons || []);
+      }
+    }
+
     sb.auth.getSession().then(({ data }) => {
       if (!alive) return;
       setSession(data.session);
-      setReady(true);
+      if (data.session?.user) {
+        fetchProfile(data.session.user.id).then(() => { if (alive) setReady(true); });
+      } else {
+        setReady(true);
+      }
     });
-    const { data: sub } = sb.auth.onAuthStateChange((_event, s) => setSession(s));
+    
+    const { data: sub } = sb.auth.onAuthStateChange((_event, s) => {
+      if (!alive) return;
+      setSession(s);
+      if (s?.user) fetchProfile(s.user.id);
+      else { setPlan("free"); setAddons([]); }
+    });
+    
     return () => { alive = false; sub.subscription.unsubscribe(); };
   }, []);
 
@@ -63,11 +88,7 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <Ctx.Provider value={{
-      ready, configured: supabaseConfigured,
-      user: session?.user ?? null, session,
-      signIn, signUp, signOut,
-    }}>
+    <Ctx.Provider value={{ ready, configured: supabaseConfigured, user: session?.user ?? null, session, plan, addons, signIn, signUp, signOut }}>
       {children}
     </Ctx.Provider>
   );
