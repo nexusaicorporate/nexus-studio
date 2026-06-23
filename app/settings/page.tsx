@@ -193,7 +193,7 @@ export default function SettingsPage() {
           <div className="card p-4 border border-primary/30 bg-primary/5">
             <div className="font-semibold text-sm mb-1 flex items-center gap-2 text-text"><Zap size={16} className="text-primary-light" /> One-click Deploy (Modal)</div>
             <p className="text-xs text-muted mb-3 max-w-2xl leading-relaxed">
-              Spin up a Modal GPU backend for one modality with the hardware you choose — no terminal. On success it registers the backend and sets it active for that modality automatically. Desktop app only (it runs the <code>modal</code> CLI); requires <code>modal setup</code> done once.
+              Spin up a Modal GPU backend for one modality with the hardware you choose. On success it registers the backend and sets it active for that modality automatically. Requires <code>modal setup</code> done once on the host running this server.
             </p>
             <div className="grid md:grid-cols-3 gap-3">
               <label className="text-xs text-muted">Modality
@@ -226,10 +226,9 @@ export default function SettingsPage() {
               </label>
             </div>
             <div className="flex items-center gap-3 mt-3">
-              <button className="btn-primary" disabled={deploying || !isDesktop()} onClick={runDeploy}>
+              <button className="btn-primary" disabled={deploying} onClick={runDeploy}>
                 {deploying ? "Deploying… (can take a few min)" : "Deploy & set active"}
               </button>
-              {!isDesktop() && <span className="text-[11px] text-amber-400">Desktop app only — in the browser, deploy from a terminal.</span>}
             </div>
             {deployMsg && (
               <div className={`mt-3 text-xs ${deployMsg.ok ? "text-emerald-400" : "text-red-400"}`}>

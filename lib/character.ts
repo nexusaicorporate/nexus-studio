@@ -9,6 +9,7 @@ export function characterPrompt(c: Character): string {
   // Normal physical attributes
   const hair = [c.hairStyle, c.hairColor].filter(Boolean).join(", ");
   if (hair) parts.push(`${hair} hair`);
+  if (c.facialHair && c.facialHair !== "none" && c.gender === "male") parts.push(`${c.facialHair}`);
   if (c.bodyShape) parts.push(`${c.bodyShape} body shape`);
   if (c.eyeColor) parts.push(`${c.eyeColor} eyes`);
   if (c.skinTone) parts.push(`${c.skinTone} skin`);
@@ -20,10 +21,21 @@ export function characterPrompt(c: Character): string {
   
   // NSFW attributes
   if (c.nsfw) {
-    const breasts = [c.breastSize, c.breastShape].filter(Boolean).join(" ");
-    if (breasts) {
-      parts.push(`${breasts} breasts${c.breastsType ? ` (${c.breastsType})` : ""}`);
+    if (c.gender !== "male") {
+      const breasts = [c.breastSize, c.breastShape].filter(Boolean).join(" ");
+      if (breasts) {
+        parts.push(`${breasts} breasts${c.breastsType ? ` (${c.breastsType})` : ""}`);
+      }
     }
+    
+    if (c.gender === "male" || c.gender === "futa") {
+      if (c.chestHair && c.chestHair !== "none") parts.push(`${c.chestHair} chest hair`);
+      const penis = [c.penisState, c.penisSize, "penis"].filter(Boolean).join(" ");
+      if (penis !== "penis") {
+        parts.push(`${penis}${c.penisCircumcised === "yes" ? " (circumcised)" : c.penisCircumcised === "no" ? " (uncircumcised)" : ""}`);
+      }
+    }
+
     const ass = [c.assSize, c.assShape].filter(Boolean).join(" ");
     if (ass) {
       parts.push(`${ass} ass`);
@@ -39,7 +51,8 @@ export function characterPrompt(c: Character): string {
     }
     
     // Piercings
-    if (c.vaginaPiercings && c.vaginaPiercings !== "none") parts.push(`vagina piercing (${c.vaginaPiercings})`);
+    if (c.gender !== "male" && c.vaginaPiercings && c.vaginaPiercings !== "none") parts.push(`vagina piercing (${c.vaginaPiercings})`);
+    if ((c.gender === "male" || c.gender === "futa") && c.vaginaPiercings && c.vaginaPiercings !== "none") parts.push(`penis piercing (${c.vaginaPiercings})`);
     if (c.bellyPiercing === "yes") parts.push("belly button piercing");
     if (c.nosePiercing === "yes") parts.push("nose piercing");
     

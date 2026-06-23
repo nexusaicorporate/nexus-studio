@@ -144,7 +144,16 @@ export interface ModalDeployResult { ok: boolean; url?: string; message: string;
 
 export async function deployModalBackend(args: ModalDeployArgs): Promise<ModalDeployResult> {
   if (!isDesktop()) {
-    return { ok: false, message: "Desktop build only — run `modal deploy modal/<script>.py` from a terminal (see setup), then paste the URL." };
+    try {
+      const res = await fetch('/api/modal/deploy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(args)
+      });
+      return await res.json();
+    } catch (e: any) {
+      return { ok: false, message: e?.message || String(e) };
+    }
   }
   try {
     return await invoke<ModalDeployResult>("deploy_modal_backend", { ...args });
@@ -156,7 +165,18 @@ export async function deployModalBackend(args: ModalDeployArgs): Promise<ModalDe
 // Stop a deployed Modal app entirely (`modal app stop`) — kills containers and
 // stops all billing. Restart by deploying again (deployModalBackend). Desktop-only.
 export async function stopModalApp(appName: string, modalTokenId?: string, modalTokenSecret?: string): Promise<ModalDeployResult> {
-  if (!isDesktop()) return { ok: false, message: "Desktop build only — run `modal app stop` from a terminal." };
+  if (!isDesktop()) {
+    try {
+      const res = await fetch('/api/modal/stop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appName, modalTokenId, modalTokenSecret })
+      });
+      return await res.json();
+    } catch (e: any) {
+      return { ok: false, message: e?.message || String(e) };
+    }
+  }
   try {
     return await invoke<ModalDeployResult>("stop_modal_app", { appName, modalTokenId, modalTokenSecret });
   } catch (e: any) {

@@ -16,9 +16,9 @@ import PromptDirector from "@/components/PromptDirector";
 export default function ChatPage() {
   const mounted = useMounted();
   const settings = useSettings();
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId)!;
+  const provider = settings.providers.find((p) => p.id === settings.activeProviderId) || settings.providers[0];
   const { plan } = useAuth();
-  const model = provider.selectedModel || provider.models[0] || "openai";
+  const model = provider?.selectedModel || provider?.models?.[0] || "openai";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState(""); const [attach, setAttach] = useState<string | null>(null); const [busy, setBusy] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);

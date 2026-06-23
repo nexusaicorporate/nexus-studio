@@ -328,7 +328,10 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
     ...item,
     hairColor: item.hairColor || "brunette",
     hairStyle: item.hairStyle || "long straight",
+    facialHair: item.facialHair || "none",
     bodyShape: item.bodyShape || "hourglass",
+    gender: item.gender || "female",
+    chestHair: item.chestHair || "none",
     eyeColor: item.eyeColor || "brown",
     skinTone: item.skinTone || "fair",
     height: item.height || "average",
@@ -341,6 +344,9 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
     pubicHair: item.pubicHair || "no",
     pubicHairAmount: item.pubicHairAmount || "light",
     pubicHairStyle: item.pubicHairStyle || "shaved",
+    penisSize: item.penisSize || "average",
+    penisState: item.penisState || "flaccid",
+    penisCircumcised: item.penisCircumcised || "no",
     vaginaPiercings: item.vaginaPiercings || "none",
     bellyPiercing: item.bellyPiercing || "no",
     nosePiercing: item.nosePiercing || "no",
@@ -353,21 +359,27 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
 
   const [analyzeStatus, setAnalyzeStatus] = useState<string>("");
 
-  // Expandable dropdown lists
   const [hairColors, setHairColors] = useState<string[]>(["blonde", "brunette", "black", "red", "pink", "blue", "purple", "platinum white", "auburn", "ginger"]);
-  const [bodyShapes, setBodyShapes] = useState<string[]>(["hourglass", "athletic", "slim/petite", "voluptuous", "pear-shaped", "muscular", "slender", "curvy"]);
-  const [eyeColors, setEyeColors] = useState<string[]>(["brown", "blue", "green", "hazel", "amber", "gray", "red", "violet"]);
-  const [skinTones, setSkinTones] = useState<string[]>(["fair", "light", "olive", "tan", "bronze", "brown", "dark", "pale"]);
-  const [heights, setHeights] = useState<string[]>(["short", "average", "tall", "petite", "very tall"]);
-  const [bodyBuilds, setBodyBuilds] = useState<string[]>(["slender", "fit", "athletic", "muscular", "curvy", "chubby", "lean"]);
+  const [hairStyles, setHairStyles] = useState<string[]>(["long straight", "short bob", "curly", "pixie", "wavy", "messy bun", "bald", "fade", "crew cut", "buzz cut"]);
+  const [facialHairs, setFacialHairs] = useState<string[]>(["none", "clean shaven", "stubble", "goatee", "mustache", "full beard"]);
+  const [chestHairs, setChestHairs] = useState<string[]>(["none", "light chest hair", "hairy chest", "bear chest"]);
+  const [bodyShapes, setBodyShapes] = useState<string[]>(["hourglass", "pear", "athletic", "slim", "curvy", "chubby", "muscular", "lean", "broad shoulders", "dad bod"]);
+  const [eyeColors, setEyeColors] = useState<string[]>(["brown", "blue", "green", "hazel", "grey"]);
+  const [skinTones, setSkinTones] = useState<string[]>(["fair", "pale", "light", "medium", "olive", "tan", "brown", "dark", "ebony"]);
+  const [heights, setHeights] = useState<string[]>(["petite", "short", "average", "tall", "towering"]);
+  const [bodyBuilds, setBodyBuilds] = useState<string[]>(["slender", "toned", "muscular", "soft", "thick"]);
   const [breastSizes, setBreastSizes] = useState<string[]>(["A cup", "B cup", "C cup", "D cup", "DD cup", "E cup", "F cup", "G cup"]);
   const [breastShapes, setBreastShapes] = useState<string[]>(["round", "tear-drop", "side-set", "athletic", "perky", "slender"]);
-  const [assSizes, setAssSizes] = useState<string[]>(["petite", "medium", "large", "bubble", "voluptuous"]);
-  const [assShapes, setAssShapes] = useState<string[]>(["round", "heart-shaped", "square", "v-shaped", "inverted", "flat"]);
+  const [assSizes, setAssSizes] = useState<string[]>(["small", "medium", "large", "huge"]);
+  const [assShapes, setAssShapes] = useState<string[]>(["round", "bubble", "heart-shaped", "flat"]);
+  const [penisSizes, setPenisSizes] = useState<string[]>(["small", "average", "thick", "large", "huge"]);
 
   const [customVal, setCustomVal] = useState<Record<string, string>>({
     hairColor: "",
+    hairStyle: "",
+    facialHair: "",
     bodyShape: "",
+    chestHair: "",
     eyeColor: "",
     skinTone: "",
     height: "",
@@ -376,6 +388,7 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
     breastShape: "",
     assSize: "",
     assShape: "",
+    penisSize: "",
   });
 
   // Predefined lists with labels
@@ -538,6 +551,45 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
         </h4>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {/* Gender */}
+          <div className="space-y-1.5">
+            <Field label={<span><Activity size={13} className="inline mr-1 text-primary-light" /> Gender</span>}>
+              <select className="input text-xs" value={c.gender} onChange={(e) => setC({ ...c, gender: e.target.value })}>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="futa">Futa / Trans</option>
+              </select>
+            </Field>
+          </div>
+
+          {/* Facial Hair (Only if Male) */}
+          {c.gender === "male" && (
+            <div className="space-y-1.5">
+              <Field label={<span><Activity size={13} className="inline mr-1 text-primary-light" /> Facial Hair</span>}>
+                <select className="input text-xs" value={c.facialHair} onChange={(e) => setC({ ...c, facialHair: e.target.value })}>
+                  {facialHairs.map((hair) => (
+                    <option key={hair} value={hair}>{hair}</option>
+                  ))}
+                </select>
+              </Field>
+              <div className="flex gap-1">
+                <input 
+                  className="input py-1 px-2 text-[10px] flex-1" 
+                  placeholder="Add custom..." 
+                  value={customVal.facialHair} 
+                  onChange={(e) => setCustomVal({ ...customVal, facialHair: e.target.value })} 
+                />
+                <button 
+                  type="button" 
+                  className="btn-outline px-2 text-xs" 
+                  onClick={() => handleAddCustomOption("facialHair", facialHairs, setFacialHairs)}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Hair Color */}
           <div className="space-y-1.5">
             <Field label={<span><Palette size={13} className="inline mr-1 text-primary-light" /> Hair Color</span>}>
@@ -773,7 +825,8 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
             </h4>
 
             {/* Breast attributes */}
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {c.gender !== "male" && (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {/* Breast Size */}
               <div className="space-y-1.5">
                 <Field label={<span><Flame size={13} className="inline mr-1 text-rose-400" /> Breast Size</span>}>
@@ -834,6 +887,52 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
                 </select>
               </Field>
             </div>
+            )}
+
+            {/* Male attributes */}
+            {(c.gender === "male" || c.gender === "futa") && (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 border-t border-rose-500/10 pt-3">
+                <div className="space-y-1.5 flex-1">
+                  <Field label={<span><Flame size={13} className="inline mr-1 text-rose-400" /> Penis Size</span>}>
+                    <select className="input text-xs" value={c.penisSize} onChange={(e) => setC({ ...c, penisSize: e.target.value })}>
+                      {penisSizes.map((size) => (
+                        <option key={size} value={size}>{size}</option>
+                      ))}
+                    </select>
+                  </Field>
+                  <div className="flex gap-1">
+                    <input className="input py-1 px-2 text-[10px] flex-1" placeholder="Add custom..." value={customVal.penisSize} onChange={(e) => setCustomVal({ ...customVal, penisSize: e.target.value })} />
+                    <button type="button" className="btn-outline px-2 text-xs text-rose-400 hover:bg-rose-400/10" onClick={() => handleAddCustomOption("penisSize", penisSizes, setPenisSizes)}>+</button>
+                  </div>
+                </div>
+
+                <Field label={<span><Flame size={13} className="inline mr-1 text-rose-400" /> Penis State</span>}>
+                  <select className="input text-xs" value={c.penisState} onChange={(e) => setC({ ...c, penisState: e.target.value })}>
+                    <option value="flaccid">Flaccid</option>
+                    <option value="semi-erect">Semi-Erect</option>
+                    <option value="erect">Erect</option>
+                    <option value="hard">Hard / Throbbing</option>
+                  </select>
+                </Field>
+
+                <Field label={<span><Flame size={13} className="inline mr-1 text-rose-400" /> Circumcised?</span>}>
+                  <select className="input text-xs" value={c.penisCircumcised} onChange={(e) => setC({ ...c, penisCircumcised: e.target.value })}>
+                    <option value="no">No (Uncut)</option>
+                    <option value="yes">Yes (Cut)</option>
+                  </select>
+                </Field>
+
+                <div className="space-y-1.5 flex-1">
+                  <Field label={<span><Flame size={13} className="inline mr-1 text-rose-400" /> Chest Hair</span>}>
+                    <select className="input text-xs" value={c.chestHair} onChange={(e) => setC({ ...c, chestHair: e.target.value })}>
+                      {chestHairs.map((hair) => (
+                        <option key={hair} value={hair}>{hair}</option>
+                      ))}
+                    </select>
+                  </Field>
+                </div>
+              </div>
+            )}
 
             {/* Ass Size & Shape */}
             <div className="grid sm:grid-cols-2 gap-3 items-start border-t border-rose-500/10 pt-3">
@@ -892,7 +991,7 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
 
             {/* Pubic Hair Setup */}
             <div className="grid sm:grid-cols-3 gap-3 border-t border-rose-500/10 pt-3">
-              <Field label={<span><Feather size={13} className="inline mr-1 text-rose-400" /> Vagina Pubic Hair?</span>}>
+              <Field label={<span><Feather size={13} className="inline mr-1 text-rose-400" /> Pubic Hair?</span>}>
                 <select className="input text-xs" value={c.pubicHair} onChange={(e) => setC({ ...c, pubicHair: e.target.value })}>
                   <option value="no">No (Fully Shaved)</option>
                   <option value="yes">Yes</option>
@@ -921,11 +1020,13 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
 
             {/* Piercings */}
             <div className="grid sm:grid-cols-3 gap-3 border-t border-rose-500/10 pt-3">
-              <Field label={<span><CircleDot size={13} className="inline mr-1 text-rose-400" /> Vagina Piercings</span>}>
+              <Field label={<span><CircleDot size={13} className="inline mr-1 text-rose-400" /> Genital Piercings</span>}>
                 <select className="input text-xs" value={c.vaginaPiercings} onChange={(e) => setC({ ...c, vaginaPiercings: e.target.value })}>
                   <option value="none">None</option>
                   <option value="hood piercing">Vertical Hood (VCH)</option>
                   <option value="labia piercing">Labia rings</option>
+                  <option value="Prince Albert">Prince Albert (Male)</option>
+                  <option value="frenum piercing">Frenum (Male)</option>
                   <option value="custom">Custom details</option>
                 </select>
               </Field>

@@ -53,9 +53,12 @@ export interface Character {
   triggerWord: string;
   refImages: string[];
   nsfw: boolean;
+  gender?: "female" | "male" | "futa" | "trans";
   hairColor?: string;
   hairStyle?: string;
+  facialHair?: string;
   bodyShape?: string;
+  chestHair?: string;
   breastSize?: string;
   breastShape?: string;
   breastsType?: string;
@@ -65,6 +68,9 @@ export interface Character {
   pubicHair?: string;
   pubicHairAmount?: string;
   pubicHairStyle?: string;
+  penisSize?: string;
+  penisState?: string;
+  penisCircumcised?: "yes" | "no";
   vaginaPiercings?: string;
   bellyPiercing?: string;
   nosePiercing?: string;
