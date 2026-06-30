@@ -9,7 +9,7 @@ export interface PlanConfig {
   interval: "month";
   description: string;
   features: string[];
-  stripePaymentLink?: string; // e.g. https://buy.stripe.com/test_...
+  stripePaymentLink?: string; // e.g. https://buy.stripe.com/test_00w4gBfdN6938g95L4cQU00
 }
 
 export const PLANS: PlanConfig[] = [
@@ -37,7 +37,7 @@ export const PLANS: PlanConfig[] = [
       "Priority support",
     ],
     // Replace with your real Stripe Payment Link for the Pro subscription
-    stripePaymentLink: "https://buy.stripe.com/test_123_pro", 
+    stripePaymentLink: "https://buy.stripe.com/test_00w4gBfdN6938g95L4cQU00", 
   },
   {
     id: "studio",
@@ -52,7 +52,7 @@ export const PLANS: PlanConfig[] = [
       "1-on-1 onboarding",
     ],
     // Replace with your real Stripe Payment Link for the Studio subscription
-    stripePaymentLink: "https://buy.stripe.com/test_123_studio",
+    stripePaymentLink: "https://buy.stripe.com/test_dRmfZjc1BdBv0NHgpIcQU01",
   },
 ];
 
@@ -73,7 +73,7 @@ export const ADDONS: AddonConfig[] = [
     type: "one-time",
     description: "Unlock unfiltered models and remove safety filters.",
     // Replace with your real Stripe Payment Link for the NSFW one-time purchase
-    stripePaymentLink: "https://buy.stripe.com/test_123_nsfw",
+    stripePaymentLink: "https://buy.stripe.com/test_dRm14pd5FgNHeEx4H0cQU03",
   },
 ];
 

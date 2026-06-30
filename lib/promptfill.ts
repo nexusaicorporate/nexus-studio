@@ -1,4 +1,4 @@
-import type { Bank } from "@/lib/types";
+import type { Bank, Character, Ingredient } from "@/lib/types";
 
 export interface PFCategory { id: string; label: string; color: string; }
 export const PF_CATEGORIES: PFCategory[] = [
@@ -58,11 +58,28 @@ export function templateTokens(content: string): { token: string; def?: string }
   return out;
 }
 
-// Options available for a token: bank options first, then inline default.
-export function tokenOptions(token: string, def: string | undefined, banks: Bank[]): string[] {
+// Options available for a token: bank options first, then inline default, then matching ingredients/characters.
+export function tokenOptions(token: string, def: string | undefined, banks: Bank[], characters: Character[] = [], ingredients: Ingredient[] = []): string[] {
   const bank = banks.find((b) => b.id === token);
   const opts = bank ? [...bank.options] : [];
   if (def && !opts.includes(def)) opts.unshift(def);
+
+  const tLow = token.toLowerCase();
+  
+  // Inject ingredients if the token matches their category
+  const matchingIngredients = ingredients.filter(i => i.category.toLowerCase().includes(tLow) || tLow.includes(i.category.toLowerCase()));
+  for (const ing of matchingIngredients) {
+    if (!opts.includes(ing.value)) opts.push(ing.value);
+  }
+
+  // Inject characters if the token asks for a subject or character
+  if (tLow.includes("subject") || tLow.includes("character")) {
+    for (const char of characters) {
+      const v = char.triggerWord || char.name;
+      if (!opts.includes(v)) opts.push(v);
+    }
+  }
+
   return opts;
 }
 

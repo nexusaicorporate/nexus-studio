@@ -140,6 +140,45 @@ export default function WorkflowStudioPage() {
     setLaunching(true);
     const firstRun = provisioned === false;
     setLaunchPhase(firstRun ? "Setting up ComfyUI (first run)…" : "Starting ComfyUI…");
+
+    // On local GPU, check and download large models if missing
+    const tauri = (window as any).__TAURI__;
+    if (tauri && comfy.deviceMode === "gpu") {
+      setLaunchPhase("Checking local GPU models…");
+      try {
+        const statusList = await tauri.core.invoke("check_model_downloads_status");
+        const missingModels = statusList.filter((s: any) => !s.complete);
+        
+        if (missingModels.length > 0) {
+          setLaunchPhase("Initializing model downloads from Hugging Face…");
+          await tauri.core.invoke("start_model_downloads");
+          
+          let downloadsComplete = false;
+          while (!downloadsComplete) {
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+            const currentStatus = await tauri.core.invoke("check_model_downloads_status");
+            const stillMissing = currentStatus.filter((s: any) => !s.complete);
+            
+            if (stillMissing.length === 0) {
+              downloadsComplete = true;
+            } else {
+              const progressStrings = currentStatus.map((s: any) => {
+                const pct = s.total_bytes > 0 ? Math.min(100, Math.round((s.current_bytes / s.total_bytes) * 100)) : 0;
+                const sizeGb = (s.current_bytes / (1024 * 1024 * 1024)).toFixed(1);
+                const totalGb = (s.total_bytes / (1024 * 1024 * 1024)).toFixed(1);
+                const shortName = s.file_name.length > 25 ? s.file_name.slice(0, 22) + "..." : s.file_name;
+                return `${shortName}: ${pct}% (${sizeGb}GB/${totalGb}GB)`;
+              });
+              setLaunchPhase(`Downloading local GPU models (this may take a while):\n${progressStrings.join("\n")}`);
+            }
+          }
+        }
+      } catch (e: any) {
+        console.error("Model downloader failed", e);
+      }
+    }
+
+    setLaunchPhase(firstRun ? "Setting up ComfyUI (first run)…" : "Starting ComfyUI…");
     const res = await launchComfy(comfy.deviceMode === "cpu", 8188, comfy.gpuType || "cpu", comfy.extraModelPaths, comfy.cliArgs, comfy.apiKeys);
     // A failed spawn (not desktop, no bundle, etc.) — show why, don't silently revert.
     if (!res.ok) {

@@ -1,17 +1,18 @@
 "use client";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import type { Session, User } from "@supabase/supabase-js";
-import { getSupabase, supabaseConfigured } from "@/lib/supabase";
+import { useSession, signIn, signOut as nextSignOut, SessionProvider } from "next-auth/react";
+import { WEB_MODE } from "@/lib/webmode";
 
 interface AuthResult { error?: string; needsConfirm?: boolean }
 
 interface AuthCtx {
-  ready: boolean;            // finished the initial session check
-  configured: boolean;      // Supabase env present (web build)
-  user: User | null;
-  session: Session | null;
+  ready: boolean;
+  configured: boolean;
+  user: { id: string; email: string; plan: string; groups: string[] } | null;
+  session: any | null;
   plan: string;
   addons: string[];
+  groups: string[];
   signIn: (email: string, password: string) => Promise<AuthResult>;
   signUp: (email: string, password: string) => Promise<AuthResult>;
   signOut: () => Promise<void>;
@@ -19,77 +20,88 @@ interface AuthCtx {
 
 const noop = async (): Promise<AuthResult> => ({ error: "Auth is not configured." });
 const Ctx = createContext<AuthCtx>({
-  ready: true, configured: false, user: null, session: null, plan: "free", addons: [],
+  ready: true, configured: false, user: null, session: null,
+  plan: "free", addons: [], groups: [],
   signIn: noop, signUp: noop, signOut: async () => {},
 });
 
 export function useAuth() { return useContext(Ctx); }
 
+// Add-ons are stored on the user's `groups` as "<addon>-plan" (e.g. "nsfw-plan"),
+// written by the Stripe webhook and the admin gear. The studios check
+// canUseNsfw(addons) against bare ids ("nsfw"), so map groups -> addon ids here.
+function deriveAddons(groups: string[]): string[] {
+  return (groups || [])
+    .filter((g) => g.endsWith("-plan"))
+    .map((g) => g.slice(0, -"-plan".length));
+}
+
+function AuthInner({ children }: { children: ReactNode }) {
+  const { data: session, status } = useSession();
+  const ready = status !== "loading";
+  const u = session?.user as any;
+
+  async function handleSignIn(email: string, password: string): Promise<AuthResult> {
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) return { error: "Invalid email or password." };
+    return {};
+  }
+
+  async function handleSignUp(email: string, password: string): Promise<AuthResult> {
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    if (!res.ok) return { error: data.error || "Registration failed." };
+    // Auto sign in after registration
+    const result = await signIn("credentials", { email, password, redirect: false });
+    if (result?.error) return { error: "Registered but could not sign in. Please try logging in." };
+    return {};
+  }
+
+  async function handleSignOut() {
+    await nextSignOut({ redirect: false });
+  }
+
+  const user = u?.id ? { id: u.id, email: u.email ?? "", plan: u.plan ?? "free", groups: u.groups ?? [] } : null;
+
+  return (
+    <Ctx.Provider value={{
+      ready,
+      configured: true,
+      user,
+      session,
+      plan: u?.plan ?? "free",
+      addons: deriveAddons(u?.groups ?? []),
+      groups: u?.groups ?? [],
+      signIn: handleSignIn,
+      signUp: handleSignUp,
+      signOut: handleSignOut,
+    }}>
+      {children}
+    </Ctx.Provider>
+  );
+}
+
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
-  const [plan, setPlan] = useState("free");
-  const [addons, setAddons] = useState<string[]>([]);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const sb = getSupabase();
-    if (!sb) { setReady(true); return; }
-    let alive = true;
-    
-    async function fetchProfile(userId: string) {
-      if (!sb) return;
-      const { data } = await sb.from("profiles").select("plan, addons").eq("id", userId).single();
-      if (alive && data) {
-        setPlan(data.plan || "free");
-        setAddons(data.addons || []);
-      }
-    }
-
-    sb.auth.getSession().then(({ data }) => {
-      if (!alive) return;
-      setSession(data.session);
-      if (data.session?.user) {
-        fetchProfile(data.session.user.id).then(() => { if (alive) setReady(true); });
-      } else {
-        setReady(true);
-      }
-    });
-    
-    const { data: sub } = sb.auth.onAuthStateChange((_event, s) => {
-      if (!alive) return;
-      setSession(s);
-      if (s?.user) fetchProfile(s.user.id);
-      else { setPlan("free"); setAddons([]); }
-    });
-    
-    return () => { alive = false; sub.subscription.unsubscribe(); };
-  }, []);
-
-  async function signIn(email: string, password: string): Promise<AuthResult> {
-    const sb = getSupabase();
-    if (!sb) return { error: "Auth is not configured." };
-    const { error } = await sb.auth.signInWithPassword({ email, password });
-    return { error: error?.message };
-  }
-
-  async function signUp(email: string, password: string): Promise<AuthResult> {
-    const sb = getSupabase();
-    if (!sb) return { error: "Auth is not configured." };
-    const { data, error } = await sb.auth.signUp({ email, password });
-    if (error) return { error: error.message };
-    // If email confirmation is on, there's no session yet.
-    return { needsConfirm: !data.session };
-  }
-
-  async function signOut(): Promise<void> {
-    const sb = getSupabase();
-    if (sb) await sb.auth.signOut();
-    setSession(null);
+  // In desktop (non-web) mode, skip auth entirely
+  if (!WEB_MODE) {
+    return (
+      <Ctx.Provider value={{
+        ready: true, configured: false, user: null, session: null,
+        plan: "free", addons: [], groups: [],
+        signIn: noop, signUp: noop, signOut: async () => {},
+      }}>
+        {children}
+      </Ctx.Provider>
+    );
   }
 
   return (
-    <Ctx.Provider value={{ ready, configured: supabaseConfigured, user: session?.user ?? null, session, plan, addons, signIn, signUp, signOut }}>
-      {children}
-    </Ctx.Provider>
+    <SessionProvider>
+      <AuthInner>{children}</AuthInner>
+    </SessionProvider>
   );
 }

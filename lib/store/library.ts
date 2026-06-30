@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { get as idbGet, set as idbSet } from "idb-keyval";
 import type { PromptItem, Ingredient, Recipe, Character, GenAsset, Conversation, Bank, Template } from "@/lib/types";
 import { SEED_PROMPTS, SYSTEM_PROMPTS, SEED_INGREDIENTS, SEED_RECIPES, SEED_BANKS, SEED_TEMPLATES } from "@/lib/data/seed";
+
 const KEY = "nexus-library-v1";
 export interface LibraryState {
   prompts: PromptItem[]; ingredients: Ingredient[]; recipes: Recipe[];
@@ -10,38 +11,41 @@ export interface LibraryState {
   promptsImported?: boolean;
   templatesTranslated?: boolean;
   load: () => Promise<void>; persist: () => Promise<void>;
-  set: <K extends keyof LibraryState>(key: K, value: LibraryState[K]) => void; importJSON: (data: Partial<LibraryState>) => void;
+  set: <K extends keyof LibraryState>(key: K, value: LibraryState[K]) => void;
+  deleteItem: (key: "prompts" | "templates" | "banks" | "ingredients", id: string) => void;
+  importJSON: (data: Partial<LibraryState>) => void;
   reseed: (mode: "merge" | "replace") => Promise<void>;
 }
-function snapshot(s: any) { return { prompts: s.prompts, ingredients: s.ingredients, recipes: s.recipes, characters: s.characters, assets: s.assets, conversations: s.conversations, banks: s.banks, templates: s.templates, promptsImported: s.promptsImported, templatesTranslated: s.templatesTranslated }; }
+
+function snapshot(s: any) {
+  return {
+    prompts: s.prompts, ingredients: s.ingredients, recipes: s.recipes,
+    characters: s.characters, assets: s.assets, conversations: s.conversations,
+    banks: s.banks, templates: s.templates,
+    promptsImported: s.promptsImported, templatesTranslated: s.templatesTranslated
+  };
+}
+
 export const useLibrary = create<LibraryState>((set, getState) => ({
-  prompts: [], ingredients: [], recipes: [], characters: [], assets: [], conversations: [], banks: [], templates: [], loaded: false, promptsImported: false, templatesTranslated: false,
+  prompts: [], ingredients: [], recipes: [], characters: [], assets: [],
+  conversations: [], banks: [], templates: [], loaded: false,
+  promptsImported: false, templatesTranslated: false,
+
   load: async () => {
     const saved = (await idbGet(KEY)) as any;
-    
-    // Helper to fetch seed files
+
     const fetchSeeds = async () => {
       let prompts: PromptItem[] = [];
       let templates: Template[] = [];
       let banks: Bank[] = [];
-      try {
-        const res = await fetch("/data/prompts.json");
-        if (res.ok) prompts = await res.json();
-      } catch (e) { console.error("Failed to fetch prompts seed", e); }
-      try {
-        const res = await fetch("/data/templates.json");
-        if (res.ok) templates = await res.json();
-      } catch (e) { console.error("Failed to fetch templates seed", e); }
-      try {
-        const res = await fetch("/data/banks.json");
-        if (res.ok) banks = await res.json();
-      } catch (e) { console.error("Failed to fetch banks seed", e); }
+      try { const r = await fetch("/data/prompts.json"); if (r.ok) prompts = await r.json(); } catch {}
+      try { const r = await fetch("/data/templates.json"); if (r.ok) templates = await r.json(); } catch {}
+      try { const r = await fetch("/data/banks.json"); if (r.ok) banks = await r.json(); } catch {}
       return { prompts, templates, banks };
     };
 
     if (saved) {
       if (!saved.promptsImported || !saved.templatesTranslated) {
-        // Upgrade existing database seamlessly by merging the new items
         const seeds = await fetchSeeds();
         const pk = (p: PromptItem) => p.category + "|" + (p.subcategory || "") + "|" + p.title + "|" + p.body;
         const bk = (b: Bank) => b.id;
@@ -53,18 +57,16 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
 
         let updatedTemplates = saved.templates || [];
         if (!saved.templatesTranslated) {
-          // Replace built-in CJK templates with translated ones while preserving custom ones
           const userTemplates = (saved.templates || []).filter((x: any) => !builtinsT.some((b) => tk(b) === tk(x)));
           updatedTemplates = [...builtinsT, ...userTemplates];
         } else {
           updatedTemplates = [...(saved.templates || []), ...builtinsT.filter((b) => !(saved.templates || []).some((x: any) => tk(x) === tk(b)))];
         }
 
-        // Migrate environments to ingredients
         let migratedIngredients = saved.ingredients || SEED_INGREDIENTS;
         if (saved.environments) {
           const envToIng = saved.environments.map((env: any) => ({
-            id: env.id, name: env.name, category: "Environment", 
+            id: env.id, name: env.name, category: "Environment",
             value: [env.description, env.lighting, env.mood].filter(Boolean).join(", "),
             tags: env.tags || [], nsfw: env.nsfw, createdAt: env.createdAt, updatedAt: env.updatedAt
           }));
@@ -78,9 +80,7 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
           recipes: saved.recipes || SEED_RECIPES,
           banks: [...(saved.banks || []), ...builtinsB.filter((b) => !(saved.banks || []).some((x: any) => bk(x) === bk(b)))],
           templates: updatedTemplates,
-          promptsImported: true,
-          templatesTranslated: true,
-          loaded: true
+          promptsImported: true, templatesTranslated: true, loaded: true
         };
         set(merged);
         await idbSet(KEY, snapshot(merged));
@@ -91,88 +91,71 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
       const seeds = await fetchSeeds();
       const seeded = {
         prompts: [...SEED_PROMPTS, ...SYSTEM_PROMPTS, ...seeds.prompts],
-        ingredients: SEED_INGREDIENTS,
-        recipes: SEED_RECIPES,
+        ingredients: SEED_INGREDIENTS, recipes: SEED_RECIPES,
         banks: [...SEED_BANKS, ...seeds.banks],
         templates: [...SEED_TEMPLATES, ...seeds.templates],
-        characters: [],
-        assets: [],
-        conversations: [],
-        promptsImported: true,
-        templatesTranslated: true,
-        loaded: true
+        characters: [], assets: [], conversations: [],
+        promptsImported: true, templatesTranslated: true, loaded: true
       };
       set(seeded);
       await idbSet(KEY, snapshot(seeded));
     }
   },
+
   persist: async () => { await idbSet(KEY, snapshot(getState())); },
-  set: (key, value) => { set({ [key]: value } as any); idbSet(KEY, snapshot({ ...getState(), [key]: value } as any)); },
+
+  set: (key, value) => {
+    set({ [key]: value } as any);
+    idbSet(KEY, snapshot({ ...getState(), [key]: value } as any));
+  },
+
+  deleteItem: (key, id) => {
+    const s = getState();
+    const next = (s[key] as any[]).filter((x) => x.id !== id);
+    set({ [key]: next } as any);
+    idbSet(KEY, snapshot({ ...s, [key]: next } as any));
+  },
+
   importJSON: (data) => {
     const s = getState();
-    
-    // Helper to generate a unique key for prompts to detect duplicates
     const pk = (p: PromptItem) => p.category + "|" + (p.subcategory || "") + "|" + p.title + "|" + p.body;
-    
-    // Filter out incoming prompts that already exist
     const newPrompts = (data.prompts || []).filter(dp => !s.prompts.some(sp => pk(sp) === pk(dp)));
-    
-    // Clean up any existing duplicates in the current store
-    const uniquePrompts = [];
-    const seen = new Set();
+    const uniquePrompts: PromptItem[] = [];
+    const seen = new Set<string>();
     for (const p of [...s.prompts, ...newPrompts]) {
       const key = pk(p);
-      if (!seen.has(key)) {
-        seen.add(key);
-        uniquePrompts.push(p);
-      }
+      if (!seen.has(key)) { seen.add(key); uniquePrompts.push(p); }
     }
-
-    const merged = { 
-      prompts: uniquePrompts, 
-      ingredients: data.ingredients ? [...s.ingredients, ...data.ingredients] : s.ingredients, 
-      recipes: data.recipes ? [...s.recipes, ...data.recipes] : s.recipes, 
-      characters: data.characters ? [...s.characters, ...data.characters] : s.characters 
+    const merged = {
+      prompts: uniquePrompts,
+      ingredients: data.ingredients ? [...s.ingredients, ...data.ingredients] : s.ingredients,
+      recipes: data.recipes ? [...s.recipes, ...data.recipes] : s.recipes,
+      characters: data.characters ? [...s.characters, ...data.characters] : s.characters
     };
-    set(merged as any); idbSet(KEY, snapshot({ ...s, ...merged } as any));
+    set(merged as any);
+    idbSet(KEY, snapshot({ ...s, ...merged } as any));
   },
+
   reseed: async (mode) => {
     const s = getState();
-    
-    // Fetch seed files
     let prompts: PromptItem[] = [];
     let templates: Template[] = [];
     let banks: Bank[] = [];
-    try {
-      const res = await fetch("/data/prompts.json");
-      if (res.ok) prompts = await res.json();
-    } catch (e) { console.error("Failed to fetch prompts seed in reseed", e); }
-    try {
-      const res = await fetch("/data/templates.json");
-      if (res.ok) templates = await res.json();
-    } catch (e) { console.error("Failed to fetch templates seed in reseed", e); }
-    try {
-      const res = await fetch("/data/banks.json");
-      if (res.ok) banks = await res.json();
-    } catch (e) { console.error("Failed to fetch banks seed in reseed", e); }
+    try { const r = await fetch("/data/prompts.json"); if (r.ok) prompts = await r.json(); } catch {}
+    try { const r = await fetch("/data/templates.json"); if (r.ok) templates = await r.json(); } catch {}
+    try { const r = await fetch("/data/banks.json"); if (r.ok) banks = await r.json(); } catch {}
 
     const builtinsP = [...SEED_PROMPTS, ...SYSTEM_PROMPTS, ...prompts];
     const builtinsT = [...SEED_TEMPLATES, ...templates];
     const builtinsB = [...SEED_BANKS, ...banks];
 
     if (mode === "replace") {
-      const seeded = {
-        prompts: builtinsP,
-        ingredients: SEED_INGREDIENTS,
-        recipes: SEED_RECIPES,
-        banks: builtinsB,
-        templates: builtinsT,
-        promptsImported: true
-      };
+      const seeded = { prompts: builtinsP, ingredients: SEED_INGREDIENTS, recipes: SEED_RECIPES, banks: builtinsB, templates: builtinsT, promptsImported: true };
       set(seeded as any);
       await idbSet(KEY, snapshot({ ...s, ...seeded } as any));
       return;
     }
+
     const pk = (p: PromptItem) => p.category + "|" + (p.subcategory || "") + "|" + p.title + "|" + p.body;
     const ik = (i: Ingredient) => i.category + "|" + i.name;
     const rk = (r: Recipe) => r.category + "|" + r.title;
@@ -191,4 +174,5 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
     await idbSet(KEY, snapshot({ ...s, ...merged } as any));
   },
 }));
+
 export const newId = () => (typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2));

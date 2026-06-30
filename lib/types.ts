@@ -89,6 +89,7 @@ export interface Character {
   loraRequestId?: string;
   loraStatusUrl?: string;
   loraResponseUrl?: string;
+  characterSheetUrl?: string;
   xray?: CharacterXRay;
   createdAt: number;
   updatedAt: number;
@@ -109,7 +110,7 @@ export interface CharacterXRay {
 }
 export interface GenAsset { id: ID; kind: "image" | "video"; url: string; prompt: string; meta: Record<string, any>; characterId?: ID; createdAt: number; }
 export interface Conversation { id: ID; title: string; messages: ChatMessage[]; createdAt: number; updatedAt: number; }
-export interface ChatMessage { id: ID; role: "user" | "assistant" | "system"; content: string; images?: string[]; model?: string; }
+export interface ChatMessage { id: ID; role: "user" | "assistant" | "system"; content: string; images?: string[]; videos?: string[]; model?: string; }
 
 export interface Bank { id: ID; name: string; category: string; options: string[]; nsfw?: boolean; createdAt: number; updatedAt: number; }
 export interface Template {
@@ -156,6 +157,7 @@ export interface CinemaScene {
   ingredientIds: string[];   // Linked ingredients
   duration?: number;
   assetId?: string;          // If rendered
+  videoUrl?: string;         // Direct video URL/file path
 }
 
 export interface CinemaProject {

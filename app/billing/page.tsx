@@ -4,34 +4,23 @@ import { useEffect, useState } from "react";
 import Page from "@/components/Page";
 import { PLANS, ADDONS, getCheckoutUrl } from "@/lib/billing";
 import { useAuth } from "@/components/AuthProvider";
-import { getSupabase } from "@/lib/supabase";
 import { CreditCard, CheckCircle2, Zap, AlertCircle } from "lucide-react";
 
 export default function BillingPage() {
-  const { user } = useAuth();
+  const { user, plan, groups } = useAuth();
   const [loading, setLoading] = useState(true);
   const [currentPlan, setCurrentPlan] = useState<string>("free");
   const [currentAddons, setCurrentAddons] = useState<string[]>([]);
   const [error, setError] = useState("");
 
+  // Plan now comes from the NextAuth session via AuthProvider
   useEffect(() => {
-    async function fetchProfile() {
-      if (!user) return;
-      const sb = getSupabase();
-      if (!sb) return;
-      
-      const { data, error } = await sb.from("profiles").select("plan, addons").eq("id", user.id).single();
-      
-      if (error) {
-        setError(error.message);
-      } else if (data) {
-        setCurrentPlan(data.plan || "free");
-        setCurrentAddons(data.addons || []);
-      }
-      setLoading(false);
-    }
-    fetchProfile();
-  }, [user]);
+    setCurrentPlan(plan ?? "free");
+    setCurrentAddons(groups.filter(g => g.endsWith("-plan") && g !== "studio-plan" && g !== "nsfw-plan" ? false : g.endsWith("-plan")).map(g => g.replace("-plan", "")));
+    setLoading(false);
+  }, [plan, groups]);
+
+
 
   if (loading) {
     return <Page title="Billing & Plans"><div className="p-6 text-muted">Loading your subscription details...</div></Page>;

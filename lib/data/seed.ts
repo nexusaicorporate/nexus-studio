@@ -157,10 +157,32 @@ function bank(id: string, name: string, category: string, options: string[], nsf
 }
 export const SEED_BANKS: Bank[] = [
   bank("role", "Role", "character", ["Master of Game and Anime Concept Art", "Senior Film Character Concept Artist", "Cyberpunk Style Designer", "Dark Fantasy Style Illustrator", "Fine-art photography blended with cinematic realism"]),
-  bank("subject", "Subject", "character", ["Female Character", "Male Character", "Mecha Girl", "Monster Anthropomorphism", "Fantasy Race (Elf/Demon)", "Female, around 20 years old", "Young Korean female K-pop idol"]),
-  bank("hair_style", "Hair Style", "character", ["Short, softly tousled dark hair", "Dark wavy long hair", "Black straight hair, falling over shoulders", "Light blonde curly hair", "High ponytail"]),
+  bank("subject", "Subject", "character", [
+    "Female Character", "Male Character", "Mecha Girl", "Monster Anthropomorphism", 
+    "Fantasy Race (Elf/Demon)", "Female, around 20 years old", "Young Korean female K-pop idol",
+    "handsome young man", "rugged man in his 30s", "mature gentleman in his 40s", 
+    "athletic young guy", "sophisticated gentleman", "high fashion male model", 
+    "corporate executive", "powerful CEO", "secret agent assassin", "bodybuilder", 
+    "fit gym trainer", "loving husband", "mysterious stranger", "gentleman in tuxedo", 
+    "warrior knight"
+  ]),
+  bank("hair_style", "Hair Style", "character", [
+    "long flowing hair", "waist-length straight hair", "hip-length silky hair", 
+    "long layered hair", "long tousled hair", "long loose waves", "mermaid waves", 
+    "long soft curls", "shoulder-length wavy hair", "sleek blunt bob", "textured lob", 
+    "short pixie cut", "curtain bangs", "vintage hollywood waves", "victory rolls", 
+    "high ponytail", "messy top knot", "half-up half-down", "dutch braids", "curly afro", 
+    "wolf cut", "long shag cut", "wet look hair", "windblown hair", "tousled bed hair",
+    "slick back hair", "undercut fade", "classic pompadour", "textured crop top", 
+    "buzz cut", "crew cut", "messy fringe", "side part quiff", "taper fade short hair", 
+    "man bun", "short messy spikes", "caesar cut", "short natural curls", "long dreadlocks"
+  ]),
   bank("character_companion", "Companion", "character", ["Deadpool", "Superman", "Einstein", "Wonder Woman", "Iron Man", "Pikachu", "Godzilla", "Hatsune Miku"]),
-  bank("expressions", "Expressions", "character", ["a soft natural smile", "a playful flirtatious look", "a calm serene expression", "a determined gaze", "caught mid-laugh"]),
+  bank("expressions", "Expressions", "character", [
+    "a soft natural smile", "a playful flirtatious look", "a calm serene expression", 
+    "a determined gaze", "caught mid-laugh", "a confident smirk", "a rugged intense gaze", 
+    "a serious focused look", "a playful wink"
+  ]),
   bank("art_style", "Art Style", "visual", ["High-quality 2D illustration style", "Ukiyo-e", "Cubism", "Surrealism", "Realism", "Realistic impasto style", "Cyberpunk neon style", "Watercolor hand-drawn style"]),
   bank("line_art_style", "Line Art Style", "visual", ["fine ink linework", "bold clean outlines", "rough sketch lines", "no visible linework"]),
   bank("shading_technique", "Shading Technique", "visual", ["minimal shading", "soft cel shading", "crosshatching", "halftone shading"]),

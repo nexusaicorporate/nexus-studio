@@ -33,6 +33,10 @@ image = (
         "comfy --skip-prompt install --nvidia",
         # the model auto-downloader node, so /workflow-models works on the server
         "comfy node install ComfyUI-Workflow-Models-Downloader || true",
+        # LTX standard custom nodes and timeline director
+        "comfy node install ComfyUI-LTXVideo || true",
+        "comfy node install ComfyUI-KJNodes || true",
+        "comfy node install WhatDreamsCost-ComfyUI || true",
     )
     .env({"HF_HUB_ENABLE_HF_TRANSFER": "1"})
 )

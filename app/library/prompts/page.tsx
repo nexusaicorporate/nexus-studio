@@ -25,6 +25,7 @@ export default function PromptsPage() {
   const lib = useLibrary();
   const prompts = lib.prompts;
   const setKey = lib.set;
+  const deleteItem = lib.deleteItem;
   const importJSON = lib.importJSON;
   const templates = lib.templates;
   const ingredients = lib.ingredients || [];
@@ -40,12 +41,12 @@ export default function PromptsPage() {
   const filtered = prompts.filter((p) => (cat === "All" || p.category === cat) && (showNsfw || !p.nsfw) && (p.title.toLowerCase().includes(q.toLowerCase()) || p.body.toLowerCase().includes(q.toLowerCase())));
 
   function save(p: PromptItem) { p.updatedAt = Date.now(); const exists = prompts.some((x) => x.id === p.id); setKey("prompts", exists ? prompts.map((x) => (x.id === p.id ? p : x)) : [p, ...prompts]); setEdit(null); }
-  function del(id: string) { setKey("prompts", prompts.filter((p) => p.id !== id)); }
+  function del(id: string) { deleteItem("prompts", id); }
   function use(p: PromptItem) { router.push(`/studio/${p.mediaType === "video" ? "video" : "image"}?prompt=${encodeURIComponent(p.body)}`); }
   function sendToRecipes(p: PromptItem) {
     const tpl: Template = { id: newId(), name: p.title || "Imported prompt", content: p.body, mediaType: p.mediaType === "video" ? "video" : "image", cover: p.cover, selections: {}, tags: p.tags || [], nsfw: p.nsfw, createdAt: Date.now(), updatedAt: Date.now() };
     setKey("templates", [tpl, ...templates]);
-    router.push("/library/recipes");
+    router.push("/library/prompt-director");
   }
 
   if (!mounted) return null;

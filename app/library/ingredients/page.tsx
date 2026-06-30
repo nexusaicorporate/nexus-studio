@@ -33,6 +33,7 @@ export default function IngredientsPage() {
   const mounted = useMounted();
   const ingredients = useLibrary((s) => s.ingredients);
   const setKey = useLibrary((s) => s.set);
+  const deleteItem = useLibrary((s) => s.deleteItem);
   const [q, setQ] = useState(""); const [cat, setCat] = useState("All"); const [edit, setEdit] = useState<Ingredient | null>(null);
 
   // Local state to track custom categories added by the user, persisted in localStorage
@@ -68,7 +69,7 @@ export default function IngredientsPage() {
   const filtered = ingredients.filter((i) => (cat === "All" || i.category === cat) && (i.name + i.value + (i.tags?.join(" ") || "")).toLowerCase().includes(q.toLowerCase()));
 
   function save(i: Ingredient) { i.updatedAt = Date.now(); const ex = ingredients.some((x) => x.id === i.id); setKey("ingredients", ex ? ingredients.map((x) => x.id === i.id ? i : x) : [i, ...ingredients]); setEdit(null); }
-  function del(id: string) { setKey("ingredients", ingredients.filter((i) => i.id !== id)); }
+  function del(id: string) { deleteItem("ingredients", id); }
 
   function addCustomCategory(newCat: string) {
     const cleaned = newCat.trim();

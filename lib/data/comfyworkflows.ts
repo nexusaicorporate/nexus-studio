@@ -690,5 +690,65 @@ export const HUB_WORKFLOWS: HubWorkflow[] = [
         }
       }
     }
+  },
+  {
+    id: "ltx-audio-video",
+    name: "LTX-2.3 Native Audio-Video",
+    category: "Video",
+    difficulty: "Advanced",
+    nodes: 6,
+    author: "Nexusai / Sunwood",
+    desc: "Uses the LTXVideo model loader coupled with an audio generation node to output a synchronized video + audio MP4 file locally in a single generation pass.",
+    json: {
+      "1": {
+        "class_type": "LTXVideoLoader",
+        "inputs": {
+          "model_name": "ltx-video-2.3-22b.safetensors"
+        }
+      },
+      "2": {
+        "class_type": "LTXTextEncode",
+        "inputs": {
+          "model": ["1", 0],
+          "prompt": "EXT. FOREST ROAD - SUNSET - DOLLY IN\nHe looks ahead, his voice deep and warm: \"We are close now, I can feel it.\" The wind rustles the trees as the camera pushes forward."
+        }
+      },
+      "3": {
+        "class_type": "LTXAudioGenerator",
+        "inputs": {
+          "prompt": "deep warm voice: \"We are close now, I can feel it.\" Wind rustling through pine needles."
+        }
+      },
+      "4": {
+        "class_type": "LTXSampler",
+        "inputs": {
+          "model": ["1", 0],
+          "text_encode": ["2", 0],
+          "audio": ["3", 0],
+          "width": 768,
+          "height": 512,
+          "steps": 25,
+          "cfg": 7.0,
+          "seed": 20261984,
+          "fps": 24,
+          "num_frames": 97
+        }
+      },
+      "5": {
+        "class_type": "LTXVAEDecode",
+        "inputs": {
+          "samples": ["4", 0]
+        }
+      },
+      "6": {
+        "class_type": "SaveVideoWithAudio",
+        "inputs": {
+          "images": ["5", 0],
+          "audio": ["3", 0],
+          "filename_prefix": "LTX_AudioVideo",
+          "fps": 24
+        }
+      }
+    }
   }
 ];

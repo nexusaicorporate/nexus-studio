@@ -11,11 +11,14 @@ import PromptPicker, { useTaskSystemPrompt } from "@/components/PromptPicker";
 import { MultiRefPicker } from "@/components/MultiRefPicker";
 import { RecipeLoader } from "@/components/RecipeLoader";
 import { VisualRecipeBuilder } from "@/components/VisualRecipeBuilder";
+import { MentionTextarea } from "@/components/MentionTextarea";
 import { assembleTemplate } from "@/lib/promptfill";
 import type { Template, Recipe } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
 import { canUseModel } from "@/lib/entitlements";
 import UpgradePrompt from "@/components/UpgradePrompt";
+import { characterPrompt } from "@/lib/character";
+import { modelsFor } from "@/lib/model-catalog";
 type Mode = "t2v" | "i2v" | "r2v" | "v2v";
 const MODE_LABEL: Record<Mode, string> = { t2v: "Text → Video", i2v: "Image → Video", r2v: "Reference → Video", v2v: "Video → Video" };
 const RATIOS = ["16:9", "9:16", "1:1"]; const RES = ["720p", "1080p", "4K"];
@@ -24,19 +27,22 @@ function VideoInner() {
   const provider = settings.providers.find((p) => p.id === settings.activeVideoProviderId)!;
   const { plan } = useAuth();
   const [mode, setMode] = useState<Mode>("t2v"); const [op, setOp] = useState<"create" | "edit" | "extend">("create");
-  const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("16:9"); const [res, setRes] = useState("1080p"); const [engine, setEngine] = useState("Veo 3");
-  const providerModels = provider?.models && provider.models.length > 0 ? provider.models : ["Veo 3", "Kling 2.0", "Seedance 2.0", "Wan 2.2", "LTX-2", "Runway Gen-4"];
+  const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("16:9"); const [res, setRes] = useState("1080p"); const [engine, setEngine] = useState("ltx-2.3");
+  const catalogModels = modelsFor(mode === "t2v" ? "t2v" : "i2v");
+  const [charId, setCharId] = useState<string>("");
   const [startImg, setStartImg] = useState<string | null>(null); const [endImg, setEndImg] = useState<string | null>(null); const [refMedia, setRefMedia] = useState<string | null>(null);
   const [refImages, setRefImages] = useState<string[]>([]);
   const [audioMode, setAudioMode] = useState<"none" | "upload" | "generate">("none");
   const [audioFile, setAudioFile] = useState<string | null>(null);
+  const [quantize, setQuantize] = useState(false);
   const [busy, setBusy] = useState(false); const [jsonOut, setJsonOut] = useState<string>("");
   const [rendering, setRendering] = useState(false); const [renderPct, setRenderPct] = useState(0); const [renderStatus, setRenderStatus] = useState(""); const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [recipe, setRecipe] = useState<Template | Recipe | null>(null);
   const [recipeSelections, setRecipeSelections] = useState<Record<string, string>>({});
   const taskSystem = useTaskSystemPrompt("video", mode === "t2v" ? "T2V" : mode === "v2v" ? "V2V" : "I2V");
   useEffect(() => { const p = sp.get("prompt"); if (p) { setPrompt(p); setRecipe(null); } }, [sp]);
-  useEffect(() => { if (providerModels.length > 0 && !providerModels.includes(engine)) setEngine(providerModels[0]); }, [providerModels, engine]);
+  useEffect(() => { if (charId) { const c = library.characters.find((x) => x.id === charId); if (c) setPrompt((prev) => prev || characterPrompt(c)); } }, [charId, library.characters]);
+  useEffect(() => { if (catalogModels.length > 0 && !catalogModels.some((m) => m.id === engine)) setEngine(catalogModels[0].id); }, [catalogModels, engine]);
   async function enhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ provider, model: provider.selectedModel || provider.models[0] || "openai", uncensored: settings.uncensored, system: taskSystem || `You are a cinematic ${MODE_LABEL[mode]} prompt writer. Rewrite the idea into a detailed prompt covering subject, camera movement, lighting, pacing and motion in ~80-100 words. Output only the prompt.`, messages: [{ id: "1", role: "user", content: activeP }] }); if (out) { setPrompt(out.trim()); setRecipe(null); } } catch (e: any) { alert("Enhance failed: " + e.message); } setBusy(false); }
   async function jsonEnhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ provider, model: provider.selectedModel || provider.models[0] || "openai", uncensored: settings.uncensored, system: "Convert the idea into a structured JSON video spec with fields: subject, setting, camera_movement, lighting, color_palette, pacing, audio, master_prompt. Output only JSON.", messages: [{ id: "1", role: "user", content: activeP }] }); setJsonOut(out.trim()); } catch (e: any) { alert("Failed: " + e.message); } setBusy(false); }
   function saveSpec() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; const spec = { mode, op, engine, ratio, res, prompt: activeP, startImg: !!startImg, endImg: !!endImg, refMedia: !!refMedia, refImages: refImages.length, audioMode, hasAudio: !!audioFile, json: jsonOut, recipe: recipe ? { id: recipe.id, selections: recipeSelections } : undefined }; library.set("assets", [{ id: newId(), kind: "video" as const, url: "", prompt: activeP, meta: spec, createdAt: Date.now() }, ...library.assets]); alert("Video spec saved to your generations. Connect a video provider (Veo/Kling/Seedance/Runway) key in Settings to render."); }
@@ -45,14 +51,19 @@ function VideoInner() {
     if (!activeP.trim()) return;
     setRendering(true); setResultUrl(null); setRenderPct(0); setRenderStatus("submitting");
     try {
+      const c = charId ? library.characters.find((x) => x.id === charId) : null;
+      const full = c ? `${characterPrompt(c)}, ${activeP}` : activeP;
       const url = await generateVideo({
-        provider, prompt: activeP, mode,
-        model: provider.selectedModel || provider.models[0],
+        provider, prompt: full, mode,
+        model: engine || provider.selectedModel || provider.models[0],
         image: mode === "i2v" ? (startImg || undefined) : mode === "r2v" ? (refImages[0] || undefined) : undefined,
+        endImage: mode === "i2v" ? (endImg || undefined) : undefined,
+        quantize,
+        audioFile: audioMode === "upload" ? (audioFile || undefined) : undefined,
         onProgress: (pct, status) => { setRenderPct(pct); setRenderStatus(status); },
       });
       setResultUrl(url);
-      library.set("assets", [{ id: newId(), kind: "video" as const, url, prompt: activeP, meta: { mode, op, engine: provider.selectedModel || engine, ratio, res }, createdAt: Date.now() }, ...library.assets]);
+      library.set("assets", [{ id: newId(), kind: "video" as const, url, prompt: full, meta: { mode, op, engine: provider.selectedModel || engine, ratio, res }, characterId: charId || undefined, createdAt: Date.now() }, ...library.assets]);
     } catch (e: any) { alert("Render failed: " + e.message); }
     setRendering(false);
   }
@@ -65,6 +76,37 @@ function VideoInner() {
           <Field label="Input mode"><div className="grid grid-cols-2 gap-2">{(Object.keys(MODE_LABEL) as Mode[]).map((m) => (<button key={m} className={`tab ${mode === m ? "tab-active" : "tab-idle"}`} onClick={() => setMode(m)}>{MODE_LABEL[m]}</button>))}</div></Field>
           <Field label="Operation"><div className="flex gap-2">{(["create", "edit", "extend"] as const).map((o) => <button key={o} className={`tab flex-1 capitalize ${op === o ? "tab-active" : "tab-idle"}`} onClick={() => setOp(o)}>{o}</button>)}</div></Field>
           <div className="flex items-center justify-between"><span className="label mb-0">System prompt</span><PromptPicker taskKey="video" filterModes={["T2V", "I2V", "V2V", "IT2V", "VT2T"]} /></div>
+          {library.characters.length > 0 && (
+            <Field label="Lock to character (keeps persona consistent)">
+              <div className="flex gap-2">
+                <select className="input flex-1" value={charId} onChange={(e) => setCharId(e.target.value)}>
+                  <option value="">— none —</option>
+                  {library.characters.map((c) => <option key={c.id} value={c.id}>{c.name || "Unnamed"}</option>)}
+                </select>
+                {charId && (() => {
+                  const selChar = library.characters.find(c => c.id === charId);
+                  const hasRef = selChar && (selChar.characterSheetUrl || selChar.refImages.length > 0);
+                  if (!hasRef) return null;
+                  return (
+                    <button
+                      className="btn-outline text-xs px-2.5"
+                      type="button"
+                      onClick={() => {
+                        const img = selChar.characterSheetUrl || selChar.refImages[0];
+                        if (img) {
+                          setStartImg(img);
+                          setMode("i2v");
+                        }
+                      }}
+                      title="Load character turnaround/reference into video start frame"
+                    >
+                      Use Reference
+                    </button>
+                  );
+                })()}
+              </div>
+            </Field>
+          )}
           {(mode === "i2v") && (<div className="grid grid-cols-2 gap-3"><Field label="Start frame"><Uploader img={startImg} onChange={upload(setStartImg)} /></Field><Field label="End frame (optional)"><Uploader img={endImg} onChange={upload(setEndImg)} /></Field></div>)}
           {mode === "r2v" && (
             <Field label={`Reference images (${refImages.length}/8)`}>
@@ -76,7 +118,7 @@ function VideoInner() {
             {recipe ? (
               <VisualRecipeBuilder content={(recipe as any).content || (recipe as any).templateString || ""} selections={recipeSelections} banks={library.banks} onChange={setRecipeSelections} />
             ) : (
-              <textarea className="input min-h-[110px]" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Describe the shot, motion and mood…" />
+              <MentionTextarea className="input min-h-[110px]" value={prompt} onChange={(e) => setPrompt(e.target.value)} placeholder="Describe the shot, motion and mood, use @ to mention elements..." />
             )}
           </Field>
           <div className="flex gap-2"><button className="btn-ghost flex-1 text-xs" onClick={enhance} disabled={busy}><Wand2 size={14} /> Enhance</button><button className="btn-ghost flex-1 text-xs" onClick={jsonEnhance} disabled={busy}><Plus size={14} /> JSON enhance</button></div>
@@ -100,7 +142,19 @@ function VideoInner() {
             )}
           </Field>
 
-          <div className="grid grid-cols-3 gap-2"><Field label="Engine"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{providerModels.map((x) => <option key={x} value={x}>{x} {!canUseModel(plan, x) ? "(Pro)" : ""}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
+          <div className="grid grid-cols-3 gap-2"><Field label="Engine"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{catalogModels.map((m) => <option key={m.id} value={m.id}>{m.label} {!canUseModel(plan, m.id) ? `(${m.tier === "studio" ? "Studio" : "Pro"})` : ""}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
+          <div className="flex items-center gap-2 py-1 select-none">
+            <input
+              id="quantize-toggle"
+              type="checkbox"
+              className="rounded border-border bg-surface2 text-primary focus:ring-primary h-4 w-4"
+              checked={quantize}
+              onChange={(e) => setQuantize(e.target.checked)}
+            />
+            <label htmlFor="quantize-toggle" className="text-xs text-text/80 cursor-pointer font-medium">
+              FP8 Quantize (Low VRAM Mode / Faster Boot)
+            </label>
+          </div>
           {!canUseModel(plan, provider?.selectedModel || engine) ? (
             <UpgradePrompt title="Pro Model Selected" message="This video model requires an active Pro subscription to render." planNeeded="Pro" inline />
           ) : provider?.kind === "modal" ? (

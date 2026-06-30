@@ -24,6 +24,7 @@ const PALETTES = ["stitch", "ocean", "forest", "sunset", "rose", "slate", "corpo
 export default function SettingsPage() {
   const mounted = useMounted();
   const s = useSettings();
+  const comfy = useComfyStore();
   const reseed = useLibrary((x) => x.reseed);
   const [fetching, setFetching] = useState<string | null>(null);
   const [tab, setTab] = useState<"providers" | "appearance" | "comfy">("providers");
@@ -34,7 +35,7 @@ export default function SettingsPage() {
   const [deploying, setDeploying] = useState(false);
   const [deployMsg, setDeployMsg] = useState<{ ok: boolean; text: string; log?: string } | null>(null);
 
-  if (!mounted) return null;
+  if (!mounted || !s.hydrated || !comfy.hydrated) return null;
 
   async function runDeploy() {
     if (!deploy.model.trim()) { setDeployMsg({ ok: false, text: "Enter a model id first." }); return; }

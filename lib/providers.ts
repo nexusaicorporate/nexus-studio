@@ -201,15 +201,20 @@ export async function chat(o: ChatOpts): Promise<string> {
   if (p.kind === "pollinations") {
     const isStream = !!onChunk;
     const msgs = [...(sys ? [{ role: "system", content: sys }] : []), ...o.messages.map((m) => ({ role: m.role, content: m.content }))];
-    const r = await fetch("https://text.pollinations.ai/openai", {
+    
+    const r = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model, messages: msgs, stream: isStream })
+      body: JSON.stringify({
+        url: "https://text.pollinations.ai/openai",
+        headers: {},
+        body: { model, messages: msgs, stream: isStream }
+      })
     });
 
     if (!r.ok) {
       const errText = await r.text();
-      throw new Error(`Pollinations API error: ${r.status} ${errText}`);
+      throw new Error(`Pollinations API proxy error: ${r.status} ${errText}`);
     }
 
     if (isStream && r.body) {
@@ -253,7 +258,16 @@ export async function chat(o: ChatOpts): Promise<string> {
   if (p.kind === "ollama" && !/\/v1$/.test(base)) base += "/v1";
   const isStream = !!onChunk;
   const msgs = [...(sys ? [{ role: "system", content: sys }] : []), ...o.messages.map((m) => {
-    if (m.images && m.images.length) return { role: m.role, content: [{ type: "text", text: m.content }, ...m.images.map((u) => ({ type: "image_url", image_url: { url: u } }))] };
+    if ((m.images && m.images.length) || (m.videos && m.videos.length)) {
+      return {
+        role: m.role,
+        content: [
+          { type: "text", text: m.content },
+          ...(m.images || []).map((u) => ({ type: "image_url", image_url: { url: u } })),
+          ...(m.videos || []).map((u) => ({ type: "video_url", video_url: { url: u } }))
+        ]
+      };
+    }
     return { role: m.role, content: m.content };
   })];
   const r = await fetch(base + "/chat/completions", {
@@ -357,6 +371,9 @@ export interface VideoOpts {
   mode?: "t2v" | "i2v" | "r2v" | "v2v";
   model?: string;
   image?: string;        // start frame (b64/data-url) for image-to-video
+  endImage?: string;     // end frame (b64/data-url) for keyframe interpolation
+  quantize?: boolean;    // FP8 low-memory mode
+  audioFile?: string;    // audio track file (b64/data-url)
   frames?: number;
   fps?: number;
   seed?: number;
@@ -386,6 +403,9 @@ export async function generateVideo(o: VideoOpts): Promise<string> {
       mode: o.mode || "t2v",
       prompt: o.prompt,
       image: o.image,
+      end_image: o.endImage,
+      quantize: o.quantize,
+      audio: o.audioFile,
       frames: o.frames,
       fps: o.fps,
       seed: o.seed,

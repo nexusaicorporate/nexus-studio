@@ -4,16 +4,16 @@
 
 :root {
   --bg: 15 17 26; --surface: 23 25 38; --surface2: 31 34 51; --border: 44 48 70;
-  --text: 233 236 245; --muted: 148 160 184; --primary: 124 58 237; --primary-fg: 255 255 255; --accent: 34 197 94;
+  --text: 255 255 255; --muted: 156 163 175; --primary: 14 165 233; --primary-fg: 255 255 255; --accent: 34 211 238;
 }
-[data-palette="stitch"]   { --primary: 124 58 237; --accent: 34 197 94; }
+[data-palette="stitch"]   { --primary: 14 165 233; --accent: 34 211 238; }
 [data-palette="ocean"]    { --primary: 37 99 235;  --accent: 14 165 233; }
 [data-palette="forest"]   { --primary: 5 150 105;  --accent: 132 204 22; }
 [data-palette="sunset"]   { --primary: 234 88 12;  --accent: 245 158 11; }
 [data-palette="rose"]     { --primary: 225 29 72;  --accent: 244 114 182; }
 [data-palette="slate"]    { --primary: 100 116 139; --accent: 148 163 184; }
 [data-palette="corporate"]{ --primary: 30 64 175; --accent: 59 130 246; }
-[data-palette="amoled"]   { --primary: 124 58 237; --accent: 34 197 94; --bg: 0 0 0; --surface: 10 10 12; --surface2: 18 18 22; --border: 32 32 38; }
+[data-palette="amoled"]   { --primary: 14 165 233; --accent: 34 211 238; --bg: 0 0 0; --surface: 10 10 12; --surface2: 18 18 22; --border: 32 32 38; }
 [data-mode="light"] {
   --bg: 248 246 252; --surface: 255 255 255; --surface2: 244 242 247; --border: 226 224 232;
   --text: 17 24 39; --muted: 100 116 139; --primary-fg: 255 255 255;
@@ -42,6 +42,22 @@ body { background: rgb(var(--bg)); color: rgb(var(--text)); font-family: Inter, 
   .tab-active { @apply bg-primary text-primary-fg; }
   .tab-idle { @apply bg-surface2 text-muted hover:text-text; }
 }
+
+/* Custom dropdown and select option styles for contrast/readability */
+select.input {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a0b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 40px;
+  color: rgb(var(--text));
+}
+select.input option {
+  background-color: rgb(var(--surface));
+  color: rgb(var(--text));
+}
+
 .glass { backdrop-filter: blur(10px); }
 .fade-in { animation: fadeIn .25s ease; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px);} to { opacity:1; transform:none; } }

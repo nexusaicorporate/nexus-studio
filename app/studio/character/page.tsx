@@ -71,6 +71,7 @@ export default function CharacterPage() {
   const [edit, setEdit] = useState<Character | null>(null);
   const [trainLoRA, setTrainLoRA] = useState<Character | null>(null);
   const [xrayChar, setXrayChar] = useState<Character | null>(null);
+  const [sheetChar, setSheetChar] = useState<Character | null>(null);
 
   function save(c: Character) { 
     c.updatedAt = Date.now(); 
@@ -117,6 +118,7 @@ export default function CharacterPage() {
                       {c.triggerWord && <span className="text-primary-light font-mono font-bold bg-primary/10 px-1 rounded">{c.triggerWord}</span>}
                       {c.loraStatus === "completed" && <span className="text-emerald-400 bg-emerald-400/5 px-1 py-0.5 rounded border border-emerald-400/20 font-bold font-mono">LoRA Loaded</span>}
                       {c.loraStatus === "training" && <span className="text-amber-400 bg-amber-400/5 px-1 py-0.5 rounded border border-amber-400/20 animate-pulse font-bold">LoRA Training</span>}
+                      {c.characterSheetUrl && <span className="text-blue-400 bg-blue-400/5 px-1 py-0.5 rounded border border-blue-400/20 font-bold font-mono">Sheet Ready</span>}
                     </div>
                   </div>
                 </div>
@@ -156,6 +158,13 @@ export default function CharacterPage() {
                   >
                     <Dumbbell size={13} />
                   </button>
+                  <button 
+                    className={`btn-ghost p-1.5 text-xs ${c.characterSheetUrl ? "text-blue-400" : "text-primary-light"}`}
+                    onClick={() => setSheetChar(c)}
+                    title="Generate Character Sheet (Consistency Anchor)"
+                  >
+                    <Palette size={13} />
+                  </button>
                   {c.loraStatus === "completed" && c.loraUrl && (
                     <a 
                       href={c.loraUrl} 
@@ -179,6 +188,7 @@ export default function CharacterPage() {
       <Modal open={!!edit} onClose={() => setEdit(null)} title={edit && characters.some((x) => x.id === edit.id) ? "Edit Character" : "New Character"} wide>{edit && <Form item={edit} onSave={save} />}</Modal>
       <Modal open={!!trainLoRA} onClose={() => setTrainLoRA(null)} title="Train Custom Character LoRA (FAL.ai)">{trainLoRA && <LoraTrainer item={trainLoRA} onClose={() => setTrainLoRA(null)} />}</Modal>
       <Modal open={!!xrayChar} onClose={() => setXrayChar(null)} title="Character Psychological X-Ray (AI Analysis)" wide>{xrayChar && <CharacterXRayTool character={xrayChar} onClose={() => setXrayChar(null)} />}</Modal>
+      <Modal open={!!sheetChar} onClose={() => setSheetChar(null)} title="Character Consistency Sheet Generator" wide>{sheetChar && <CharacterSheetGenerator character={sheetChar} onClose={() => setSheetChar(null)} />}</Modal>
     </Page>
   );
 }
@@ -248,8 +258,26 @@ function renderHairStyleSVG(id: string) {
           <path d="M32 35 C32 15, 68 15, 68 35 C70 45, 68 70, 66 75 C60 55, 62 42, 55 42 C50 42, 45 35, 45 35 C45 35, 40 42, 35 42 C30 42, 32 55, 26 75 C24 70, 22 45, 32 35 Z" fill="currentColor" />
         </svg>
       );
-    default:
-      return null;
+    default: {
+      const isShort = /(short|buzz|crew|fade|slick|undercut|crop|pompadour|quiff|spikes|caesar|bald|taper|high and tight)/i.test(id);
+      if (isShort) {
+        return (
+          <svg className="w-12 h-12 text-primary-light/80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="45" r="18" fill="currentColor" opacity="0.15" />
+            <path d="M36 38 C36 22, 64 22, 64 38 C64 42, 60 33, 56 33 C52 33, 48 35, 44 33 Z" fill="currentColor" />
+            <circle cx="50" cy="42" r="14" fill="currentColor" opacity="0.25" />
+          </svg>
+        );
+      } else {
+        return (
+          <svg className="w-12 h-12 text-primary-light/80" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="45" r="18" fill="currentColor" opacity="0.15" />
+            <path d="M30 40 C30 20, 70 20, 70 40 L71 65 L67 65 L65 43 L35 43 L33 65 L29 65 Z" fill="currentColor" />
+            <circle cx="50" cy="42" r="14" fill="currentColor" opacity="0.25" />
+          </svg>
+        );
+      }
+    }
   }
 }
 
@@ -322,6 +350,94 @@ function renderTattooSVG(id: string) {
   }
 }
 
+const femaleHairStyles = [
+  { id: "long flowing hair", label: "Long Flowing Hair" },
+  { id: "waist-length straight hair", label: "Waist-Length Straight" },
+  { id: "hip-length silky hair", label: "Hip-Length Silky" },
+  { id: "long layered hair", label: "Long Layered Hair" },
+  { id: "long tousled hair", label: "Long Tousled Hair" },
+  { id: "long loose waves", label: "Long Loose Waves" },
+  { id: "mermaid waves", label: "Mermaid Waves" },
+  { id: "long soft curls", label: "Long Soft Curls" },
+  { id: "long tight curls", label: "Long Tight Curls" },
+  { id: "long voluminous hair", label: "Long Voluminous Hair" },
+  { id: "shoulder-length wavy hair", label: "Shoulder-Length Wavy" },
+  { id: "shoulder-length straight hair", label: "Shoulder-Length Straight" },
+  { id: "collarbone-length bob", label: "Collarbone-Length Bob" },
+  { id: "sleek blunt bob", label: "Sleek Blunt Bob" },
+  { id: "textured lob", label: "Textured Lob" },
+  { id: "sleek chin-length bob", label: "Sleek Chin-Length Bob" },
+  { id: "short pixie cut", label: "Short Pixie Cut" },
+  { id: "textured pixie with undercut", label: "Textured Pixie with Undercut" },
+  { id: "asymmetrical bob", label: "Asymmetrical Bob" },
+  { id: "side-swept long hair", label: "Side-Swept Long Hair" },
+  { id: "center-parted long hair", label: "Center-Parted Long Hair" },
+  { id: "deep side part", label: "Deep Side Part" },
+  { id: "curtain bangs", label: "Curtain Bangs" },
+  { id: "face-framing layers", label: "Face-Framing Layers" },
+  { id: "wispy bangs", label: "Wispy Bangs" },
+  { id: "long feathered hair", label: "Long Feathered Hair" },
+  { id: "70s feathered haircut", label: "70s Feathered" },
+  { id: "90s supermodel blowout", label: "90s Supermodel Blowout" },
+  { id: "vintage hollywood waves", label: "Vintage Hollywood Waves" },
+  { id: "soft romantic curls", label: "Soft Romantic Curls" },
+  { id: "victory rolls", label: "Victory Rolls" },
+  { id: "high ponytail", label: "High Ponytail" },
+  { id: "low ponytail", label: "Low Ponytail" },
+  { id: "messy top knot", label: "Messy Top Knot" },
+  { id: "sleek high bun", label: "Sleek High Bun" },
+  { id: "low messy bun", label: "Low Messy Bun" },
+  { id: "half-up half-down", label: "Half-Up Half-Down" },
+  { id: "french braid", label: "French Braid" },
+  { id: "dutch braids", label: "Dutch Braids" },
+  { id: "fishtail braid", label: "Fishtail Braid" },
+  { id: "side braid", label: "Side Braid" },
+  { id: "crown braid", label: "Crown Braid" },
+  { id: "long dreadlocks", label: "Long Dreadlocks" },
+  { id: "medium-length dreadlocks", label: "Medium Dreadlocks" },
+  { id: "curly afro", label: "Curly Afro" },
+  { id: "voluminous afro", label: "Voluminous Afro" },
+  { id: "short natural curls", label: "Short Natural Curls" },
+  { id: "wolf cut", label: "Wolf Cut" },
+  { id: "long shag cut", label: "Long Shag Cut" },
+  { id: "medium shag with bangs", label: "Medium Shag with Bangs" },
+  { id: "wet look hair", label: "Wet Look Hair" },
+  { id: "freshly washed wet hair", label: "Freshly Washed Wet" },
+  { id: "dripping wet hair", label: "Dripping Wet Hair" },
+  { id: "windblown hair", label: "Windblown Hair" },
+  { id: "tousled bed hair", label: "Tousled Bed Hair" },
+  { id: "freshly blown-out hair", label: "Freshly Blown-Out" },
+  { id: "silky smooth hair", label: "Silky Smooth" },
+  { id: "frizz-controlled hair", label: "Frizz-Controlled" },
+  { id: "slightly messy hair", label: "Slightly Messy" },
+  { id: "hair tucked behind ears", label: "Hair Tucked Behind Ears" },
+  { id: "hair swept over one shoulder", label: "Swept Over One Shoulder" },
+];
+
+const maleHairStyles = [
+  { id: "slick back hair", label: "Slick Back" },
+  { id: "undercut fade", label: "Undercut Fade" },
+  { id: "classic pompadour", label: "Classic Pompadour" },
+  { id: "textured crop top", label: "Textured Crop" },
+  { id: "buzz cut", label: "Buzz Cut" },
+  { id: "crew cut", label: "Crew Cut" },
+  { id: "messy fringe", label: "Messy Fringe" },
+  { id: "side part quiff", label: "Side Part Quiff" },
+  { id: "taper fade short hair", label: "Taper Fade" },
+  { id: "man bun", label: "Man Bun" },
+  { id: "short messy spikes", label: "Short Messy Spikes" },
+  { id: "caesar cut", label: "Caesar Cut" },
+  { id: "short natural curls", label: "Short Natural Curls" },
+  { id: "medium-length dreadlocks", label: "Medium Dreadlocks" },
+  { id: "long dreadlocks", label: "Long Dreadlocks" },
+  { id: "bald head", label: "Bald Head" },
+  { id: "high and tight", label: "High and Tight" },
+  { id: "wet look short hair", label: "Wet Look Short Hair" },
+  { id: "windblown tousled short hair", label: "Windblown Tousled" },
+  { id: "surfer waves", label: "Surfer Waves" },
+  { id: "fringe undercut", label: "Fringe Undercut" },
+];
+
 function Form({ item, onSave }: { item: Character; onSave: (c: Character) => void }) {
   const { addons } = useAuth();
   const [c, setC] = useState<any>({
@@ -361,18 +477,18 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
 
   const [hairColors, setHairColors] = useState<string[]>(["blonde", "brunette", "black", "red", "pink", "blue", "purple", "platinum white", "auburn", "ginger"]);
   const [hairStyles, setHairStyles] = useState<string[]>(["long straight", "short bob", "curly", "pixie", "wavy", "messy bun", "bald", "fade", "crew cut", "buzz cut"]);
-  const [facialHairs, setFacialHairs] = useState<string[]>(["none", "clean shaven", "stubble", "goatee", "mustache", "full beard"]);
-  const [chestHairs, setChestHairs] = useState<string[]>(["none", "light chest hair", "hairy chest", "bear chest"]);
-  const [bodyShapes, setBodyShapes] = useState<string[]>(["hourglass", "pear", "athletic", "slim", "curvy", "chubby", "muscular", "lean", "broad shoulders", "dad bod"]);
-  const [eyeColors, setEyeColors] = useState<string[]>(["brown", "blue", "green", "hazel", "grey"]);
+  const [facialHairs, setFacialHairs] = useState<string[]>(["none", "clean shaven", "stubble", "goatee", "mustache", "full beard", "short beard", "heavy stubble", "lumberjack beard", "chinstrap", "handlebar mustache"]);
+  const [chestHairs, setChestHairs] = useState<string[]>(["none", "clean shaven chest", "defined muscular pecs", "broad powerful chest", "toned chest with light hair", "hairy chest", "bear chest"]);
+  const [bodyShapes, setBodyShapes] = useState<string[]>(["hourglass", "pear", "athletic", "slim", "curvy", "chubby", "muscular", "lean", "broad shoulders", "dad bod", "chiseled v-taper", "shredded bodybuilder", "tall broad-shouldered", "petite slender"]);
+  const [eyeColors, setEyeColors] = useState<string[]>(["brown", "blue", "green", "hazel", "grey", "piercing ice-blue", "deep sapphire blue", "emerald green", "warm amber", "steel gray"]);
   const [skinTones, setSkinTones] = useState<string[]>(["fair", "pale", "light", "medium", "olive", "tan", "brown", "dark", "ebony"]);
   const [heights, setHeights] = useState<string[]>(["petite", "short", "average", "tall", "towering"]);
-  const [bodyBuilds, setBodyBuilds] = useState<string[]>(["slender", "toned", "muscular", "soft", "thick"]);
+  const [bodyBuilds, setBodyBuilds] = useState<string[]>(["slender", "toned", "muscular", "soft", "thick", "athletic", "bodybuilder", "shredded", "stocky"]);
   const [breastSizes, setBreastSizes] = useState<string[]>(["A cup", "B cup", "C cup", "D cup", "DD cup", "E cup", "F cup", "G cup"]);
   const [breastShapes, setBreastShapes] = useState<string[]>(["round", "tear-drop", "side-set", "athletic", "perky", "slender"]);
   const [assSizes, setAssSizes] = useState<string[]>(["small", "medium", "large", "huge"]);
   const [assShapes, setAssShapes] = useState<string[]>(["round", "bubble", "heart-shaped", "flat"]);
-  const [penisSizes, setPenisSizes] = useState<string[]>(["small", "average", "thick", "large", "huge"]);
+  const [penisSizes, setPenisSizes] = useState<string[]>(["small", "average", "thick", "large", "huge", "monster-sized"]);
 
   const [customVal, setCustomVal] = useState<Record<string, string>>({
     hairColor: "",
@@ -767,6 +883,27 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
                 </button>
               );
             })}
+          </div>
+
+          <div className="mt-3 flex gap-2 items-center">
+            <span className="text-[11px] text-muted shrink-0">More presets:</span>
+            <select
+              className="input py-1 px-2 text-xs flex-1 border border-border/40"
+              value={c.hairStyle || ""}
+              onChange={(e) => setC({ ...c, hairStyle: e.target.value })}
+            >
+              <option value="" disabled>Choose a detailed preset...</option>
+              <optgroup label="Female Hairstyles">
+                {femaleHairStyles.map((style) => (
+                  <option key={style.id} value={style.id}>{style.label}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Male Hairstyles">
+                {maleHairStyles.map((style) => (
+                  <option key={style.id} value={style.id}>{style.label}</option>
+                ))}
+              </optgroup>
+            </select>
           </div>
         </div>
       </div>
@@ -2028,6 +2165,141 @@ Your output MUST be a valid JSON object matching this schema. Do not write any c
               </div>
             </div>
 
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface CharacterSheetGeneratorProps {
+  character: Character;
+  onClose: () => void;
+}
+
+function CharacterSheetGenerator({ character, onClose }: CharacterSheetGeneratorProps) {
+  const settings = useSettings();
+  const characters = useLibrary((s) => s.characters);
+  const setKey = useLibrary((s) => s.set);
+  
+  const [style, setStyle] = useState<"photorealistic" | "anime" | "3d-render" | "comic-book">("photorealistic");
+  const [customPrompt, setCustomPrompt] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<string | null>(character.characterSheetUrl || null);
+
+  const provider = settings.providers.find((p) => p.id === settings.activeImageProviderId)!;
+
+  async function generate() {
+    setBusy(true);
+    setResult(null);
+    try {
+      const appearance = characterPrompt(character);
+      const styleDesc = 
+        style === "photorealistic" ? "highly detailed photorealistic portrait photo" :
+        style === "anime" ? "detailed anime digital painting style, clean linework" :
+        style === "3d-render" ? "3D Pixar Disney style digital render, octane render" :
+        "vibrant comic book concept art style";
+
+      const prompt = `A detailed character sheet of a consistent character: ${character.name}, ${appearance}. ${styleDesc}. Showing the character in multiple panel layout views: front view, side profile view, and back view. Clean solid white background, model sheet, turnaround, visual concept art keyframe. ${customPrompt}`;
+
+      // Use the active provider with the fallback mechanism
+      const url = await generateImage({
+        provider,
+        prompt,
+        width: 1280,
+        height: 720,
+        model: provider.selectedModel || provider.models[0] || "flux",
+        image: character.refImages[0] || undefined // Use first ref image if available as reference anchor
+      });
+      
+      setResult(url);
+    } catch (e: any) {
+      alert("Failed to generate character sheet: " + e.message);
+    }
+    setBusy(false);
+  }
+
+  function handleSave() {
+    if (!result) return;
+    const updated = characters.map(c => 
+      c.id === character.id 
+        ? { ...c, characterSheetUrl: result, updatedAt: Date.now() } 
+        : c
+    );
+    setKey("characters", updated);
+    alert("Character sheet successfully linked and saved!");
+    onClose();
+  }
+
+  function handleClear() {
+    const updated = characters.map(c => 
+      c.id === character.id 
+        ? { ...c, characterSheetUrl: undefined, updatedAt: Date.now() } 
+        : c
+    );
+    setKey("characters", updated);
+    setResult(null);
+    alert("Character sheet unlinked.");
+  }
+
+  return (
+    <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-2">
+      <div className="bg-surface2/30 border border-border/40 p-4 rounded-xl space-y-3">
+        <h3 className="font-bold text-sm text-text">Generate Consistency Anchor Sheet</h3>
+        <p className="text-[11px] text-muted leading-relaxed">
+          Generates a multi-panel reference sheet (front, side, back view) based on the character's physical details. You can import this sheet in Image/Video gear to anchor consistency.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Sheet Style">
+            <select className="input text-xs" value={style} onChange={(e: any) => setStyle(e.target.value)}>
+              <option value="photorealistic">Photorealistic Cinematic</option>
+              <option value="anime">Anime / Manga Digital Art</option>
+              <option value="3d-render">3D Pixar/Disney Render</option>
+              <option value="comic-book">Comic Book Art</option>
+            </select>
+          </Field>
+          <Field label="Custom Modifiers (Optional)">
+            <input 
+              className="input text-xs" 
+              value={customPrompt} 
+              onChange={(e) => setCustomPrompt(e.target.value)} 
+              placeholder="e.g. wearing blue jacket, simple background..."
+            />
+          </Field>
+        </div>
+
+        <div className="flex gap-2 justify-end pt-2">
+          {result && (
+            <button className="btn-ghost text-xs text-rose-400" onClick={handleClear} disabled={busy}>
+              Remove Sheet
+            </button>
+          )}
+          <button className="btn-ghost text-xs" onClick={onClose} disabled={busy}>
+            Cancel
+          </button>
+          <button className="btn-primary text-xs" onClick={generate} disabled={busy}>
+            {busy ? <Loader2 size={13} className="animate-spin mr-1.5" /> : <Sparkles size={13} className="mr-1.5" />}
+            Generate Turnaround Sheet
+          </button>
+        </div>
+      </div>
+
+      {result && (
+        <div className="card p-4 space-y-3 border border-border">
+          <h4 className="font-semibold text-xs text-text">Generated Model Sheet Turnaround</h4>
+          <div className="aspect-[16/9] bg-black rounded-lg overflow-hidden border border-border">
+            <img src={result} className="w-full h-full object-contain" alt="Character Sheet" />
+          </div>
+          <div className="flex gap-2 justify-between">
+            <a className="btn-outline text-xs" href={result} download={`${character.name || "character"}_sheet.png`} target="_blank">
+              <Download size={13} className="mr-1.5" /> Download Image
+            </a>
+            {result !== character.characterSheetUrl && (
+              <button className="btn-primary text-xs" onClick={handleSave}>
+                Save as Identity Anchor
+              </button>
+            )}
           </div>
         </div>
       )}

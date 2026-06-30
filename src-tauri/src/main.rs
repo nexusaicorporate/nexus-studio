@@ -568,6 +568,149 @@ fn stop_modal_app(
     }
 }
 
+#[tauri::command]
+fn concat_videos(app: tauri::AppHandle, video_urls: Vec<String>) -> Result<String, String> {
+    let cache_dir = app.path().app_cache_dir().map_err(|e| e.to_string())?;
+    let temp_dir = cache_dir.join("cinema_temp");
+    let _ = std::fs::create_dir_all(&temp_dir);
+
+    let mut local_paths = Vec::new();
+    for (i, url) in video_urls.iter().enumerate() {
+        let dest = temp_dir.join(format!("scene_{}.mp4", i));
+        let status = Command::new("curl")
+            .arg("-L")
+            .arg("-o")
+            .arg(&dest)
+            .arg(url)
+            .status()
+            .map_err(|e| format!("Failed to download video: {}", e))?;
+        if !status.success() {
+            return Err(format!("Failed to download video from: {}", url));
+        }
+        local_paths.push(dest);
+    }
+
+    let list_file = temp_dir.join("input.txt");
+    let mut list_content = String::new();
+    for path in &local_paths {
+        let path_str = path.to_string_lossy().replace("\\", "/");
+        list_content.push_str(&format!("file '{}'\n", path_str));
+    }
+    std::fs::write(&list_file, list_content).map_err(|e| format!("Failed to write input.txt: {}", e))?;
+
+    let output_file = temp_dir.join("final_movie.mp4");
+    if output_file.exists() {
+        let _ = std::fs::remove_file(&output_file);
+    }
+
+    let status = Command::new("ffmpeg")
+        .arg("-y")
+        .arg("-f")
+        .arg("concat")
+        .arg("-safe")
+        .arg("0")
+        .arg("-i")
+        .arg(&list_file)
+        .arg("-c")
+        .arg("copy")
+        .arg(&output_file)
+        .status()
+        .map_err(|e| format!("Failed to execute ffmpeg: {}. Check that ffmpeg is installed and in PATH.", e))?;
+
+    if !status.success() {
+        return Err("ffmpeg concatenation failed. Make sure all video inputs have matching resolution and codecs.".into());
+    }
+
+    Ok(output_file.to_string_lossy().into_owned())
+}
+
+#[derive(serde::Serialize)]
+struct DownloadStatus {
+    file_name: String,
+    current_bytes: u64,
+    total_bytes: u64,
+    complete: bool,
+    exists: bool,
+}
+
+#[tauri::command]
+fn check_model_downloads_status(app: tauri::AppHandle) -> Vec<DownloadStatus> {
+    let comfy_dir = resolve_comfy_dir(&app);
+    let diffusion_dir = comfy_dir.join("ComfyUI").join("models").join("diffusion_models");
+    let clip_vision_dir = comfy_dir.join("ComfyUI").join("models").join("clip_vision");
+
+    let ltx_path = diffusion_dir.join("ltx-2.3-22b-distilled-1.1_transformer_only_fp8_scaled.safetensors");
+    let gguf_path = clip_vision_dir.join("Gemma4-26B-A4B-QAT-Uncensored-HauhauCS-Balanced-Q4_K_M.gguf");
+
+    let mut list = Vec::new();
+
+    // LTX-2.3 Video Model
+    let ltx_exists = ltx_path.exists();
+    let ltx_len = ltx_path.metadata().map(|m| m.len()).unwrap_or(0);
+    let ltx_total = 22300000000; // estimated 22.3 GB
+    list.push(DownloadStatus {
+        file_name: "ltx-2.3-22b-distilled-1.1_transformer_only_fp8_scaled.safetensors".into(),
+        current_bytes: ltx_len,
+        total_bytes: ltx_total,
+        complete: ltx_exists && ltx_len >= ltx_total - 1000000,
+        exists: ltx_exists,
+    });
+
+    // Qwen/Gemma GGUF Text Model
+    let gguf_exists = gguf_path.exists();
+    let gguf_len = gguf_path.metadata().map(|m| m.len()).unwrap_or(0);
+    let gguf_total = 16000000000; // estimated 16.0 GB
+    list.push(DownloadStatus {
+        file_name: "Gemma4-26B-A4B-QAT-Uncensored-HauhauCS-Balanced-Q4_K_M.gguf".into(),
+        current_bytes: gguf_len,
+        total_bytes: gguf_total,
+        complete: gguf_exists && gguf_len >= gguf_total - 1000000,
+        exists: gguf_exists,
+    });
+
+    list
+}
+
+#[tauri::command]
+fn start_model_downloads(app: tauri::AppHandle) -> Result<String, String> {
+    let comfy_dir = resolve_comfy_dir(&app);
+    let diffusion_dir = comfy_dir.join("ComfyUI").join("models").join("diffusion_models");
+    let clip_vision_dir = comfy_dir.join("ComfyUI").join("models").join("clip_vision");
+
+    let _ = std::fs::create_dir_all(&diffusion_dir);
+    let _ = std::fs::create_dir_all(&clip_vision_dir);
+
+    // Spawn LTX-2.3 video model download in background thread
+    let ltx_path = diffusion_dir.join("ltx-2.3-22b-distilled-1.1_transformer_only_fp8_scaled.safetensors");
+    if !ltx_path.exists() || ltx_path.metadata().map(|m| m.len()).unwrap_or(0) < 1000000 {
+        let ltx_path_clone = ltx_path.clone();
+        std::thread::spawn(move || {
+            let _ = Command::new("curl")
+                .arg("-L")
+                .arg("-o")
+                .arg(&ltx_path_clone)
+                .arg("https://huggingface.co/Lightricks/LTX-Video/resolve/main/ltx-2.3-22b-distilled-1.1_transformer_only_fp8_scaled.safetensors")
+                .status();
+        });
+    }
+
+    // Spawn Gemma GGUF model download in background thread
+    let gguf_path = clip_vision_dir.join("Gemma4-26B-A4B-QAT-Uncensored-HauhauCS-Balanced-Q4_K_M.gguf");
+    if !gguf_path.exists() || gguf_path.metadata().map(|m| m.len()).unwrap_or(0) < 1000000 {
+        let gguf_path_clone = gguf_path.clone();
+        std::thread::spawn(move || {
+            let _ = Command::new("curl")
+                .arg("-L")
+                .arg("-o")
+                .arg(&gguf_path_clone)
+                .arg("https://huggingface.co/lmstudio-community/gemma-2-27b-it-GGUF/resolve/main/gemma-2-27b-it-Q4_K_M.gguf")
+                .status();
+        });
+    }
+
+    Ok("Downloads spawned".into())
+}
+
 fn main() {
     let mut builder = tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
@@ -589,7 +732,10 @@ fn main() {
             install_modal_node,
             restore_comfy_env,
             deploy_modal_backend,
-            stop_modal_app
+            stop_modal_app,
+            concat_videos,
+            check_model_downloads_status,
+            start_model_downloads
         ])
         .setup(|app| {
             #[cfg(desktop)]

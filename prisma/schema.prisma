@@ -1,0 +1,87 @@
+// This is your Prisma schema file
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  plan      String   @default("free")
+  groups    String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  prompts     Prompt[]
+  templates   Template[]
+  banks       Bank[]
+  ingredients Ingredient[]
+}
+
+model Prompt {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  category    String
+  subcategory String?
+  modes       String[] @default([])
+  body        String
+  tags        String[] @default([])
+  nsfw        Boolean  @default(false)
+  mediaType   String?  @default("image")
+  cover       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Template {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  tokens    Json     @default("[]")
+  tags      String[] @default([])
+  nsfw      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Bank {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name      String
+  category  String
+  items     Json     @default("[]")
+  tags      String[] @default([])
+  nsfw      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Ingredient {
+  id              String   @id @default(cuid())
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  category        String
+  value           String
+  tags            String[] @default([])
+  nsfw            Boolean  @default(false)
+  mediaUrl        String?
+  mediaType       String?
+  triggerWord     String?
+  description     String?
+  refWeight       Float?
+  influenceType   String?
+  negativeModifier String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

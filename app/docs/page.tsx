@@ -320,42 +320,54 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     body: (
       <>
         <H2>Video Gear</H2>
-        <Lede>A cinematic spec builder for Text/Image/Reference/Video → Video, with create · edit · extend operations. Build the spec here, then render through your connected engine.</Lede>
+        <Lede>A cinematic spec builder and renderer for Text/Image/Reference/Video → Video, with create · edit · extend operations. Bundled with direct support for local APIs, cloud GPUs, and optimized LTX engines.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Pick an input mode: <b>Text → Video</b>, <b>Image → Video</b>, <b>Reference → Video</b> or <b>Video → Video</b>.</>,
           <>Pick an operation: <b>create</b>, <b>edit</b> or <b>extend</b> (extend continues from the last frame of an uploaded clip).</>,
           <>Upload start/end frames, a reference image, or a source video depending on the mode.</>,
           <>Write a prompt and use <b>Enhance</b> (cinematic rewrite) or <b>JSON enhance</b> (structured spec).</>,
-          <>Choose an engine, aspect ratio and resolution, then "Build / save spec" to store it in your generations.</>,
+          <>Choose an engine (e.g. LTX-2.3 distilled), aspect ratio and resolution, then click <b>Render</b> to process.</>,
         ]} />
+        <H3>Optimized LTX-2.3 Engine</H3>
+        <P>
+          The Video Gear integrates the optimized backend pipeline from <Code>LTX2.3-Multifunctional</Code> directly. 
+          When rendering via the cloud GPU (Modal), it runs an FP8 quantized transformer which drops VRAM requirements 
+          down to 24GB, accelerating launch times and allowing runs on cheaper hardware tiers.
+        </P>
         <H3>JSON enhance</H3>
         <P>
           Produces a structured JSON video spec with fields like <Code>subject</Code>, <Code>setting</Code>, <Code>camera_movement</Code>,
           <Code>lighting</Code>, <Code>color_palette</Code>, <Code>pacing</Code>, <Code>audio</Code> and a <Code>master_prompt</Code> — ready to paste into a renderer.
         </P>
         <H3>Engines</H3>
-        <Chips items={["Veo 3", "Kling 2.0", "Seedance 2.0", "Wan 2.2", "LTX-2", "Runway Gen-4"]} />
-        <Note>
-          The Video Gear builds and stores specs; actual rendering requires the chosen engine's own API key. Add it as a custom provider in
-          Settings, or take the saved spec to your renderer.
-        </Note>
+        <Chips items={["LTX-2.3 (Distilled)", "Veo 3", "Kling 2.0", "Seedance 2.0", "Wan 2.2", "Runway Gen-4"]} />
       </>
     ),
   },
   {
     id: "cinema", label: "Cinema Gear", group: "Studio Gears", icon: Clapperboard,
-    keywords: "cinema studio storyboard scenes prompt director recipes script",
+    keywords: "cinema studio storyboard scenes prompt director recipes script transitions timeline continuity ltx director",
     body: (
       <>
         <H2>Cinema Gear</H2>
-        <Lede>Create comprehensive storyboards and script sequences by linking scenes together, powered by the Prompt Director.</Lede>
+        <Lede>Create comprehensive storyboards and script sequences by linking scenes together, powered by the Prompt Director and native LTX Director frame continuity.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Create a new <b>Cinema Project</b>.</>,
           <>Add sequential <b>Scenes</b> to your storyboard timeline.</>,
           <>For each scene, open the embedded <b>Prompt Director</b> to dynamically load Recipes, tie in Characters, and mix Ingredients to craft the perfect shot.</>,
-          <>Reorder scenes and track the flow of your visual story before sending them to the Video Gear for rendering.</>,
+          <>Enable <b>LTX Director Mode</b> for seamless frame-to-frame continuity across scenes.</>,
+          <>Stitch dialogue or background audio directly in the timeline, then click <b>Compile Movie</b> to compile the shots into a single video file.</>,
+        ]} />
+        <H3>Native LTX Director Continuity</H3>
+        <P>
+          Instead of rendering scenes in isolation (which creates visual cuts and character mismatches), the Cinema Gear ports the continuity logic from the ComfyUI <Code>WhatDreamsCost-ComfyUI</Code> (LTX Director) custom node:
+        </P>
+        <UL items={[
+          <><b>Chained Frame Conditioning:</b> The renderer automatically extracts the last frame of the previous scene and injects it as the starting frame (I2V) of the next scene, preserving character faces, outfits, lighting, and backgrounds.</>,
+          <><b>Prompt Embedding Interpolation:</b> Gradually transitions the text guidance vectors between scenes to morph environments smoothly.</>,
+          <><b>FFmpeg Audio Stitching:</b> Compiles multiple generated clips and stitches voice/audio tracks onto precise frame offsets dynamically.</>,
         ]} />
       </>
     ),
