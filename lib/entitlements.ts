@@ -28,9 +28,9 @@ export function canUseFeature(plan: string, feature: "cinema" | "comfy_cloud" | 
   return false;
 }
 
-export function canUseNsfw(addons: string[]): boolean {
+export function canUseNsfw(addons?: string[]): boolean {
   if (!WEB_MODE) return true;
-  return addons.includes("nsfw");
+  return !!addons && addons.includes("nsfw");
 }
 
 // Text chat now runs on built-in / local / free providers at no cost, so those

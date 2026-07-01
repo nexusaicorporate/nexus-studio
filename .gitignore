@@ -2,6 +2,7 @@
 /.next
 /out
 *.tsbuildinfo
+tsc-scope.tmp.json
 next-env.d.ts
 .DS_Store
 /src-tauri/target

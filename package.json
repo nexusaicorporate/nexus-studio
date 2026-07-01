@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "build:static": "cross-env BUILD_STATIC=1 next build",
+    "build:static": "node scripts/build-static.js",
     "serve:static": "npx serve out -l 3000",
     "desktop:dev": "tauri dev",
     "desktop:build": "tauri build",
