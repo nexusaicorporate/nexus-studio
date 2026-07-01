@@ -1,67 +1,54 @@
-import { createClient } from "@supabase/supabase-js";
+// Provision the admin + test users directly into Postgres via Prisma.
+// Stack is NextAuth (credentials) + Prisma + Postgres — NO Supabase.
+//
+// Passwords come from env so no secret is committed. Example:
+//   ADMIN_EMAIL=you@example.com ADMIN_PASSWORD='...' \
+//   TEST_EMAIL=test@example.com TEST_PASSWORD='...' \
+//   node scripts/provision_users.mjs
+//
+// Add-ons are stored on User.groups as "<addon>-plan" (e.g. "nsfw-plan"),
+// exactly like the Stripe webhook writes them. There is no `addons` column.
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 
-if (!supabaseUrl || !supabaseServiceKey) {
-  console.error("Missing Supabase env vars");
+const prisma = new PrismaClient();
+
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "cscannell@nexusaigear.com";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const TEST_EMAIL = process.env.TEST_EMAIL || "test-studio@nexusaigear.com";
+const TEST_PASSWORD = process.env.TEST_PASSWORD;
+
+if (!ADMIN_PASSWORD || !TEST_PASSWORD) {
+  console.error(
+    "Set ADMIN_PASSWORD and TEST_PASSWORD env vars before running (they are not hardcoded).",
+  );
   process.exit(1);
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-  auth: { autoRefreshToken: false, persistSession: false }
-});
-
-async function provision() {
-  console.log("Provisioning admin...");
-  let adminRes = await supabase.auth.admin.createUser({
-    email: "cscannell@nexusaigear.com",
-    password: "ZMCw486!75276",
-    email_confirm: true
+async function upsertUser(email, password, plan, groups) {
+  const hash = await bcrypt.hash(password, 12);
+  await prisma.user.upsert({
+    where: { email },
+    // Don't reset an existing user's password on re-run; only sync plan/groups.
+    update: { plan, groups },
+    create: { email, password: hash, plan, groups },
   });
-  let adminId = adminRes.data?.user?.id;
-  if (adminRes.error) {
-    if (adminRes.error.message.includes("already registered") || adminRes.error.message.includes("already exists")) {
-      console.log("Admin already exists, fetching ID...");
-      const { data } = await supabase.auth.admin.listUsers();
-      adminId = data.users.find(u => u.email === "cscannell@nexusaigear.com")?.id;
-    } else {
-      console.error(adminRes.error);
-    }
-  }
+  console.log(`  ✓ ${email} → plan=${plan} groups=[${groups.join(", ")}]`);
+}
 
-  if (adminId) {
-    console.log("Updating admin profile...");
-    await supabase.from('profiles').update({ groups: ['admin', 'dev'] }).eq('id', adminId);
-  }
-
-  console.log("Provisioning test user...");
-  let testRes = await supabase.auth.admin.createUser({
-    email: "test-studio@nexusaigear.com",
-    password: "TestUser123!",
-    email_confirm: true
-  });
-  let testId = testRes.data?.user?.id;
-  if (testRes.error) {
-    if (testRes.error.message.includes("already registered") || testRes.error.message.includes("already exists")) {
-      console.log("Test user already exists, fetching ID...");
-      const { data } = await supabase.auth.admin.listUsers();
-      testId = data.users.find(u => u.email === "test-studio@nexusaigear.com")?.id;
-    } else {
-      console.error(testRes.error);
-    }
-  }
-
-  if (testId) {
-    console.log("Updating test profile...");
-    await supabase.from('profiles').update({ 
-      plan: 'studio', 
-      addons: ['nsfw'], 
-      groups: ['dev'] 
-    }).eq('id', testId);
-  }
-
+async function main() {
+  console.log("Provisioning users into Postgres (Prisma)...");
+  // Admin: full admin + dev access.
+  await upsertUser(ADMIN_EMAIL, ADMIN_PASSWORD, "studio", ["admin", "dev"]);
+  // Test user: Studio plan + NSFW add-on (nsfw-plan) + dev group.
+  await upsertUser(TEST_EMAIL, TEST_PASSWORD, "studio", ["dev", "nsfw-plan"]);
   console.log("Provisioning complete!");
 }
 
-provision().catch(console.error);
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());
