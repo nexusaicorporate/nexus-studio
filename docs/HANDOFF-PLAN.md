@@ -1,6 +1,7 @@
 # Nexus Studio — Engineering Handoff Plan
 
-> Living document. Hand this to another developer to continue the work. Last updated 2026‑06‑27.
+> Living document. Hand this to another developer to continue the work. Last updated 2026‑07‑01.
+> **Project location: `C:\Development\nexusaicorporate\nexus-studio`** (moved from `C:/Development/nexusaicorporate/nexus-studio`).
 > **Golden rule for all feature ports below: remove the MUAPI dependency.** Every feature borrowed
 > from the Anil‑matcha repos must be routed through Nexus's own stack — BYO API keys, Modal GPU
 > backends, and ComfyUI/LTX — never `muapi.ai`. Strip their `x-api-key`/MUAPI client and re‑point at
