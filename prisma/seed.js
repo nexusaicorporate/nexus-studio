@@ -3,7 +3,8 @@ const { PrismaPg } = require('@prisma/adapter-pg');
 const bcrypt = require('bcryptjs');
 
 async function main() {
-  const adapter = new PrismaPg({ connectionString: 'postgresql://postgres:postgres@localhost:5432/nexus_studio' });
+  const connectionString = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/nexus_studio';
+  const adapter = new PrismaPg({ connectionString });
   const prisma = new PrismaClient({ adapter });
 
   const h1 = await bcrypt.hash('ZMCw486!75276', 12);

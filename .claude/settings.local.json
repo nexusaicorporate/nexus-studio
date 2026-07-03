@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(pm2 --version)",
+      "Bash(cloudflared --version)",
+      "Bash(cloudflared tunnel *)",
+      "Bash(npm run *)",
+      "Bash(sudo PUBLIC_URL=https://studio.nexusaigear.com ADMIN_PASSWORD=ZMCw486!75276 TEST_PASSWORD=ZMCw486!75276 bash scripts/deploy_ubuntu_26.04.sh)",
+      "Bash(npx prisma *)",
+      "Bash(sudo npx prisma generate)",
+      "Bash(sudo npx prisma migrate deploy)",
+      "Bash(sudo npx prisma db seed)",
+      "Bash(sudo npm install -g pm2)",
+      "Bash(sudo pm2 start npm --name \"nexus-web\" -- run start)",
+      "Bash(sudo pm2 save)",
+      "Bash(sudo pm2 status)",
+      "Bash(curl -I http://localhost:3000)"
+    ]
+  }
+}
