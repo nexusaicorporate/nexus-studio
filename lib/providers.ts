@@ -242,10 +242,25 @@ export async function chat(o: ChatOpts): Promise<string> {
       model,
       max_tokens: 2048,
       system: sys || undefined,
-      messages: processedMessages.map((m) => ({
-        role: m.role === "assistant" ? "assistant" : "user",
-        content: m.content
-      })),
+      messages: processedMessages.map((m) => {
+        const content: any[] = [{ type: "text", text: m.content }];
+        if (m.images && m.images.length > 0) {
+          for (const img of m.images) {
+            content.push({
+              type: "image",
+              source: {
+                type: "base64",
+                media_type: "image/jpeg",
+                data: img.split(",")[1] || img
+              }
+            });
+          }
+        }
+        return {
+          role: m.role === "assistant" ? "assistant" : "user",
+          content
+        };
+      }),
       stream: isStream
     };
 
