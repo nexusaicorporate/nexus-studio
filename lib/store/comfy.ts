@@ -11,9 +11,11 @@ export const DEFAULT_COMFY_PROVIDERS: ComfyProvider[] = [
   { id: "runpod", name: "RunPod", url: "https://api.runpod.io", enabled: false },
   { id: "replicate", name: "Replicate", url: "https://api.replicate.com/v1", enabled: false },
   { id: "rundiffusion", name: "RunDiffusion", url: "https://api.rundiffusion.com", enabled: false },
-  { id: "comfyicu", name: "ComfyICU", url: "https://api.comfy.icu", enabled: false },
-  { id: "local", name: "Local ComfyUI Instance", url: "http://localhost:8188", enabled: true }
+  { id: "comfyicu", name: "ComfyICU", url: "https://api.comfy.icu", enabled: false }
 ];
+
+// Canvas server URL — ComfyUI always runs here for workflow editing and custom nodes
+export const COMFY_CANVAS_URL = "http://studio:8188";
 
 export interface ComfyState {
   workflows: ComfyWorkflow[];
@@ -22,7 +24,7 @@ export interface ComfyState {
   providers: ComfyProvider[];
   activeProviderId: string;
   hydrated: boolean;
-  runMode: 'local' | 'hybrid' | 'cloud';
+  runMode: 'hybrid' | 'cloud';
   runModeLocked: boolean;
   cloudPlan: 'standard' | 'creator' | 'pro' | null;
   cloudEnvironment: string;
@@ -65,13 +67,13 @@ export const useComfyStore = create<ComfyState>()(
       providers: DEFAULT_COMFY_PROVIDERS,
       activeProviderId: "comfycloud",
       hydrated: false,
-      runMode: 'local',
-      runModeLocked: false,
+      runMode: 'cloud',
+      runModeLocked: true,
       cloudPlan: null,
       cloudEnvironment: 'Comfy Cloud',
       showPlansModal: false,
       hybridConfig: {
-        remoteGpuUrl: 'http://studio:8188',
+        remoteGpuUrl: COMFY_CANVAS_URL,
         remoteGpuKey: '',
         customNodeRepo: 'nathannlu/comfyui-cloud'
       },

@@ -239,30 +239,6 @@ export default function ComfyEnvSelector({ onClose }: ComfyEnvSelectorProps) {
           </div>
 
           <div className="grid gap-3 mb-6">
-            {/* Local */}
-            <button
-              type="button"
-              className={`card p-4 text-left border flex items-center justify-between transition-all ${
-                comfy.runMode === "local" ? "border-primary bg-primary/5 shadow-glow" : "border-border hover:border-primary/40"
-              }`}
-              onClick={() => comfy.set("runMode", "local")}
-            >
-              <div className="flex gap-3 items-center">
-                <div className="w-10 h-10 rounded-xl bg-surface2 flex items-center justify-center shrink-0 border border-border/40">
-                  <Cpu size={18} className="text-muted" />
-                </div>
-                <div>
-                  <div className="font-bold text-sm">Full Local Install</div>
-                  <div className="text-[11px] text-muted leading-tight mt-0.5">
-                    Render local nodes and execute on your own machine.
-                  </div>
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-muted uppercase tracking-wider shrink-0 bg-surface2 py-1 px-2.5 rounded-lg border border-border/40">
-                localhost:8188
-              </span>
-            </button>
-
             {/* Hybrid */}
             <button
               type="button"

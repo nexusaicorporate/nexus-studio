@@ -422,92 +422,7 @@ export default function WorkflowStudioPage() {
       }, 6000);
     };
 
-    if (comfy.runMode === "local") {
-      try {
-        setExecLogs((prev) => [...prev, `[Local ComfyUI] Connection enqueuing to ${activeProvider.url}...`]);
-        
-        const clientId = "nexus_studio_" + Math.random().toString(36).substring(2, 9);
-        const wsUrl = activeProvider.url.replace(/^http/, "ws") + `/ws?clientId=${clientId}`;
-        
-        const ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
-
-        ws.onopen = () => {
-          setExecLogs((prev) => [...prev, `[WebSocket] Connected to local ComfyUI stream.`]);
-        };
-
-        ws.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-            if (msg.type === "status") {
-              const queueRemaining = msg.data.status.exec_info.queue_remaining;
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Queue remaining: ${queueRemaining}`]);
-            } else if (msg.type === "execution_start") {
-              setExecStatus("running");
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution started: ${msg.data.prompt_id}`]);
-            } else if (msg.type === "executing") {
-              const node = msg.data.node;
-              if (node === null) {
-                setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution flow ended.`]);
-              } else {
-                setActiveNode(node);
-                setExecLogs((prev) => [...prev, `[Local ComfyUI] Executing Node ${node}`]);
-              }
-            } else if (msg.type === "progress") {
-              const { value, max } = msg.data;
-              setExecProgress(Math.round((value / max) * 100));
-            } else if (msg.type === "executed") {
-              const { node, output } = msg.data;
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Node ${node} completed.`]);
-              
-              if (output.images && output.images.length > 0) {
-                const img = output.images[0];
-                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(img.filename)}&subfolder=${encodeURIComponent(img.subfolder)}&type=${encodeURIComponent(img.type)}`;
-                setOutputImage(viewUrl);
-                setExecStatus("completed");
-                setExecProgress(100);
-                setActiveNode(null);
-                ws.close();
-              } else if (output.gifs && output.gifs.length > 0) {
-                const gif = output.gifs[0];
-                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(gif.filename)}&subfolder=${encodeURIComponent(gif.subfolder)}&type=${encodeURIComponent(gif.type)}`;
-                setOutputImage(viewUrl);
-                setExecStatus("completed");
-                setExecProgress(100);
-                setActiveNode(null);
-                ws.close();
-              }
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        };
-
-        ws.onerror = () => {
-          setExecLogs((prev) => [...prev, `[WebSocket] Error connecting to local ComfyUI event stream.`]);
-        };
-
-        const res = await fetch(`${activeProvider.url}/prompt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ client_id: clientId, prompt: executionPayload })
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-        }
-
-        const data = await res.json();
-        setExecLogs((prev) => [...prev, `[Local ComfyUI] Prompt enqueued successfully (Prompt ID: ${data.prompt_id})`]);
-      } catch (err: any) {
-        setExecLogs((prev) => [
-          ...prev,
-          `[Local API Error] Connect failed: ${err.message}`,
-          `[Nexus] Local ComfyUI is offline or CORS is not enabled. Running simulated prompt execution instead...`
-        ]);
-        runSimulatedExecution();
-      }
-    } else if (comfy.runMode === "hybrid") {
+    if (comfy.runMode === "hybrid") {
       try {
         setExecLogs((prev) => [
           ...prev,
@@ -692,8 +607,8 @@ export default function WorkflowStudioPage() {
               disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
               onClick={handleExecute}
             >
-              {comfy.runMode === "local" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
-              {comfy.runMode === "local" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
+              {comfy.runMode === "hybrid" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
+              {comfy.runMode === "hybrid" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
             </button>
           )}
         </div>
@@ -706,7 +621,7 @@ export default function WorkflowStudioPage() {
         <div className="flex-1 flex flex-col border border-border rounded-xl bg-black/40 shadow-xl overflow-hidden h-full">
           <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
             <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "local" ? "bg-emerald-400" : comfy.runMode === "hybrid" ? "bg-cyan-400" : "bg-primary-light"} animate-pulse`} />
+              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "hybrid" ? "bg-emerald-400" : "bg-primary-light"} animate-pulse`} />
               <span>Live Workspace: <strong>{iframeUrl}</strong></span>
               <span className="chip text-[10px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
                 {comfy.runMode} Mode

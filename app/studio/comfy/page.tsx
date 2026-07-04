@@ -97,9 +97,9 @@ export default function ComfyHubPage() {
                   Active Resource Mode: <span className="capitalize">{comfy.runMode}</span> Mode
                 </div>
                 <p className="text-xs text-muted leading-relaxed mt-0.5">
-                  {comfy.runMode === "local" && "Executing locally on http://localhost:8188. Ensure your ComfyUI backend is running."}
-                  {comfy.runMode === "hybrid" && `Offloading local graph layouts to remote server GPU (${comfy.hybridConfig.remoteGpuUrl || "URL not set"}) using ${comfy.hybridConfig.customNodeRepo}.`}
-                  {comfy.runMode === "cloud" && `Executing fully in the cloud via API under the ${comfy.cloudPlan || "No plan"} plan (Location: ${comfy.cloudEnvironment}).`}
+                  Canvas running on {comfy.hybridConfig.remoteGpuUrl || "studio:8188"}.
+                  {comfy.runMode === "hybrid" && ` Generations on local server GPU.`}
+                  {comfy.runMode === "cloud" && ` Generations via ${comfy.cloudPlan || "cloud API"} (${comfy.cloudEnvironment}).`}
                 </p>
               </div>
             </div>

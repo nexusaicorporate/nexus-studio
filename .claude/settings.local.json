@@ -178,7 +178,18 @@
       "Bash(wget -q https://github.com/sharkdp/bat/releases/download/v0.24.0/bat_0.24.0_amd64.deb -O /dev/null)",
       "Bash(curl -s https://api.github.com/repos/desktop/desktop/releases)",
       "Bash(flatpak search *)",
-      "Bash(flatpak install *)"
+      "Bash(flatpak install *)",
+      "Bash(pm2 status *)",
+      "Bash(python3 -m pip install -q -r requirements.txt)",
+      "Bash(chmod +x /tmp/comfyui-start.sh)",
+      "Bash(curl -s http://localhost:8188/system_stats)",
+      "Bash(python3 -m pip install -q sqlalchemy pydantic aiohttp -q)",
+      "Bash(curl -s http://localhost:8188/api/models)",
+      "Bash(hostname && cat /etc/hostname)",
+      "Bash(curl -s http://studio:8188/system_stats)",
+      "Bash(git commit -m 'config: use studio hostname for ComfyUI hybrid mode instead of localhost *)",
+      "Bash(curl -s http://studio:8188/api/auth)",
+      "Bash(git commit -m 'refactor: comfyui always runs on server, generations via providers only *)"
     ]
   }
 }

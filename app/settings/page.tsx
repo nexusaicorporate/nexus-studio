@@ -577,12 +577,12 @@ function ComfySettingsPanel() {
 
       {/* ComfyUI Execution Mode Configuration */}
       <div className="card p-4">
-        <div className="font-semibold mb-1">ComfyUI Execution & Resource Mode</div>
+        <div className="font-semibold mb-1">ComfyUI Workflow Execution</div>
         <p className="text-xs text-muted mb-4">
-          Choose how ComfyUI workflows are executed: entirely local, hybrid (local UI with remote cloud GPU offloading), or fully in the cloud.
+          ComfyUI canvas always runs on the server. Choose where generations are processed: hybrid (local server GPU) or cloud (remote GPU provider like Modal).
         </p>
-        <div className="grid sm:grid-cols-3 gap-3 mb-4">
-          {(['local', 'hybrid', 'cloud'] as const).map((mode) => (
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          {(['hybrid', 'cloud'] as const).map((mode) => (
             <button
               key={mode}
               type="button"
@@ -596,9 +596,8 @@ function ComfySettingsPanel() {
               <div>
                 <div className="font-semibold capitalize text-sm mb-1">{mode} Mode</div>
                 <p className="text-[11px] text-muted leading-relaxed">
-                  {mode === 'local' && "Run interface and GPU node execution completely on your local computer."}
-                  {mode === 'hybrid' && "Run node interface locally, but offload the intensive GPU execution to a remote cloud worker."}
-                  {mode === 'cloud' && "Execute API workflows entirely in the cloud on managed serverless environments."}
+                  {mode === 'hybrid' && "Generate images/videos on local server GPU (if available)."}
+                  {mode === 'cloud' && "Generate images/videos on remote cloud GPU provider (Modal, ComfyUI Cloud, etc.)."}
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between">
