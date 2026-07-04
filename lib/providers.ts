@@ -173,7 +173,7 @@ export async function chat(o: ChatOpts): Promise<string> {
       parts: [
         { text: m.content },
         ...(m.images || []).map((d) => ({
-          inline_data: { mime_type: "image/png", data: d.split(",")[1] || d }
+          inline_data: { mime_type: "image/jpeg", data: d.split(",")[1] || d }
         }))
       ]
     }));
