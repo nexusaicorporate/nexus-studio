@@ -37,45 +37,55 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(true);
   
   const NAV = [
-    { 
-      group: "Workspace Gears", 
+    {
+      group: "Workspace Gears",
       items: [
         { href: "/", label: "Home", icon: Home, color: "text-blue-400", image: "/images/home_gear_vertical.png" },
-        { href: "/chat", label: "Chat Gear", icon: MessageSquare, color: "text-sky-400", image: "/images/chat_gear.png" }, 
-        { href: "/analyze", label: "Analyze Gear", icon: ScanSearch, color: "text-cyan-400", image: "/images/analyze_gear.png" }, 
+        { href: "/chat", label: "Chat Gear", icon: MessageSquare, color: "text-sky-400", image: "/images/chat_gear.png" },
         { href: "/bulk", label: "Bulk Gear", icon: Images, color: "text-emerald-400", image: "/images/bulk_gear.png" }
-      ] 
+      ]
     },
-    { 
-      group: "Studio Gears", 
+    {
+      group: "Pro Gears",
       items: [
-        { href: "/studio/character", label: "Character Gear", icon: User, color: "text-orange-400", image: "/images/character_gear.jpg" }, 
-        { href: "/studio/image", label: "Image Gear", icon: ImageIcon, color: "text-violet-400", image: "/images/image_gear.png" }, 
-        { href: "/studio/video", label: "Video Gear", icon: Clapperboard, color: "text-lime-400", image: "/images/video_gear.png" }, 
-        { href: "/studio/ugc", label: "UGC Ads Gear", icon: Megaphone, color: "text-pink-500", image: "/images/ugc_ads_gear.jpg" }, 
-        { href: "/studio/cinema", label: "Cinema Gear", icon: Film, color: "text-amber-400", image: "/images/cinema_gear.jpg" }, 
-        { href: "/studio/workflow", label: "ComfyUI Gear", icon: Layers, color: "text-indigo-400", image: "/images/comfyui_gear_vertical.png" }, 
+        { href: "/analyze", label: "Analyze Gear", icon: ScanSearch, color: "text-cyan-400", image: "/images/analyze_gear.png" },
+        { href: "/studio/image", label: "Image Gear", icon: ImageIcon, color: "text-violet-400", image: "/images/image_gear.png" },
+        { href: "/studio/video", label: "Video Gear", icon: Clapperboard, color: "text-lime-400", image: "/images/video_gear.png" },
+        { href: "/studio/character", label: "Character Gear", icon: User, color: "text-orange-400", image: "/images/character_gear.jpg" }
+      ]
+    },
+    {
+      group: "Studio Gears",
+      items: [
+        { href: "/studio/ugc", label: "UGC Ads Gear", icon: Megaphone, color: "text-pink-500", image: "/images/ugc_ads_gear.jpg" },
+        { href: "/studio/cinema", label: "Cinema Gear", icon: Film, color: "text-amber-400", image: "/images/cinema_gear.jpg" },
+        { href: "/studio/workflow", label: "ComfyUI Gear", icon: Layers, color: "text-indigo-400", image: "/images/comfyui_gear_vertical.png" },
         { href: "/studio/comfy", label: "Comfy Hub Gear", icon: Sparkles, color: "text-rose-400", image: "/images/comfy_hub_gear.png" }
-      ] 
+      ]
     },
-    { 
-      group: "Library Gears", 
+    {
+      group: "Library Gears",
       items: [
-        { href: "/library/prompts", label: "Prompts Gear", icon: Sparkles, color: "text-sky-400", image: "/images/library_gear.png" }, 
-        { href: "/library/prompt-director", label: "Prompt Director Gear", icon: ChefHat, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" }, 
+        { href: "/library/prompts", label: "Prompts Gear", icon: Sparkles, color: "text-sky-400", image: "/images/library_gear.png" },
+        { href: "/library/prompt-director", label: "Prompt Director Gear", icon: ChefHat, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" },
         { href: "/library/ingredients", label: "Ingredients Gear", icon: Boxes, color: "text-purple-400", image: "/images/ingredients_gear.png" }
-      ] 
+      ]
     },
-    { 
-      group: "System Gears", 
+    {
+      group: "System Gears",
       items: [
-        { href: "/settings", label: "Settings Gear", icon: Settings, color: "text-slate-400", image: "/images/settings_gear.png" }, 
-        { href: "/docs", label: "Docs Gear", icon: LifeBuoy, color: "text-yellow-400", image: "/images/docs_gear.png" }, 
-        ...(WEB_MODE ? [{ href: "/billing", label: "Billing Gear", icon: CreditCard, color: "text-teal-500", image: "/images/billing_gear.png" }] : []),
+        { href: "/settings", label: "Settings Gear", icon: Settings, color: "text-slate-400", image: "/images/settings_gear.png" },
+        { href: "/docs", label: "Docs Gear", icon: LifeBuoy, color: "text-yellow-400", image: "/images/docs_gear.png" },
+        ...(WEB_MODE ? [{ href: "/billing", label: "Billing Gear", icon: CreditCard, color: "text-teal-500", image: "/images/billing_gear.png" }] : [])
+      ]
+    },
+    ...(groups.includes("admin") || groups.includes("dev") ? [{
+      group: "Admin Gears",
+      items: [
         ...(groups.includes("admin") ? [{ href: "/admin", label: "Admin Gear", icon: ShieldAlert, color: "text-red-500", image: "/images/admin_gear.png" }] : []),
         ...(groups.includes("dev") || groups.includes("admin") ? [{ href: "/dev", label: "Dev Gear", icon: Terminal, color: "text-red-400", image: "/images/dev_gear.png" }] : [])
-      ] 
-    },
+      ]
+    }] : [])
   ];
 
   const { mode, setMode, palette, activeImageProviderId, activeVideoProviderId, providers } = useSettings();
@@ -142,11 +152,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                       className={`nav-link flex items-center transition-all ${collapsed ? "justify-center px-0 py-2.5 rounded-lg" : "gap-3 rounded-xl px-3 py-2"} ${isActive ? "nav-link-active" : ""}`}
                       title={collapsed ? it.label : undefined}
                     >
-                      {it.image ? (
-                        <img src={it.image} className="w-6 h-6 rounded-md object-cover shrink-0 transition-transform hover:scale-110" alt="" />
-                      ) : (
-                        <Icon size={19} className={`${it.color} shrink-0 transition-transform hover:scale-110`} /> 
-                      )}
+                      <Icon size={19} className={`${it.color} shrink-0 transition-transform hover:scale-110`} />
                       {!collapsed && <span className="truncate text-sm">{it.label}</span>}
                     </Link>
                   ); 

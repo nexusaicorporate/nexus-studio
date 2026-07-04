@@ -71,7 +71,7 @@ export const useComfyStore = create<ComfyState>()(
       cloudEnvironment: 'Comfy Cloud',
       showPlansModal: false,
       hybridConfig: {
-        remoteGpuUrl: '',
+        remoteGpuUrl: 'http://studio:8188',
         remoteGpuKey: '',
         customNodeRepo: 'nathannlu/comfyui-cloud'
       },

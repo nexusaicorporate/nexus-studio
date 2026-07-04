@@ -28,7 +28,7 @@ export const PLANS: PlanConfig[] = [
   {
     id: "pro",
     name: "Pro",
-    price: 15,
+    price: 19.89,
     interval: "month",
     description: "For creators needing more power.",
     features: [
@@ -42,7 +42,7 @@ export const PLANS: PlanConfig[] = [
   {
     id: "studio",
     name: "Studio",
-    price: 35,
+    price: 38.89,
     interval: "month",
     description: "The ultimate toolkit for professionals.",
     features: [
