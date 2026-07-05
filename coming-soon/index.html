@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI Studio - Coming Soon</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f1e 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e0e0e0;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 2rem;
+        }
+
+        .logo {
+            margin-bottom: 2rem;
+        }
+
+        .logo img {
+            height: 60px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            color: #a0a0a0;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #00d4ff, #7c3aed);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .animation {
+            margin: 3rem 0;
+            font-size: 4rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .loading-dots {
+            margin: 2rem 0;
+            font-size: 1.5rem;
+            letter-spacing: 5px;
+            animation: blink 1.4s infinite;
+        }
+
+        @keyframes blink {
+            0%, 20%, 50%, 80%, 100% {
+                opacity: 1;
+            }
+            40% {
+                opacity: 0.5;
+            }
+            60% {
+                opacity: 0.7;
+            }
+        }
+
+        .features-preview {
+            margin-top: 3rem;
+            padding-top: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .features-preview h3 {
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .feature-tag {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            color: #00d4ff;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #707070;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .animation {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 60'%3E%3Ctext x='10' y='45' font-size='40' font-weight='bold' fill='%2300d4ff'%3ENexus%3C/text%3E%3C/svg%3E" alt="Nexus AI Studio">
+        </div>
+
+        <div class="animation">✨</div>
+
+        <h1>Coming Soon</h1>
+        <p class="subtitle">We're building something amazing. Nexus AI Studio will revolutionize creative content generation with cutting-edge AI tools.</p>
+
+        <div class="loading-dots">●●●</div>
+
+        <a href="https://studio.nexusaigear.com" class="cta-button">Access Studio</a>
+
+        <div class="features-preview">
+            <h3>Preview Features</h3>
+            <div class="feature-list">
+                <span class="feature-tag">🎨 Image Generation</span>
+                <span class="feature-tag">🎬 Video Creation</span>
+                <span class="feature-tag">🎭 Character Consistency</span>
+                <span class="feature-tag">🎪 Cinema Studio</span>
+                <span class="feature-tag">🎤 Voice & Audio</span>
+                <span class="feature-tag">📦 Asset Management</span>
+            </div>
+        </div>
+
+        <footer>
+            <p>Nexus AI Studio © 2026 | <a href="https://studio.nexusaigear.com" style="color: #00d4ff; text-decoration: none;">Launch Beta</a></p>
+        </footer>
+    </div>
+</body>
+</html>
