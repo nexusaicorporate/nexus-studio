@@ -1,33 +1,121 @@
-# LTX Video Generation Rules & Guidelines
+# Nexus AI Studio - Project Instructions & Guidelines
 
-Guidelines and prompting patterns for working with LTX-2.3 (Live-Action/Open-Source audio-video foundation models) on both the Cloud API and local ComfyUI GPU nodes.
+This document provides system instructions, architectural context, coding guidelines, and rules for AI assistants (such as Antigravity, Claude, and Codex) when developing or modifying the **Nexus AI Studio** codebase.
 
-## 1. Native Audio-Video Prompting Framework
-LTX-2.3 is a Diffusion Transformer (DiT) model that generates synchronized video and audio *in a single pass*. Prompts should be structured like screenplays to maximize audio-visual coherence:
+---
 
-* **Single Paragraph format:** Write prompts as 4–8 sentences in a single, continuous paragraph using **present tense**.
-* **Cinematic Headers:** Begin the prompt with screenplay-style headers (e.g., `EXT. PORT TOWN - SUNRISE - DRONE SHOT`).
-* **Shot Scale & Detail Matching:** Detail density must match the camera view:
-  * *Close-ups:* Specify micro-textures (skin pores, hair strands catching light, moisture).
-  * *Wide shots:* Focus on environment layout, weather, lighting, and camera pans.
-* **Camera Movement Markers:** Specify explicit camera directions (e.g., *“slow dolly in,” “handheld tracking,” “cameraman pans right”*). Describe the framing *after* the camera moves to help the model render motion smoothly.
-* **Integrated Dialogue/Audio:** 
-  * Put spoken dialogue inside **quotation marks** prefixed by the character and delivery tone: `Reporter (excitedly): "..."`.
-  * Describe ambient sounds, whispers, or musical tones in the action description (e.g. *“the faint hum of distant drilling fills the air”*).
+## 1. Project Overview & Tech Stack
+**Nexus AI Studio** is a rebuild of AI Prompt Assistant Pro (originally a Flutter desktop app) using a modern web-first tech stack. It runs in two distinct modes:
+1. **Web SaaS Mode**: Run with Node.js/PM2 server and PostgreSQL database.
+2. **Desktop Mode**: Packaged as a desktop application using **Tauri v2** with local browser storage (IndexedDB) and static export.
 
-## 2. Erotic & Character Creator Guidelines
-* **Avoid Abstract Emotion Labels:** Instead of saying a character is "sad" or "excited," describe physical cues (e.g. *“quivering lower lip, eyes rolled back in ecstasy,” “blushing red neck”*).
-* **Subject Prompts:** Always start subjects with physical anchor definitions (e.g. `solo female, beautiful young woman, stunning model in her 20s`).
-* **Detailed Hairstyles:** Incorporate rich styles and color modifiers (e.g. `Victory rolls honey blonde hair`, `undercut fade slick back dark brown hair`).
+### Stack Details:
+- **Framework**: Next.js 14 (App Router), React, TypeScript.
+- **Styling**: Tailwind CSS, PostCSS.
+- **Database (Web)**: Prisma ORM with PostgreSQL.
+- **Database (Desktop)**: Client-side local persistence using IndexedDB.
+- **Authentication**: NextAuth.js (Credentials Provider).
+- **Desktop Wrapper**: Tauri v2 (`src-tauri/`) using Rust for low-level features (e.g. video stitching, local storage directories).
+- **GPU Compute**: Deployments on Modal GPU compute platform (`modal/`).
 
-## 3. LipDub (Speech Replacement / Dubbing)
-For video-to-video dialogue replacement:
-* **Prompt Template:** `[Speaker] is speaking [Language/Accent], saying: "[Dialogue]"`
-* **Native Scripting:** Write dialogue text using the script of the target language (e.g., Cyrillic for Russian, Hanzi for Chinese).
-* **Length Constraints:** Syllable length of the prompt should match the source video length. Too long causes skipped words; too short causes slow, unnatural pacing.
+---
 
-## 4. What to Avoid
-* **Readable Text:** LTX does not generate legible text/logos reliably yet.
-* **Internal Emotion Labels:** Replace words like "scared" or "happy" with visual actions.
-* **Overloaded Scenes:** Limit the number of subjects and actions to prevent rendering artifacts.
-* **Conflicting Lighting:** Keep light sources consistent (e.g., do not combine studio softboxes with harsh direct noon sunlight in the same description).
+## 2. Key Architecture & Dual-Mode Configuration
+
+### 2.1 Web SaaS Mode vs. Desktop Mode
+- **Configuration**: Gated via the `WEB_MODE` environment flag (`NEXT_PUBLIC_WEB_MODE=1`, defined in `lib/webmode.ts`).
+- **Web SaaS**: Gated behind authentication, plan limitations, and paywalls (Stripe). Uses database tables mapped in Prisma (`prisma/schema.prisma`).
+- **Desktop**: Fully unrestricted (`!WEB_MODE`), BYO-API-keys (saved in local settings), no backend requirements. Uses Next.js static HTML export (`BUILD_STATIC=1` setting `output: 'export'` in `next.config.mjs`).
+
+### 2.2 Critical Constraints (Golden Rules)
+- **NO Supabase, NO Docker**: Both have been completely deprecated and removed. If you find references in comments/directories, ignore them and do NOT build any features using them.
+- **NO MUAPI (`muapi.ai`)**: All generative features must route through our own infrastructure via `lib/providers.ts` (BYO keys), Modal GPU backends (`modal/`), or ComfyUI/LTX. Never add or query `muapi.ai` endpoints.
+- **Stripe Billing**: Kept in **sandbox/test mode ONLY** for billing validation (`lib/billing.ts`, `app/api/stripe/webhook/route.ts`). Never add live keys yet.
+- **User Groups / Entitlements**: Entitlements live in user `groups` in database as `"<addon>-plan"` (e.g. `nsfw-plan`). There is no database column for addons.
+
+---
+
+## 3. Directory Structure & Key Files
+- **`app/`**: Route directories and views (App Router).
+  - `/chat`: Multi-provider chat interface.
+  - `/analyze`: Vision/media analysis.
+  - `/studio`: Studios for Character Turnarounds, Image, Video, and Cinema.
+  - `/settings`: Configuration page.
+  - `/dev`: Developer cockpit dashboard.
+- **`components/`**: Reusable React components (e.g. `Shell.tsx`, `UpgradePrompt.tsx`, `AuthProvider.tsx`).
+- **`lib/`**: Business logic:
+  - `model-catalog.ts`: Single source of truth for all models, backends, and tiers.
+  - `entitlements.ts`: Permission evaluation (`canUseModel`, `canUseFeature`).
+  - `providers.ts`: Generative wrappers for LLM and Vision/Video generation APIs.
+  - `local-ai.ts`: In-browser free Qwen2-1.5B text generation.
+  - `prisma.ts` / `auth.ts` / `billing.ts`: Web backend services.
+- **`src-tauri/`**: Tauri v2 desktop shell and Rust codebase.
+- **`modal/`**: Serverless Python worker code for video generation models.
+- **`comfyui-nodes/`**: Local ComfyUI integrations.
+
+---
+
+## 4. Development Workflow & Commands
+Run these commands from the repository root:
+
+- **Start Dev Server**:
+  ```bash
+  npm run dev
+  ```
+- **Build Web Mode**:
+  ```bash
+  npm run build
+  ```
+- **Build Static Export (Tauri)**:
+  ```bash
+  npm run build:static
+  ```
+- **Build Tauri Desktop App**:
+  ```bash
+  npm run desktop:build
+  ```
+- **Database Migrations (Prisma)**:
+  ```bash
+  npx prisma migrate dev
+  npx prisma generate
+  ```
+- **Deploy Server Production Script**:
+  ```bash
+  sudo PUBLIC_URL=https://your-domain ADMIN_PASSWORD='...' TEST_PASSWORD='...' bash scripts/deploy_ubuntu_26.04.sh
+  ```
+
+---
+
+## 5. Coding Guidelines & AI Assistant Rules
+1. **Double Mode Awareness**: When adding features, ensure they fall back gracefully when running in Desktop Mode (`!WEB_MODE`). Avoid writing backend routes or server-side Prisma calls without gating them behind web check/safety guards.
+2. **Type Safety**: Strictly write typed TypeScript. Avoid using the `any` type.
+3. **Responsive UI**: Follow modern styling guidelines using Tailwind CSS. Respect theme settings (light/dark/custom palettes).
+4. **No Placeholders**: Never write incomplete implementations (`// TODO: implement later`).
+5. **No Regression**: Run `npm run build` or `npm run build:static` to verify compile success before claiming completion.
+
+---
+
+## 6. LTX Video Generation Prompting Patterns
+When generating prompts for the LTX-2.3 model (Live-Action/Open-Source audio-video foundation model), use the following patterns:
+
+### 6.1 Native Audio-Video Prompting Framework
+LTX-2.3 generates synchronized video and audio in a single pass. Prompts should be structured like screenplays:
+- **Format**: Write prompts as 4–8 sentences in a single, continuous paragraph using **present tense**.
+- **Cinematic Headers**: Begin the prompt with screenplay headers (e.g., `EXT. PORT TOWN - SUNRISE - DRONE SHOT`).
+- **Detail Matching**: Describe micro-textures in close-ups, and macro layouts/lighting in wide shots.
+- **Camera Movement Markers**: Include directions like *"slow dolly in," "handheld tracking," "cameraman pans right"*. Describe the framing *after* the camera moves.
+- **Integrated Dialogue/Audio**: Spoken dialogue inside quotes prefixed by character and delivery tone (`Reporter (excitedly): "..."`). Describe ambient sounds in the environment description.
+
+### 6.2 Erotic & Character Creator Guidelines
+- Avoid abstract emotion labels. Replace words like "sad" or "excited" with visual cues (e.g., *“quivering lower lip, eyes rolled back in ecstasy,” “blushing red neck”*).
+- Start subjects with physical anchor definitions (e.g., `solo female, beautiful young woman, stunning model in her 20s`).
+- Provide detailed hairstyles (e.g. `Victory rolls honey blonde hair`, `undercut fade slick back dark brown hair`).
+
+### 6.3 LipDub (Speech Replacement)
+- **Template**: `[Speaker] is speaking [Language/Accent], saying: "[Dialogue]"`
+- **Constraint**: Match prompt syllable count to the source video length to ensure natural pacing.
+
+### 6.4 What to Avoid
+- Avoid readable text/logos (LTX cannot generate text reliably).
+- Avoid conflicting light sources. Keep lighting details consistent.
+- Avoid overloaded scenes with too many subjects/actions.
