@@ -66,9 +66,9 @@ function AuthInner({ children }: { children: ReactNode }) {
   }
 
   let currentPlan = u?.plan ?? "free";
-  if (u?.groups?.includes("studio")) {
+  if (u?.groups?.includes("studio") || u?.groups?.includes("studio-plan")) {
     currentPlan = "studio";
-  } else if (u?.groups?.includes("pro")) {
+  } else if (u?.groups?.includes("pro") || u?.groups?.includes("pro-plan")) {
     currentPlan = "pro";
   }
 

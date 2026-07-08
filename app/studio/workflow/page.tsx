@@ -74,7 +74,7 @@ export default function WorkflowStudioPage() {
   const [connecting, setConnecting] = useState(false); // web: waiting for an externally-started ComfyUI
 
   const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
-  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
+  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || (typeof window !== "undefined" && !isDesktop() ? window.location.origin + "/comfyui-api/" : "http://localhost:8188");
 
   // Poll whether the managed ComfyUI is up; resolve its folder for display (desktop).
   useEffect(() => {
@@ -567,7 +567,7 @@ export default function WorkflowStudioPage() {
     alert("Workflow saved to local repository.");
   }
 
-  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: "http://localhost:8188" };
+  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: (typeof window !== "undefined" && !isDesktop() ? window.location.origin + "/comfyui-api/" : "http://localhost:8188") };
   const iframeUrl = modalUrl || localProvider.url;
 
   return (
