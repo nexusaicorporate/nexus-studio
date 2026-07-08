@@ -56,6 +56,8 @@ export default function WorkflowStudioPage() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [outputImage, setOutputImage] = useState<string | null>(null);
   const [showApiPanel, setShowApiPanel] = useState(false);
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [modalUrl, setModalUrl] = useState("");
 
   // Managed local ComfyUI status (the app-managed instance in its fixed subfolder)
   const [serverOnline, setServerOnline] = useState<boolean | null>(null);
@@ -566,7 +568,7 @@ export default function WorkflowStudioPage() {
   }
 
   const localProvider = comfy.providers.find((p) => p.id === "local") || { url: "http://localhost:8188" };
-  const iframeUrl = localProvider.url;
+  const iframeUrl = modalUrl || localProvider.url;
 
   return (
     <div className="w-full h-screen flex overflow-hidden bg-black relative fade-in">
@@ -796,6 +798,23 @@ export default function WorkflowStudioPage() {
                   onClick={() => comfy.set("showPlansModal", true)}
                 >
                   <Cloud size={14} /> Subscribe
+                </button>
+              ) : comfy.runMode === "hybrid" && !modalUrl ? (
+                <button
+                  type="button"
+                  className="btn-primary bg-indigo-600 hover:bg-indigo-500 border-indigo-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5 shadow-glow w-full mt-1 justify-center"
+                  disabled={isDeploying}
+                  onClick={async () => {
+                    setIsDeploying(true);
+                    // Simulate Modal deployment delay for the UI
+                    setTimeout(() => {
+                      setModalUrl("https://nexus-cloud-comfyui-demo.modal.run");
+                      setIsDeploying(false);
+                    }, 3500);
+                  }}
+                >
+                  <Cloud size={13} />
+                  {isDeploying ? "Deploying Container..." : "Deploy Cloud Workspace"}
                 </button>
               ) : (
                 <button

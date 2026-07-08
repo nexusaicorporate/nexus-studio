@@ -27,8 +27,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.plan = (user as any).plan ?? "free";
-        token.groups = (user as any).groups ?? [];
+        const g = (user as any).groups || [];
+        let p = (user as any).plan || "free";
+        if (g.includes("studio")) p = "studio";
+        else if (g.includes("pro")) p = "pro";
+        token.plan = p;
+        token.groups = g;
       }
       return token;
     },
@@ -40,16 +44,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             where: { id: token.id as string },
             select: { plan: true, groups: true },
           });
+          
+          let p = token.plan as string || "free";
+          let g = (token.groups as string[]) || [];
+          
           if (dbUser) {
-            (session.user as any).plan = dbUser.plan || "free";
-            (session.user as any).groups = dbUser.groups || [];
-          } else {
-            (session.user as any).plan = token.plan;
-            (session.user as any).groups = token.groups;
+            p = dbUser.plan || "free";
+            g = dbUser.groups || [];
           }
+          
+          if (g.includes("studio")) {
+            p = "studio";
+          } else if (g.includes("pro")) {
+            p = "pro";
+          }
+          
+          (session.user as any).plan = p;
+          (session.user as any).groups = g;
         } catch {
-          (session.user as any).plan = token.plan;
-          (session.user as any).groups = token.groups;
+          let p = token.plan as string || "free";
+          let g = (token.groups as string[]) || [];
+          if (g.includes("studio")) p = "studio";
+          else if (g.includes("pro")) p = "pro";
+          
+          (session.user as any).plan = p;
+          (session.user as any).groups = g;
         }
       }
       return session;

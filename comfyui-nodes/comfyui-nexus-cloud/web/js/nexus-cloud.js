@@ -10,6 +10,7 @@ import { app } from "../../scripts/app.js";
 
 const LS_KEY = "nexus-cloud.creds";        // { [providerId]: {field:value} }
 const LS_PROFILE = "nexus-cloud.profile";  // { provider, gpu, gpu_count, cpu, ram_gb, volume_gb }
+const LS_LOCKED = "nexus-cloud.locked";
 
 function loadJSON(key, fallback) {
   try { return JSON.parse(localStorage.getItem(key)) || fallback; }
@@ -33,8 +34,9 @@ function el(tag, props = {}, children = []) {
 }
 
 class NexusCloudPanel {
-  constructor(root) {
+  constructor(root, onClose) {
     this.root = root;
+    this.onClose = onClose;
     this.specs = [];
     this.creds = loadJSON(LS_KEY, {});
     this.profile = loadJSON(LS_PROFILE, {});
@@ -251,20 +253,86 @@ class NexusCloudPanel {
       textContent: "Provider docs ↗", href: sp.docs_url, target: "_blank",
       style: "font-size:10px;opacity:.6;display:block;margin-top:8px;",
     }));
+
+    // Setup Popup "Lock" Button (only relevant if shown as a popup)
+    if (this.onClose) {
+      r.append(el("hr", { style: "border:none;border-top:1px solid #444;margin:16px 0;" }));
+      const lockRow = el("div", { style: "display:flex;justify-content:space-between;align-items:center;" });
+      
+      const lbl = el("label", { style: "display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;" });
+      const lkChk = el("input", { type: "checkbox", checked: loadJSON(LS_LOCKED, false), onchange: (e) => saveJSON(LS_LOCKED, e.target.checked) });
+      lbl.append(lkChk, el("span", { textContent: "Remember & Lock Config" }));
+      
+      const confirmBtn = el("button", {
+        textContent: "Confirm Setup",
+        style: "padding:8px 12px;background:#38f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:bold;",
+        onclick: () => {
+          saveJSON(LS_LOCKED, lkChk.checked);
+          this.onClose();
+        }
+      });
+      
+      lockRow.append(lbl, confirmBtn);
+      r.append(lockRow);
+    }
   }
 }
 
 app.registerExtension({
   name: "NexusCloud.Sidebar",
   async setup() {
-    const mount = (root) => new NexusCloudPanel(root);
-    // Force floating panel so it's always visible for testing!
-    const panel = el("div", {
-      style: "position:fixed;top:60px;right:12px;width:280px;max-height:80vh;overflow:auto;" +
-             "background:var(--comfy-menu-bg,#222);color:var(--fg-color,#ddd);" +
-             "border:1px solid #444;border-radius:8px;padding:10px;z-index:9999;",
+    const isLocked = () => loadJSON(LS_LOCKED, false);
+
+    // 1. Setup the Side Panel (always present but only visible/useful if locked, or we can just always mount it)
+    const mountSidebar = () => {
+      const panel = el("div", {
+        style: "width:100%; max-height:40vh; overflow:auto; " +
+               "background:var(--comfy-menu-bg,#222); color:var(--fg-color,#ddd); " +
+               "border-top:1px solid #444; padding:10px; margin-top:10px;",
+      });
+      app.ui.menuContainer.append(panel);
+      new NexusCloudPanel(panel, null);
+    };
+
+    mountSidebar();
+
+    // 2. Auto-Popup Logic
+    const showPopup = () => {
+      const overlay = el("div", {
+        style: "position:fixed; top:0; left:0; width:100vw; height:100vh; " +
+               "background:rgba(0,0,0,0.8); z-index:99999; " +
+               "display:flex; justify-content:center; align-items:center;",
+      });
+      const modal = el("div", {
+        style: "width:400px; max-height:80vh; overflow:auto; " +
+               "background:var(--comfy-menu-bg,#222); color:var(--fg-color,#ddd); " +
+               "border:1px solid #444; border-radius:12px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);",
+      });
+      
+      const title = el("h2", { textContent: "ComfyUI Cloud Setup", style: "margin-top:0;" });
+      const desc = el("p", { textContent: "Please configure your remote GPU environment. Lock this configuration to hide this popup in the future.", style: "font-size:12px; opacity:0.8;" });
+      
+      modal.append(title, desc);
+      overlay.append(modal);
+      document.body.append(overlay);
+
+      new NexusCloudPanel(modal, () => overlay.remove());
+    };
+
+    if (!isLocked()) {
+      showPopup();
+    }
+
+    // 3. Settings Hook
+    app.ui.settings.addSetting({
+      id: "NexusCloud.UnlockSetup",
+      name: "Unlock Nexus Cloud Setup",
+      type: "button",
+      label: "Open Setup Popup",
+      callback: () => {
+        saveJSON(LS_LOCKED, false);
+        showPopup();
+      }
     });
-    document.body.append(panel);
-    mount(panel);
   },
 });

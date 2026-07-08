@@ -37,6 +37,10 @@ function serializeForDb(s: Partial<SettingsState>) {
     modalDeploys: s.modalDeploys,
     modalBudget: s.modalBudget,
     modalSpend: s.modalSpend,
+    onboardingCompleted: s.onboardingCompleted,
+    onboardingRole: s.onboardingRole,
+    onboardingHardware: s.onboardingHardware,
+    onboardingExperience: s.onboardingExperience,
   };
 }
 
@@ -97,6 +101,12 @@ export interface SettingsState {
   modalBudget: number;
   modalSpend: number;
 
+  // Onboarding
+  onboardingCompleted: boolean;
+  onboardingRole: string;
+  onboardingHardware: string;
+  onboardingExperience: string;
+
   // Actions
   loadFromDb: () => Promise<void>;
   setModalDeploy: (modality: string, data: SettingsState["modalDeploys"][string]) => void;
@@ -120,6 +130,7 @@ export interface SettingsState {
   setTaskPrompt: (key: string, promptId: string) => void;
   setAutoSystemPrompt: (b: boolean) => void;
   setFalKey: (key: string) => void;
+  setOnboarding: (data: Partial<Pick<SettingsState, "onboardingRole" | "onboardingHardware" | "onboardingExperience" | "onboardingCompleted">>) => void;
 }
 
 function applyTheme(mode: string, palette: string) {
@@ -148,6 +159,10 @@ export const useSettings = create<SettingsState>()((set, get) => ({
   modalDeploys: {},
   modalBudget: 0,
   modalSpend: 0,
+  onboardingCompleted: false,
+  onboardingRole: "",
+  onboardingHardware: "",
+  onboardingExperience: "",
 
   // -------------------------------------------------------------------------
   // DB load — single hydration path, called once on mount
@@ -242,4 +257,8 @@ export const useSettings = create<SettingsState>()((set, get) => ({
   setTaskPrompt: (key, promptId) => { set({ taskPrompts: { ...get().taskPrompts, [key]: promptId } }); scheduleSyncToDb(get()); },
   setAutoSystemPrompt: (b) => { set({ autoSystemPrompt: b }); scheduleSyncToDb(get()); },
   setFalKey: (key) => { set({ falKey: key }); scheduleSyncToDb(get()); },
+  setOnboarding: (data) => {
+    set(data);
+    scheduleSyncToDb(get());
+  },
 }));

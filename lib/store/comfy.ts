@@ -68,7 +68,7 @@ export const useComfyStore = create<ComfyState>()(
       activeProviderId: "comfycloud",
       hydrated: false,
       runMode: 'hybrid',
-      runModeLocked: true,
+      runModeLocked: false,
       cloudPlan: null,
       cloudEnvironment: 'Comfy Cloud',
       showPlansModal: false,
