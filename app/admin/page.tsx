@@ -13,7 +13,7 @@ interface UserRecord {
   createdAt: string;
 }
 
-const ALL_GROUPS = ["admin", "dev", "studio-plan", "nsfw-plan"];
+const ALL_GROUPS = ["admin", "dev", "studio-plan", "pro-plan", "nsfw-plan"];
 const ALL_PLANS = ["free", "studio", "pro"];
 
 export default function AdminPage() {
