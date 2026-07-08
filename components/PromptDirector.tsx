@@ -1,9 +1,10 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
 import { Modal, copy } from "@/components/ui";
-import { Wand2, Dice5, Copy, CornerDownLeft, Sparkles, BookOpen, Users, Image as ImageIcon } from "lucide-react";
+import { Wand2, Dice5, Copy, CornerDownLeft, Sparkles, BookOpen, Users, Image as ImageIcon, Plus } from "lucide-react";
 import { useLibrary } from "@/lib/store/library";
 import { assembleTemplate, templateTokens } from "@/lib/promptfill";
+import { useRouter } from "next/navigation";
 
 export default function PromptDirector({ 
   onInsert,
@@ -15,6 +16,7 @@ export default function PromptDirector({
   onSaveScene?: (data: { prompt: string; templateId?: string; characterIds: string[]; ingredientIds: string[] }) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   
   // Library data
   const templates = useLibrary(s => s.templates);
@@ -90,10 +92,22 @@ export default function PromptDirector({
     <div className="space-y-4">
       <div>
         <span className="label">Select Recipe (Template)</span>
-        <select className="input" value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)}>
-          <option value="">— Select a Recipe —</option>
-          {templates.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-        </select>
+        <div className="flex gap-2">
+          <select className="input flex-1 bg-surface2 text-foreground border border-border focus:ring-1 focus:ring-primary" value={selectedTemplateId} onChange={(e) => setSelectedTemplateId(e.target.value)}>
+            <option value="" className="bg-surface2 text-foreground py-1">— Select a Recipe —</option>
+            {templates.map(t => <option key={t.id} value={t.id} className="bg-surface2 text-foreground py-1">{t.name}</option>)}
+          </select>
+          <button 
+            className="btn-outline px-3" 
+            title="Create New Recipe"
+            onClick={() => {
+              setOpen(false);
+              router.push("/studio/workflow"); // Assuming workflow or library for template creation
+            }}
+          >
+            <Plus size={16} />
+          </button>
+        </div>
       </div>
 
       {activeTemplate && (
@@ -111,37 +125,45 @@ export default function PromptDirector({
                 <div key={token} className="flex flex-col gap-1">
                   <span className="label capitalize text-xs">{token.replace(/_/g, ' ')}</span>
                   
-                  {/* Select Dropdown prioritizing matching categories */}
-                  <select 
-                    className="input text-xs" 
-                    value={selections[token] || ""} 
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      // Detect if we picked a character or ingredient based on a prefix convention in the value, or just trust the string.
-                      // For true relational mapping we would look up the ID. Here we just set the string directly.
-                      handleSelect(token, val);
-                    }}
-                  >
-                    <option value="">— Type Custom Below —</option>
+                  <div className="flex gap-1">
+                    <select 
+                      className="input text-xs flex-1 bg-surface2 text-foreground border border-border focus:ring-1 focus:ring-primary" 
+                      value={selections[token] || ""} 
+                      onChange={(e) => handleSelect(token, e.target.value)}
+                    >
+                      <option value="" className="bg-surface2 text-foreground py-1">— Type Custom Below —</option>
+                      
+                      {isSubject && characters.length > 0 && (
+                        <optgroup label="Characters" className="bg-surface2 text-foreground font-semibold">
+                          {characters.map(c => <option key={c.id} value={c.triggerWord || c.name} className="font-normal">{c.name}</option>)}
+                        </optgroup>
+                      )}
+
+                      {matchingIngredients.length > 0 && (
+                        <optgroup label="Ingredients" className="bg-surface2 text-foreground font-semibold">
+                          {matchingIngredients.map(i => <option key={i.id} value={i.value} className="font-normal">{i.name}</option>)}
+                        </optgroup>
+                      )}
+
+                      {matchingBanks.length > 0 && (
+                        <optgroup label="Bank Options" className="bg-surface2 text-foreground font-semibold">
+                          {matchingBanks.flatMap(b => b.options.map(o => <option key={o} value={o} className="font-normal">{o}</option>))}
+                        </optgroup>
+                      )}
+                    </select>
                     
-                    {isSubject && characters.length > 0 && (
-                      <optgroup label="Characters">
-                        {characters.map(c => <option key={c.id} value={c.triggerWord || c.name}>{c.name}</option>)}
-                      </optgroup>
-                    )}
-
-                    {matchingIngredients.length > 0 && (
-                      <optgroup label="Ingredients">
-                        {matchingIngredients.map(i => <option key={i.id} value={i.value}>{i.name}</option>)}
-                      </optgroup>
-                    )}
-
-                    {matchingBanks.length > 0 && (
-                      <optgroup label="Bank Options">
-                        {matchingBanks.flatMap(b => b.options.map(o => <option key={o} value={o}>{o}</option>))}
-                      </optgroup>
-                    )}
-                  </select>
+                    <button 
+                      className="btn-outline px-2 border-border/50 text-muted hover:text-foreground"
+                      title={`Add new ${token}`}
+                      onClick={() => {
+                        setOpen(false);
+                        if (isSubject) router.push("/studio/character");
+                        else router.push("/library/ingredients"); // Or another route
+                      }}
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
                   
                   <input 
                     className="input text-xs" 

@@ -257,25 +257,14 @@ class NexusCloudPanel {
 app.registerExtension({
   name: "NexusCloud.Sidebar",
   async setup() {
-    // Prefer the modern sidebar tab API; fall back to a floating panel.
     const mount = (root) => new NexusCloudPanel(root);
-    if (app.extensionManager?.registerSidebarTab) {
-      app.extensionManager.registerSidebarTab({
-        id: "nexus-cloud",
-        icon: "pi pi-cloud",
-        title: "Nexus Cloud",
-        tooltip: "Cloud GPU provider for workflows",
-        type: "custom",
-        render: (e) => mount(e),
-      });
-    } else {
-      const panel = el("div", {
-        style: "position:fixed;top:60px;right:12px;width:280px;max-height:80vh;overflow:auto;" +
-               "background:var(--comfy-menu-bg,#222);color:var(--fg-color,#ddd);" +
-               "border:1px solid #444;border-radius:8px;padding:10px;z-index:1000;",
-      });
-      document.body.append(panel);
-      mount(panel);
-    }
+    // Force floating panel so it's always visible for testing!
+    const panel = el("div", {
+      style: "position:fixed;top:60px;right:12px;width:280px;max-height:80vh;overflow:auto;" +
+             "background:var(--comfy-menu-bg,#222);color:var(--fg-color,#ddd);" +
+             "border:1px solid #444;border-radius:8px;padding:10px;z-index:9999;",
+    });
+    document.body.append(panel);
+    mount(panel);
   },
 });

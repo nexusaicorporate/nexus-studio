@@ -158,6 +158,7 @@ export interface CinemaScene {
   duration?: number;
   assetId?: string;          // If rendered
   videoUrl?: string;         // Direct video URL/file path
+  mediaType?: "video" | "image" | "audio";
 }
 
 export interface CinemaProject {

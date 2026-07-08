@@ -24,7 +24,7 @@ function ImageStudioInner() {
   const mounted = useMounted(); const sp = useSearchParams(); const settings = useSettings(); const library = useLibrary();
   const provider = settings.providers.find((p) => p.id === settings.activeImageProviderId)!;
   const { plan } = useAuth();
-  const [mode, setMode] = useState<"t2i" | "i2i">("t2i"); const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("1:1"); const [model, setModel] = useState("flux");
+  const [mode, setMode] = useState<"t2i" | "i2i" | "r2i">("t2i"); const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("1:1"); const [model, setModel] = useState("flux");
   const catalogModels = modelsFor(mode === "t2i" ? "t2i" : "i2i");
   const [refs, setRefs] = useState<string[]>([]); const [busy, setBusy] = useState(false); const [result, setResult] = useState<string | null>(null);
   const [seed, setSeed] = useState<number>(() => Math.floor(Math.random() * 1e9)); const [charId, setCharId] = useState<string>("");
@@ -43,8 +43,8 @@ function ImageStudioInner() {
     <Page title="Image Studio" subtitle="Text-to-image, image-to-image, create / edit / animate. Free Pollinations route works with no key; OpenAI used when a key is set.">
       <div className="grid lg:grid-cols-[400px_1fr] gap-5">
         <div className="card p-4 space-y-3 h-max">
-          <div className="flex gap-2"><button className={`tab flex-1 ${mode === "t2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("t2i")}>Text → Image</button><button className={`tab flex-1 ${mode === "i2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("i2i")}>Image → Image</button></div>
-          <div className="flex items-center justify-between"><span className="label mb-0">System prompt</span><PromptPicker taskKey="image" filterModes={mode === "i2i" ? ["IT2I", "I2I"] : ["T2I"]} /></div>
+          <div className="flex gap-2"><button className={`tab flex-1 ${mode === "t2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("t2i")}>Text → Image</button><button className={`tab flex-1 ${mode === "i2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("i2i")}>Image → Image</button><button className={`tab flex-1 ${mode === "r2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("r2i")}>Ref → Image</button></div>
+          <div className="flex items-center justify-between"><span className="label mb-0">System prompt</span><PromptPicker taskKey="image" filterModes={mode === "i2i" || mode === "r2i" ? ["IT2I", "I2I"] : ["T2I"]} /></div>
           {library.characters.length > 0 && (
             <Field label="Lock to character (keeps persona consistent)">
               <div className="flex gap-2">
@@ -52,6 +52,7 @@ function ImageStudioInner() {
                   <option value="">— none —</option>
                   {library.characters.map((c) => <option key={c.id} value={c.id}>{c.name || "Unnamed"}</option>)}
                 </select>
+                <a href="/studio/character" className="btn-outline text-xs px-2.5 flex items-center justify-center" title="Create a new character">+</a>
                 {charId && (() => {
                   const selChar = library.characters.find(c => c.id === charId);
                   const hasRef = selChar && (selChar.characterSheetUrl || selChar.refImages.length > 0);
@@ -76,7 +77,7 @@ function ImageStudioInner() {
               </div>
             </Field>
           )}
-          {mode === "i2i" && (<Field label={`Reference images (${refs.length}/8)`}><MultiRefPicker max={8} refs={refs} onChange={setRefs} /></Field>)}
+          {(mode === "i2i" || mode === "r2i") && (<Field label={`Reference images (${refs.length}/8)`}><MultiRefPicker max={8} refs={refs} onChange={setRefs} /></Field>)}
           <Field label={<div className="flex items-center justify-between w-full"><span>Prompt</span><div className="flex items-center gap-2">{recipe && <button className="btn-ghost px-2 py-1 text-[10px] text-rose-400" onClick={() => { setPrompt(assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks)); setRecipe(null); }}>Detach Recipe</button>}<RecipeLoader onSelect={(r: any) => { setRecipe(r); setRecipeSelections(r.selections || {}); }} /></div></div>}>
             {recipe ? (
               <VisualRecipeBuilder content={(recipe as any).content || (recipe as any).templateString || ""} selections={recipeSelections} banks={library.banks} onChange={setRecipeSelections} />
@@ -85,7 +86,7 @@ function ImageStudioInner() {
             )}
           </Field>
           <div className="flex gap-2"><button className="btn-ghost flex-1 text-xs" onClick={enhance} disabled={busy}><Wand2 size={14} /> Improve</button><button className="btn-ghost flex-1 text-xs" onClick={surprise} disabled={busy}><Sparkles size={14} /> Surprise me</button></div>
-          <div className="grid grid-cols-2 gap-3"><Field label="Aspect ratio"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{Object.keys(RATIOS).map((r) => <option key={r}>{r}</option>)}</select></Field><Field label="Model"><select className="input" value={model} onChange={(e) => setModel(e.target.value)}>{catalogModels.map((m) => <option key={m.id} value={m.id}>{m.label} {!canUseModel(plan, m.id) ? `(${m.tier === "studio" ? "Studio" : "Pro"})` : ""}</option>)}</select></Field></div>
+          <div className="grid grid-cols-2 gap-3"><Field label="Aspect ratio"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{Object.keys(RATIOS).map((r) => <option key={r}>{r}</option>)}</select></Field><Field label="Model"><select className="input" value={model} onChange={(e) => setModel(e.target.value)}>{provider?.models.map((m) => <option key={m} value={m}>{m}</option>)}</select></Field></div>
           <Field label="Seed"><div className="flex gap-2"><input className="input" type="number" value={seed} onChange={(e) => setSeed(+e.target.value)} /><button className="btn-ghost px-3" onClick={() => setSeed(Math.floor(Math.random() * 1e9))}><Dice5 size={15} /></button></div></Field>
           {!canUseModel(plan, provider?.selectedModel || model) ? (
             <UpgradePrompt title="Pro Model Selected" message="This image model requires an active Pro subscription to generate." planNeeded="Pro" inline />

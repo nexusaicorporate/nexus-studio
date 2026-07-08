@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "name": "nexus-studio",
+  "color": "",
+  "dockState": {
+    "zones": {
+      "left": {
+        "position": "left",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "right": {
+        "position": "right",
+        "visible": false,
+        "size": 260,
+        "layout": null
+      },
+      "bottom": {
+        "position": "bottom",
+        "visible": false,
+        "size": 240,
+        "layout": null
+      },
+      "center": {
+        "position": "center",
+        "visible": true,
+        "size": 0,
+        "layout": {
+          "type": "tabs",
+          "id": "80160e43-4742-4cb5-a44a-d93831169879",
+          "panelIds": [
+            "f78efa63-01bd-4a93-a44d-efb21a6b7dc2"
+          ],
+          "activeIndex": 0
+        }
+      }
+    },
+    "locations": {
+      "f78efa63-01bd-4a93-a44d-efb21a6b7dc2": {
+        "type": "dock",
+        "zone": "center",
+        "stackId": "80160e43-4742-4cb5-a44a-d93831169879"
+      }
+    }
+  },
+  "panels": {
+    "5ab6b8c4-08ea-4aa0-9038-dd6b35998087": {
+      "type": "terminal",
+      "title": "cmd.exe"
+    },
+    "f78efa63-01bd-4a93-a44d-efb21a6b7dc2": {
+      "type": "canvas",
+      "title": "Canvas"
+    }
+  },
+  "canvases": {
+    "f78efa63-01bd-4a93-a44d-efb21a6b7dc2": {
+      "id": "f78efa63-01bd-4a93-a44d-efb21a6b7dc2",
+      "canvasNodes": {
+        "b015805b-6938-46bd-9017-3e440aac0a56": {
+          "id": "b015805b-6938-46bd-9017-3e440aac0a56",
+          "panelId": "5ab6b8c4-08ea-4aa0-9038-dd6b35998087",
+          "origin": {
+            "x": 130,
+            "y": 168
+          },
+          "size": {
+            "width": 640,
+            "height": 400
+          },
+          "zOrder": 2,
+          "creationIndex": 0,
+          "animationState": "idle",
+          "dockLayout": {
+            "type": "tabs",
+            "id": "b9d0a73a-8f70-4255-8917-3fee1a59efe1",
+            "panelIds": [
+              "5ab6b8c4-08ea-4aa0-9038-dd6b35998087"
+            ],
+            "activeIndex": 0
+          }
+        }
+      },
+      "zoomLevel": 1,
+      "viewportOffset": {
+        "x": 0,
+        "y": 0
+      }
+    }
+  }
+}

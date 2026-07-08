@@ -65,7 +65,14 @@ function AuthInner({ children }: { children: ReactNode }) {
     await nextSignOut({ redirect: false });
   }
 
-  const user = u?.id ? { id: u.id, email: u.email ?? "", plan: u.plan ?? "free", groups: u.groups ?? [] } : null;
+  let currentPlan = u?.plan ?? "free";
+  if (u?.groups?.includes("studio")) {
+    currentPlan = "studio";
+  } else if (u?.groups?.includes("pro")) {
+    currentPlan = "pro";
+  }
+
+  const user = u?.id ? { id: u.id, email: u.email ?? "", plan: currentPlan, groups: u.groups ?? [] } : null;
 
   return (
     <Ctx.Provider value={{
@@ -73,7 +80,7 @@ function AuthInner({ children }: { children: ReactNode }) {
       configured: true,
       user,
       session,
-      plan: u?.plan ?? "free",
+      plan: currentPlan,
       addons: deriveAddons(u?.groups ?? []),
       groups: u?.groups ?? [],
       signIn: handleSignIn,

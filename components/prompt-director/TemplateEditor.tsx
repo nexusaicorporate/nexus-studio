@@ -197,19 +197,22 @@ Return ONLY the 5 options, separated by commas. No bullets, no numbers, no expla
                 return (
                   <span key={i} className={`inline-flex items-center rounded-md px-1 py-0 mx-1 shadow-sm ${color}`}>
                     <select
-                      className="bg-transparent outline-none text-inherit cursor-pointer max-w-[200px] truncate py-1 pl-1 pr-1"
+                      className="bg-surface2 text-foreground outline-none cursor-pointer max-w-[200px] truncate py-1 pl-1 pr-1 border border-border/30 focus:ring-1 focus:ring-primary rounded-sm"
                       value={selections[seg.token!] ?? ""}
                       onChange={(e) => {
-                        if (e.target.value === "__custom") {
+                        if (e.target.value === "___CUSTOM___") {
                           handleCustomOption(seg.token!, val);
+                        } else if (e.target.value === "___AI___") {
+                          handleAIGenerateElements(seg.token!, val);
                         } else {
                           setSel(seg.token!, e.target.value);
                         }
                       }}
                     >
-                      <option value="">{val}</option>
-                      {opts.map((o) => <option key={o} value={o}>{o}</option>)}
-                      <option value="__custom">+ Custom...</option>
+                      <option value="" className="bg-surface2 text-foreground">{val}</option>
+                      {opts.map((o) => <option key={o} value={o} className="bg-surface2 text-foreground">{o}</option>)}
+                      <option value="___CUSTOM___" className="bg-surface2 text-foreground font-bold">+ Custom Value...</option>
+                      <option value="___AI___" className="bg-surface2 text-primary font-bold">✨ AI Generate...</option>
                     </select>
                     <button
                       onClick={() => handleAIGenerateElements(seg.token!, val)}

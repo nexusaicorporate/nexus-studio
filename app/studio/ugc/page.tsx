@@ -11,6 +11,7 @@ import { Megaphone, Sparkles, ImagePlus, Loader2, Download, Copy, Clapperboard, 
 import { RecipeLoader } from "@/components/RecipeLoader";
 import { VisualRecipeBuilder } from "@/components/VisualRecipeBuilder";
 import { MentionTextarea } from "@/components/MentionTextarea";
+import { MultiRefPicker } from "@/components/MultiRefPicker";
 import { assembleTemplate } from "@/lib/promptfill";
 import type { Template, Recipe } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -253,43 +254,16 @@ function UGCStudioInner() {
             )}
           </Field>
 
-          <div className="flex gap-2">
-            <button className="btn-ghost flex-1 text-xs" onClick={enhance} disabled={busy}><Sparkles size={13} className="mr-1.5 text-amber-500" /> AI Script Polish</button>
-            <button className="btn-ghost flex-1 text-xs" onClick={jsonEnhance} disabled={busy}><Copy size={13} className="mr-1.5" /> Campaign Spec</button>
-          </div>
-
           <Field label={`Product & Face Reference Images (${refImages.length}/8)`}>
-            <div className="grid grid-cols-4 gap-2">
-              {refImages.map((img, idx) => (
-                <div key={idx} className="relative aspect-[9/16] rounded-lg overflow-hidden border border-border group">
-                  <img src={img} className="w-full h-full object-cover" alt="" />
-                  <div className="absolute top-1 left-1 bg-black/60 text-[10px] text-white px-1.5 py-0.5 rounded font-bold">
-                    @image{idx + 1}
-                  </div>
-                  <button
-                    onClick={() => removeImage(idx)}
-                    className="absolute top-1 right-1 p-1 bg-rose-500/80 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 size={10} />
-                  </button>
-                </div>
-              ))}
-              {refImages.length < 8 && (
-                <label className="aspect-[9/16] rounded-lg border border-dashed border-border flex flex-col items-center justify-center cursor-pointer text-muted hover:text-text hover:border-text transition-colors">
-                  <ImagePlus size={20} />
-                  <span className="text-[10px] mt-1">Upload</span>
-                  <input type="file" accept="image/*" multiple hidden onChange={handleImageUpload} />
-                </label>
-              )}
-            </div>
+            <MultiRefPicker max={8} refs={refImages} onChange={setRefImages} />
           </Field>
 
           <div className="grid grid-cols-3 gap-2">
-            <Field label="Engine">
+            <Field label="Model">
               <select className="input text-xs" value={engine} onChange={(e) => setEngine(e.target.value)}>
-                {catalogModels.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.label} {!canUseModel(plan ?? "free", m.id) ? `(${m.tier === "studio" ? "Studio" : "Pro"})` : ""}
+                {provider?.models.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
                   </option>
                 ))}
               </select>

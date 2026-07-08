@@ -83,6 +83,7 @@ function VideoInner() {
                   <option value="">— none —</option>
                   {library.characters.map((c) => <option key={c.id} value={c.id}>{c.name || "Unnamed"}</option>)}
                 </select>
+                <a href="/studio/character" className="btn-outline text-xs px-2.5 flex items-center justify-center" title="Create a new character">+</a>
                 {charId && (() => {
                   const selChar = library.characters.find(c => c.id === charId);
                   const hasRef = selChar && (selChar.characterSheetUrl || selChar.refImages.length > 0);
@@ -142,7 +143,7 @@ function VideoInner() {
             )}
           </Field>
 
-          <div className="grid grid-cols-3 gap-2"><Field label="Engine"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{catalogModels.map((m) => <option key={m.id} value={m.id}>{m.label} {!canUseModel(plan, m.id) ? `(${m.tier === "studio" ? "Studio" : "Pro"})` : ""}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
+          <div className="grid grid-cols-3 gap-2"><Field label="Model"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{provider?.models.map((m) => <option key={m} value={m}>{m}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
           <div className="flex items-center gap-2 py-1 select-none">
             <input
               id="quantize-toggle"

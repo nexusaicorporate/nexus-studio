@@ -46,7 +46,12 @@ export default function PromptPicker({ taskKey, label = "System prompt", filterM
   const sel = prompts.find((p) => p.id === selId);
 
   const groups = useMemo(() => {
-    let list = prompts.filter((p) => p.category === "System Prompt");
+    let list = prompts.filter((p) => {
+      if (taskKey === "analyze") {
+        return p.category.toLowerCase() === "analyze" || (p.tags && p.tags.map(t => t.toLowerCase()).includes("analyze"));
+      }
+      return p.category === "System Prompt";
+    });
     if (q) list = list.filter((p) => (p.title + (p.subcategory || "")).toLowerCase().includes(q.toLowerCase()));
     if (filterModes?.length) list = list.filter((p) => !p.modes?.length || p.modes.some((m) => filterModes.includes(m)));
     const g: Record<string, PromptItem[]> = {};

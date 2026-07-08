@@ -8,12 +8,15 @@ import { useComfyStore } from "@/lib/store/comfy";
 import { extractRequiredModels } from "@/lib/comfy-models";
 import ComfyEnvSelector, { ComfyEnvDropdown } from "@/components/ComfyEnvSelector";
 import { HUB_WORKFLOWS } from "@/lib/data/comfyworkflows";
+import { NEW_HUB_WORKFLOWS } from "@/lib/data/comfy-hub-data";
+import { useSettings } from "@/lib/store/settings";
+import Link from "next/link";
 
 export default function ComfyHubPage() {
   const mounted = useMounted();
   const router = useRouter();
   const comfy = useComfyStore();
-  const [tab, setTab] = useState<"hub" | "docs">("hub");
+  const settings = useSettings();
   const [filterCat, setFilterCat] = useState<string>("All");
 
   function importWorkflow(e: React.ChangeEvent<HTMLInputElement>) {
@@ -41,10 +44,23 @@ export default function ComfyHubPage() {
 
   if (!mounted) return null;
 
-  const categories = ["All", "Image", "Video", "ControlNet", "Flux", "Utilities"];
+  const categories = ["All", "Featured", "Apps", "Image", "Video", "ControlNet", "Utilities"];
+  if (settings.uncensored) {
+    categories.push("NSFW");
+  }
+  
+  // Use the new scraped data
   const filteredWorkflows = filterCat === "All"
-    ? HUB_WORKFLOWS
-    : HUB_WORKFLOWS.filter((w) => w.category === filterCat);
+    ? NEW_HUB_WORKFLOWS
+    : filterCat === "Featured"
+    ? NEW_HUB_WORKFLOWS.slice(0, 20)
+    : filterCat === "Apps"
+    ? NEW_HUB_WORKFLOWS.filter((w) => w.isApp)
+    : filterCat === "NSFW"
+    ? NEW_HUB_WORKFLOWS.filter((w) => w.tags && w.tags.some(t => ["nsfw", "adult", "18+"].includes(t.toLowerCase())))
+    : NEW_HUB_WORKFLOWS.filter((w) => w.tags && w.tags.some(t => t.toLowerCase().includes(filterCat.toLowerCase())));
+    
+  const featuredWorkflows = NEW_HUB_WORKFLOWS.slice(0, 5); // Just grab first 5 as featured
 
   return (
     <Page
@@ -70,25 +86,8 @@ export default function ComfyHubPage() {
       {/* ComfyUI Startup Select Modal */}
       <ComfyEnvSelector />
 
-      {/* Tabs Menu */}
-      <div className="flex gap-2 mb-5">
-        <button
-          className={`tab ${tab === "hub" ? "tab-active" : "tab-idle"}`}
-          onClick={() => setTab("hub")}
-        >
-          <Sparkles size={14} /> Workflow Hub
-        </button>
-        <button
-          className={`tab ${tab === "docs" ? "tab-active" : "tab-idle"}`}
-          onClick={() => setTab("docs")}
-        >
-          <BookOpen size={14} /> ComfyUI API Documentation
-        </button>
-      </div>
-
-      {tab === "hub" ? (
-        <div className="space-y-6">
-          {/* Active Mode Notice */}
+      {/* Active Mode Notice */}
+      <div className="space-y-6">
           <div className="card p-4 bg-primary/5 border border-primary/20 flex flex-wrap gap-4 items-center justify-between">
             <div className="flex gap-3 items-start">
               <AlertCircle className="text-primary-light flex-shrink-0 mt-0.5" size={18} />
@@ -148,16 +147,60 @@ export default function ComfyHubPage() {
             </div>
           )}
 
+          {/* Featured Carousel (CSS Snap) */}
+          <div className="w-full overflow-x-auto snap-x snap-mandatory flex gap-4 pb-4 hidden-scrollbar mt-4">
+            {featuredWorkflows.map((wf) => (
+              <Link
+                href={`/studio/comfy/${wf.shareId}`}
+                key={`feat-${wf.shareId}`}
+                className="relative snap-center shrink-0 w-full lg:w-[80%] xl:w-[70%] h-[300px] md:h-[400px] lg:h-[450px] rounded-[2rem] overflow-hidden group border border-border/40 hover:border-primary/50 transition-colors bg-surface/50"
+              >
+                {wf.thumbnails?.[0] ? (
+                  wf.thumbnailVariant === "video" ? (
+                    <video src={wf.thumbnails[0]} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                  ) : (
+                    <img src={wf.thumbnails[0]} alt={wf.title} className="w-full h-full object-cover" />
+                  )
+                ) : (
+                  <div className="w-full h-full bg-surface2/50 flex items-center justify-center">No Cover</div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl text-[10px] font-bold text-white uppercase tracking-wider">
+                  Featured · Staff Pick
+                </div>
+                <div className="absolute bottom-6 left-6 right-6">
+                  <h2 className="text-2xl md:text-3xl lg:text-4xl font-normal tracking-tight text-white mb-3 line-clamp-1 group-hover:text-primary-light transition-colors">{wf.title}</h2>
+                  <div className="flex items-center gap-3">
+                    {wf.creatorAvatarUrl && (
+                      <img src={wf.creatorAvatarUrl} alt={wf.creatorDisplayName} className="w-6 h-6 rounded-full object-cover" />
+                    )}
+                    <span className="text-sm text-white/90 font-medium">{wf.creatorDisplayName}</span>
+                    <div className="flex gap-2">
+                      {wf.tags?.slice(0, 3).map(t => (
+                        <span key={t} className="px-3 py-1 rounded-full bg-black/40 backdrop-blur text-xs text-white/80">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center py-8">
+            <h1 className="text-3xl md:text-4xl font-normal text-text mb-2">558+ workflows across every model and category</h1>
+            <p className="text-xs font-bold tracking-[0.2em] uppercase text-primary">Browse Workflows</p>
+          </div>
+
           {/* Categories Filter */}
-          <div className="flex flex-wrap gap-1.5 border-b border-border/40 pb-3">
+          <div className="flex flex-wrap gap-2 justify-center border-b border-border/40 pb-6 mb-6">
             {categories.map((catName) => (
               <button
                 key={catName}
                 type="button"
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all ${
+                className={`px-4 py-2 rounded-2xl text-xs font-extrabold tracking-wider uppercase transition-all ${
                   filterCat === catName
-                    ? "bg-primary text-primary-fg shadow"
-                    : "text-muted hover:text-text bg-surface2/40 hover:bg-surface2/80"
+                    ? "bg-primary text-primary-fg shadow-lg shadow-primary/20"
+                    : "text-muted hover:text-text bg-surface2/40 hover:bg-surface2/80 border border-transparent hover:border-border"
                 }`}
                 onClick={() => setFilterCat(catName)}
               >
@@ -166,236 +209,54 @@ export default function ComfyHubPage() {
             ))}
           </div>
 
-          {/* Workflows Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Masonry-style Grid */}
+          <div className="columns-1 md:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
             {filteredWorkflows.map((tpl) => (
-              <div
-                key={tpl.id}
-                className="card p-5 flex flex-col justify-between border border-border hover:border-primary/40 transition-colors bg-surface/80"
+              <Link
+                href={`/studio/comfy/${tpl.shareId}`}
+                key={tpl.shareId}
+                className="card flex flex-col overflow-hidden border border-border hover:border-primary/40 transition-colors bg-surface/80 group break-inside-avoid"
               >
-                <div>
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="chip text-[9px] uppercase tracking-wider font-bold bg-primary/10 text-primary-light border-primary/20">
-                      {tpl.category}
-                    </span>
-                    <span
-                      className={`chip text-[9px] uppercase tracking-wider font-semibold ${
-                        tpl.difficulty === "Beginner"
-                          ? "bg-emerald-500/10 text-emerald-300 border-emerald-500/30"
-                          : tpl.difficulty === "Intermediate"
-                          ? "bg-amber-500/10 text-amber-300 border-amber-500/30"
-                          : "bg-rose-500/10 text-rose-300 border-rose-500/30"
-                      }`}
-                    >
-                      {tpl.difficulty}
-                    </span>
+                <div className="relative w-full aspect-video bg-surface2/30">
+                  {tpl.thumbnails?.[0] ? (
+                    tpl.thumbnailVariant === "video" ? (
+                      <video src={tpl.thumbnails[0]} className="w-full h-full object-cover" autoPlay muted loop playsInline />
+                    ) : (
+                      <img src={tpl.thumbnails[0]} alt={tpl.title} className="w-full h-full object-cover" loading="lazy" />
+                    )
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted">No Cover</div>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />
+                </div>
+                
+                <div className="p-4 flex flex-col gap-3">
+                  <h4 className="font-bold text-sm text-text leading-snug group-hover:text-primary transition-colors">{tpl.title}</h4>
+                  
+                  <div className="flex items-center gap-2">
+                    {tpl.creatorAvatarUrl && (
+                      <img src={tpl.creatorAvatarUrl} alt={tpl.creatorDisplayName} className="w-5 h-5 rounded-full object-cover" />
+                    )}
+                    <span className="text-xs text-muted-more font-medium truncate">{tpl.creatorDisplayName}</span>
                   </div>
-                  <h4 className="font-bold text-sm text-text mb-1.5">{tpl.name}</h4>
-                  <p className="text-xs text-muted leading-relaxed mb-4 min-h-[50px]">{tpl.desc}</p>
 
-                  <div className="flex items-center justify-between text-[10px] text-muted-more bg-surface2/40 px-2.5 py-1.5 rounded-lg border border-border/20 mb-4">
-                    <span>Nodes: <strong>{tpl.nodes}</strong></span>
-                    <span>Author: <strong>{tpl.author}</strong></span>
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {tpl.tags?.slice(0, 3).map(tag => (
+                      <span key={tag} className="px-2 py-0.5 rounded text-[9px] font-bold tracking-wide uppercase bg-surface2 text-muted">
+                        {tag}
+                      </span>
+                    ))}
+                    {tpl.tags?.length > 3 && (
+                      <span className="px-2 py-0.5 rounded text-[9px] font-bold tracking-wide uppercase bg-surface2 text-muted">
+                        +{tpl.tags.length - 3}
+                      </span>
+                    )}
                   </div>
                 </div>
-
-                <button
-                  type="button"
-                  className="btn-primary w-full text-xs py-2 mt-2 flex items-center justify-center gap-1.5 font-bold shadow-sm"
-                  onClick={() => {
-                    // Save workflow into ComfyStore and load it
-                    comfy.addWorkflow({
-                      id: tpl.id,
-                      name: tpl.name,
-                      description: tpl.desc,
-                      json: JSON.stringify(tpl.json, null, 2),
-                      createdAt: Date.now(),
-                      updatedAt: Date.now()
-                    });
-                    router.push(`/studio/workflow?template=${tpl.id}`);
-                  }}
-                >
-                  <Send size={13} /> Use in ComfyUI
-                </button>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
-      ) : (
-        <div className="grid lg:grid-cols-12 gap-6 items-start">
-          {/* Docs Table of Contents (3 cols) */}
-          <div className="lg:col-span-3 card p-4 space-y-2 border border-border bg-surface2/25">
-            <h4 className="font-bold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 mb-2">
-              API Topics
-            </h4>
-            <nav className="flex flex-col gap-1.5 text-xs">
-              <a href="#introduction" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                1. API Reference Introduction
-              </a>
-              <a href="#enabling-dev" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                2. Enabling Developer API Mode
-              </a>
-              <a href="#prompt-endpoint" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                3. POST /prompt (Queueing)
-              </a>
-              <a href="#ws-monitoring" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                4. WebSocket Event Stream
-              </a>
-              <a href="#history-retrieval" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                5. GET /history (Retrieving)
-              </a>
-              <a href="#hybrid-setup" className="text-muted hover:text-primary transition-colors py-1 pl-1 border-l border-transparent hover:border-primary">
-                6. Hybrid Remote GPU Node
-              </a>
-            </nav>
-          </div>
-
-          {/* Docs Content (9 cols) */}
-          <div className="lg:col-span-9 card p-6 space-y-8 prose prose-invert max-w-none text-xs leading-relaxed text-zinc-300 border border-border bg-surface/50">
-            
-            {/* Section 1 */}
-            <section id="introduction" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <Code className="text-primary-light" size={18} /> 1. API Reference Introduction
-              </h3>
-              <p>
-                The ComfyUI backend server acts as a powerful headless JSON execution engine. By sending workflow node specifications in API prompt formats, you can run complex Stable Diffusion and FLUX model chains programmatically.
-              </p>
-              <p>
-                Our **Nexusaigear** platform supports standard local endpoints, hybrid offloading, and remote serverless clouds using places with ComfyUI API backend servers. We route execution triggers based on your active resource configuration switch.
-              </p>
-            </section>
-
-            {/* Section 2 */}
-            <section id="enabling-dev" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <FileCode className="text-primary-light" size={18} /> 2. Enabling Developer API Mode
-              </h3>
-              <p>
-                By default, saving a workflow in the ComfyUI web UI outputs a user interface layout JSON file containing visual placements. To retrieve the execution-compatible minimized JSON:
-              </p>
-              <ol className="list-decimal list-inside space-y-1.5 pl-1.5 mt-1.5">
-                <li>Open your local ComfyUI interface (usually at <code>http://localhost:8188</code>).</li>
-                <li>Click the **Settings** gear icon on the floating menu.</li>
-                <li>Check the box labeled **"Enable Dev mode"**.</li>
-                <li>A new button labeled **"Save (API Format)"** will appear on your side panel.</li>
-                <li>Click this button to save the api-compatible JSON. You can load this file into our **ComfyUI Gear** API panel.</li>
-              </ol>
-            </section>
-
-            {/* Section 3 */}
-            <section id="prompt-endpoint" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <Code className="text-primary-light" size={18} /> 3. POST /prompt (Queueing Prompts)
-              </h3>
-              <p>
-                To trigger a workflow execution, send a POST request with the API JSON structure placed under the <code>prompt</code> field.
-              </p>
-              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
-                <div className="text-primary-light">POST http://localhost:8188/prompt</div>
-                <pre className="text-zinc-400">{`{
-  "client_id": "nexus_studio_client",
-  "prompt": {
-    "3": {
-      "class_type": "KSampler",
-      "inputs": {
-        "seed": 12345678,
-        "steps": 20,
-        "cfg": 8,
-        "sampler_name": "euler",
-        "scheduler": "normal",
-        "model": ["4", 0],
-        "positive": ["6", 0],
-        "negative": ["7", 0],
-        "latent_image": ["5", 0]
-      }
-    },
-    "4": {
-      "class_type": "CheckpointLoaderSimple",
-      "inputs": { "ckpt_name": "dreamshaper_8.safetensors" }
-    },
-    ...
-  }
-}`}</pre>
-              </div>
-            </section>
-
-            {/* Section 4 */}
-            <section id="ws-monitoring" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <Globe className="text-primary-light" size={18} /> 4. WebSocket Monitoring (/ws)
-              </h3>
-              <p>
-                To listen to execution updates in real-time, connect to the WebSocket stream using the client ID passed during queueing.
-              </p>
-              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
-                <div className="text-primary-light">WebSocket URL: ws://localhost:8188/ws?clientId=nexus_studio_client</div>
-                <div className="text-muted-more mt-2">Key Event Messages:</div>
-                <ul className="list-disc list-inside space-y-1 text-zinc-400 pl-1">
-                  <li><code>{"{\"type\": \"status\", \"data\": {\"status\": {\"exec_info\": {\"queue_remaining\": 1}}}}"}</code></li>
-                  <li><code>{"{\"type\": \"execution_start\", \"data\": {\"prompt_id\": \"uuid\"}}"}</code></li>
-                  <li><code>{"{\"type\": \"executing\", \"data\": {\"node\": \"3\", \"prompt_id\": \"uuid\"}}"}</code></li>
-                  <li><code>{"{\"type\": \"progress\", \"data\": {\"value\": 10, \"max\": 20}}"}</code></li>
-                  <li><code>{"{\"type\": \"executed\", \"data\": {\"node\": \"9\", \"output\": {\"images\": [...]}}}"}</code></li>
-                </ul>
-              </div>
-            </section>
-
-            {/* Section 5 */}
-            <section id="history-retrieval" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <Code className="text-primary-light" size={18} /> 5. GET /history/{"{prompt_id}"} (History & Outputs)
-              </h3>
-              <p>
-                For serverless architectures where long-running persistent WebSockets are not feasible, you can fetch completion details and media output URLs directly from the history cache.
-              </p>
-              <div className="bg-black/90 p-4 rounded-xl border border-border/60 font-mono text-[10px] space-y-2">
-                <div className="text-primary-light">GET http://localhost:8188/history/prompt-uuid-here</div>
-                <pre className="text-zinc-400">{`{
-  "prompt-uuid-here": {
-    "status": {
-      "status_str": "success",
-      "completed": true
-    },
-    "outputs": {
-      "9": {
-        "images": [
-          {
-            "filename": "ComfyUI_00001_.png",
-            "subfolder": "",
-            "type": "output"
-          }
-        ]
-      }
-    }
-  }
-}`}</pre>
-              </div>
-            </section>
-
-            {/* Section 6 */}
-            <section id="hybrid-setup" className="space-y-3">
-              <h3 className="text-base font-bold text-text border-b border-border/40 pb-2 flex items-center gap-2">
-                <Layers className="text-primary-light" size={18} /> 6. Hybrid Remote GPU Node Configuration
-              </h3>
-              <p>
-                To execute local workflow graphs using remote cloud GPUs, configure the **nathannlu/comfyui-cloud** custom node.
-              </p>
-              <div className="bg-surface2/50 border border-border/40 p-4 rounded-xl space-y-2.5">
-                <div className="flex items-center gap-2 text-primary-light font-semibold">
-                  <CheckCircle2 size={15} /> Setup Steps
-                </div>
-                <ol className="list-decimal list-inside space-y-1 text-muted">
-                  <li>Install the custom node repository: <code>https://github.com/nathannlu/comfyui-cloud</code>.</li>
-                  <li>In your local ComfyUI settings or config file, input your remote cloud worker URL and secret GPU authentication key.</li>
-                  <li>When you queue a prompt, the custom node will serialize your tensors and offload processing tasks seamlessly to the remote backend, returning completed outputs directly to your local UI.</li>
-                </ol>
-              </div>
-            </section>
-
-          </div>
-        </div>
-      )}
     </Page>
   );
 }

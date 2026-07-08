@@ -1,120 +1,220 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Page from "@/components/Page";
-import { PLANS, ADDONS, getCheckoutUrl } from "@/lib/billing";
+import { Check, Crown, Zap, Shield, ArrowRight, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/AuthProvider";
-import { CreditCard, CheckCircle2, Zap, AlertCircle } from "lucide-react";
+
+const TIERS = [
+  {
+    id: "free",
+    name: "Hobby",
+    description: "Perfect for exploring AI workflows and casual generation.",
+    price: { monthly: 0, yearly: 0 },
+    icon: Zap,
+    features: [
+      "50 Daily Generative Credits",
+      "Standard SDXL & Flux Models",
+      "Local Asset Library (up to 100 items)",
+      "Basic Chat Assistant",
+      "Community Support"
+    ],
+    buttonText: "Current Plan",
+    buttonVariant: "outline"
+  },
+  {
+    id: "pro",
+    name: "Pro",
+    description: "For professionals needing high-res outputs and advanced control.",
+    price: { monthly: 29, yearly: 290 },
+    icon: Sparkles,
+    popular: true,
+    features: [
+      "Unlimited Generative Credits",
+      "Pro Custom Fine-Tuned Models",
+      "Cloud Asset Sync (up to 10k items)",
+      "High-Resolution Upscaling (8k)",
+      "Priority Email Support"
+    ],
+    buttonText: "Upgrade to Pro",
+    buttonVariant: "primary",
+    stripePriceId: { 
+      monthly: "price_1Tqk77Ddw6EA34Q2wPvGUjEv", 
+      yearly: "price_1Tqk77Ddw6EA34Q2XrtNGrna" 
+    }
+  },
+  {
+    id: "studio",
+    name: "Studio",
+    description: "Uncapped performance, custom models, and enterprise API access.",
+    price: { monthly: 99, yearly: 990 },
+    icon: Crown,
+    features: [
+      "Dedicated GPU Instances",
+      "Team Collaboration & Shared Libraries",
+      "API Access for External Integrations",
+      "Advanced UGC Ad Automation",
+      "24/7 White-glove Support"
+    ],
+    buttonText: "Contact Sales",
+    buttonVariant: "outline",
+    stripePriceId: { 
+      monthly: "price_1Tqk77Ddw6EA34Q2cmwrsIjd", 
+      yearly: "price_1Tqk78Ddw6EA34Q2M0JtxSyq" 
+    }
+  }
+];
 
 export default function BillingPage() {
-  const { user, plan, groups } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [currentPlan, setCurrentPlan] = useState<string>("free");
-  const [currentAddons, setCurrentAddons] = useState<string[]>([]);
-  const [error, setError] = useState("");
+  const { plan, user } = useAuth();
+  const [interval, setInterval] = useState<"monthly" | "yearly">("monthly");
+  const [loading, setLoading] = useState<string | null>(null);
 
-  // Plan now comes from the NextAuth session via AuthProvider
-  useEffect(() => {
-    setCurrentPlan(plan ?? "free");
-    setCurrentAddons(groups.filter(g => g.endsWith("-plan") && g !== "studio-plan" && g !== "nsfw-plan" ? false : g.endsWith("-plan")).map(g => g.replace("-plan", "")));
-    setLoading(false);
-  }, [plan, groups]);
+  const handleCheckout = async (tierId: string, priceId?: string) => {
+    if (!priceId) return; // e.g., Hobby or Contact Sales
+    
+    setLoading(tierId);
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ priceId }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Checkout failed:", error);
+    } finally {
+      setLoading(null);
+    }
+  };
 
-
-
-  if (loading) {
-    return <Page title="Billing & Plans"><div className="p-6 text-muted">Loading your subscription details...</div></Page>;
-  }
+  const handleManageBilling = async () => {
+    try {
+      // customerId would typically come from your auth session
+      const res = await fetch("/api/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerId: "cus_placeholder" }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Portal failed:", error);
+    }
+  };
 
   return (
-    <Page title="Billing & Plans" subtitle="Manage your subscription and unlocking extra features.">
-      <div className="max-w-4xl p-6">
+    <Page title="Billing & Plans" subtitle="Manage your subscription and usage">
+      <div className="max-w-6xl mx-auto py-8">
         
-        {error && (
-          <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl flex gap-3 text-sm">
-            <AlertCircle className="shrink-0" size={18} /> {error}
-          </div>
-        )}
-
-        <div className="mb-8 p-5 bg-surface-alt border border-border rounded-xl flex items-center justify-between">
-          <div>
-            <h3 className="font-semibold text-lg text-primary mb-1">Your Current Plan: <span className="uppercase">{currentPlan}</span></h3>
-            <p className="text-sm text-muted">Active Add-ons: {currentAddons.length > 0 ? currentAddons.join(", ") : "None"}</p>
-          </div>
-          <div className="text-right text-xs text-muted">
-            <p>Billed securely via Stripe.</p>
-            <p>Signed in as {user?.email}</p>
+        {/* Toggle */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-surface border border-border rounded-full p-1 flex items-center shadow-lg">
+            <button
+              onClick={() => setInterval("monthly")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
+                interval === "monthly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted hover:text-text"
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setInterval("yearly")}
+              className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
+                interval === "yearly" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted hover:text-text"
+              }`}
+            >
+              Yearly <span className="ml-1 text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">Save 20%</span>
+            </button>
           </div>
         </div>
 
-        <h3 className="font-semibold text-xl mb-4">Subscription Plans</h3>
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
-          {PLANS.map(plan => {
-            const isActive = currentPlan === plan.id;
-            const checkoutUrl = user ? getCheckoutUrl(plan.stripePaymentLink, user.id) : null;
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {TIERS.map((tier) => {
+            const Icon = tier.icon;
+            const isPopular = tier.popular;
+            const priceId = tier.stripePriceId?.[interval];
             
             return (
-              <div key={plan.id} className={`card p-6 flex flex-col ${isActive ? 'ring-2 ring-primary bg-primary/5' : ''}`}>
-                <div className="mb-4">
-                  <h4 className="font-bold text-xl">{plan.name}</h4>
-                  <div className="mt-2 text-3xl font-black">${plan.price}<span className="text-sm font-normal text-muted">/mo</span></div>
-                  <p className="text-sm text-muted mt-2">{plan.description}</p>
+              <div 
+                key={tier.id}
+                className={`relative bg-surface border rounded-2xl flex flex-col p-8 transition-all hover:shadow-2xl ${
+                  isPopular ? "border-primary shadow-[0_0_40px_-15px_rgba(var(--primary-rgb),0.5)] scale-105 z-10 bg-surface/80 backdrop-blur-xl" : "border-border hover:border-border/80"
+                }`}
+              >
+                {isPopular && (
+                  <div className="absolute -top-4 left-0 right-0 flex justify-center">
+                    <span className="bg-gradient-to-r from-primary to-indigo-500 text-white text-xs font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow-lg">
+                      Most Popular
+                    </span>
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-lg ${isPopular ? "bg-primary/20 text-primary" : "bg-surface2 text-muted"}`}>
+                    <Icon size={24} />
+                  </div>
+                  <h3 className="text-2xl font-bold">{tier.name}</h3>
                 </div>
                 
-                <ul className="space-y-3 mb-6 flex-1">
-                  {plan.features.map((feat, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-text/80">
-                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                      <span>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {isActive ? (
-                  <button disabled className="btn-primary w-full opacity-50 cursor-default">Current Plan</button>
-                ) : plan.price === 0 ? (
-                  <button disabled className="btn-outline w-full opacity-50 cursor-default">Free Tier</button>
+                <p className="text-muted text-sm mb-6 min-h-[40px]">{tier.description}</p>
+                
+                <div className="mb-8">
+                  <span className="text-5xl font-black">${tier.price[interval]}</span>
+                  <span className="text-muted ml-2">/ {interval === "monthly" ? "mo" : "yr"}</span>
+                </div>
+                
+                {plan === tier.id ? (
+                  <button 
+                    disabled
+                    className="w-full py-3 rounded-lg font-bold mb-8 flex items-center justify-center gap-2 transition-all bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 cursor-not-allowed"
+                  >
+                    Current Plan
+                    <Check size={16} />
+                  </button>
                 ) : (
-                  <a href={checkoutUrl || "#"} target="_blank" rel="noreferrer" className="btn-primary w-full inline-flex justify-center">
-                    Upgrade to {plan.name}
-                  </a>
+                  <button 
+                    onClick={() => tier.id !== "free" && handleCheckout(tier.id, priceId)}
+                    disabled={loading === tier.id || (!priceId && tier.id !== "free")}
+                    className={`w-full py-3 rounded-lg font-bold mb-8 flex items-center justify-center gap-2 transition-all ${
+                      tier.buttonVariant === "primary" 
+                        ? "bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_0_20px_-5px_rgba(var(--primary-rgb),0.5)]" 
+                        : "bg-surface2 hover:bg-surface border border-border text-text"
+                    } ${loading === tier.id || (!priceId && tier.id !== "free") ? "opacity-50 cursor-not-allowed" : ""}`}
+                  >
+                    {loading === tier.id ? "Loading..." : (tier.id === "free" && plan !== "free" ? "Downgrade" : tier.buttonText)}
+                    {tier.id !== "free" && <ArrowRight size={16} />}
+                  </button>
                 )}
-              </div>
-            );
-          })}
-        </div>
-
-        <h3 className="font-semibold text-xl mb-4">À La Carte Add-ons</h3>
-        <div className="grid md:grid-cols-2 gap-6">
-          {ADDONS.map(addon => {
-            const isOwned = currentAddons.includes(addon.id);
-            const checkoutUrl = user ? getCheckoutUrl(addon.stripePaymentLink, user.id) : null;
-
-            return (
-              <div key={addon.id} className="card p-6 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-orange-500/10 text-orange-400 flex items-center justify-center shrink-0">
-                  <Zap size={24} />
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between items-start">
-                    <h4 className="font-bold">{addon.name}</h4>
-                    <span className="font-semibold">${addon.price}</span>
-                  </div>
-                  <p className="text-xs text-muted mt-1">{addon.description}</p>
-                </div>
-                <div>
-                  {isOwned ? (
-                    <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider bg-emerald-400/10 px-3 py-1.5 rounded-full">Unlocked</span>
-                  ) : (
-                    <a href={checkoutUrl || "#"} target="_blank" rel="noreferrer" className="btn-outline text-xs px-4">
-                      Purchase
-                    </a>
-                  )}
+                
+                <div className="space-y-4 flex-1">
+                  <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Features</p>
+                  {tier.features.map((feat, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="mt-0.5 bg-emerald-500/20 text-emerald-400 p-0.5 rounded-full shrink-0">
+                        <Check size={12} strokeWidth={3} />
+                      </div>
+                      <span className="text-sm text-text/80">{feat}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* Secure Checkout Banner */}
+        <div className="mt-16 flex items-center justify-center gap-2 text-muted text-sm">
+          <Shield size={16} className="text-emerald-400" />
+          <span>Payments are securely processed via <strong>Stripe</strong>. You can cancel at any time.</span>
+        </div>
+
       </div>
     </Page>
   );

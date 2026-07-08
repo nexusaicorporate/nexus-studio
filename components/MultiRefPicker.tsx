@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ImagePlus, X, Search, FileImage } from "lucide-react";
 import { useLibrary } from "@/lib/store/library";
 import { Modal, Field } from "@/components/ui";
+import { AssetPicker } from "@/components/AssetPicker";
 
 export function MultiRefPicker({
   max = 8,
@@ -15,14 +16,7 @@ export function MultiRefPicker({
 }) {
   const library = useLibrary();
   const [showIngModal, setShowIngModal] = useState(false);
-
-  function upload(e: React.ChangeEvent<HTMLInputElement>) {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    const r = new FileReader();
-    r.onload = () => onChange([...refs, r.result as string]);
-    r.readAsDataURL(f);
-  }
+  const [showAssetPicker, setShowAssetPicker] = useState(false);
 
   function pickIngredient(url: string) {
     if (!url) return;
@@ -49,11 +43,14 @@ export function MultiRefPicker({
         ))}
         {refs.length < max && (
           <div className="flex flex-col gap-1 w-full aspect-square">
-            <label className="flex-1 rounded-lg border border-dashed border-border flex flex-col items-center justify-center cursor-pointer text-muted hover:text-text bg-surface/50 hover:bg-surface2 transition-colors">
+            <button
+              type="button"
+              className="flex-1 rounded-lg border border-dashed border-border flex flex-col items-center justify-center cursor-pointer text-muted hover:text-text bg-surface/50 hover:bg-surface2 transition-colors"
+              onClick={() => setShowAssetPicker(true)}
+            >
               <ImagePlus size={16} className="mb-1" />
               <span className="text-[10px]">Upload</span>
-              <input type="file" accept="image/*" hidden onChange={upload} />
-            </label>
+            </button>
             <button
               type="button"
               className="flex-1 rounded-lg border border-dashed border-border flex flex-col items-center justify-center cursor-pointer text-muted hover:text-text bg-surface/50 hover:bg-surface2 transition-colors"
@@ -87,6 +84,12 @@ export function MultiRefPicker({
           ))}
         </div>
       </Modal>
+
+      <AssetPicker
+        open={showAssetPicker}
+        onClose={() => setShowAssetPicker(false)}
+        onSelect={(url) => onChange([...refs, url])}
+      />
     </div>
   );
 }

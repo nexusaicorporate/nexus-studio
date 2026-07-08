@@ -201,7 +201,30 @@ function EditForm({ item, onSave }: { item: PromptItem; onSave: (p: PromptItem) 
 
       <div className="grid md:grid-cols-2 gap-3">
         <Field label="Title"><input className="input" value={p.title} onChange={(e) => setP({ ...p, title: e.target.value })} /></Field>
-        <Field label="Category"><input className="input" value={p.category} onChange={(e) => setP({ ...p, category: e.target.value })} /></Field>
+        <Field label="Category">
+          <div className="flex gap-2">
+            <select 
+              className="input flex-1" 
+              value={p.category} 
+              onChange={(e) => setP({ ...p, category: e.target.value })}
+            >
+              {Array.from(new Set(["General", "System Prompt", "Analyze", ...lib.prompts.map(x => x.category), p.category])).filter(Boolean).map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+            <button 
+              type="button" 
+              className="btn-outline px-3 h-10 flex items-center justify-center text-sm font-bold" 
+              title="Add custom category" 
+              onClick={() => {
+                const name = prompt("Enter new category name:");
+                if (name && name.trim()) setP({ ...p, category: name.trim() });
+              }}
+            >
+              <Plus size={15} />
+            </button>
+          </div>
+        </Field>
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <Field label="Subcategory (e.g. Video Generation, Image Editing)"><input className="input" value={p.subcategory || ""} onChange={(e) => setP({ ...p, subcategory: e.target.value })} /></Field>

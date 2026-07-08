@@ -66,17 +66,18 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     {
       group: "Library Gears",
       items: [
-        { href: "/library/prompts", label: "Prompts Gear", icon: Sparkles, color: "text-sky-400", image: "/images/library_gear.png" },
-        { href: "/library/prompt-director", label: "Prompt Director Gear", icon: ChefHat, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" },
-        { href: "/library/ingredients", label: "Ingredients Gear", icon: Boxes, color: "text-purple-400", image: "/images/ingredients_gear.png" }
+        { href: "/library/assets", label: "Assets Gear", icon: Boxes, color: "text-rose-400", image: "/images/image_gear.png" },
+        { href: "/library/prompts", label: "Prompts Gear", icon: BookOpen, color: "text-blue-400", image: "/images/library_gear.png" },
+        { href: "/library/prompt-director", label: "Prompt Director", icon: Layers, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" },
+        { href: "/library/ingredients", label: "Ingredients Gear", icon: ChefHat, color: "text-purple-400", image: "/images/ingredients_gear.png" }
       ]
     },
     {
       group: "System Gears",
       items: [
         { href: "/settings", label: "Settings Gear", icon: Settings, color: "text-slate-400", image: "/images/settings_gear.png" },
-        { href: "/docs", label: "Docs Gear", icon: LifeBuoy, color: "text-yellow-400", image: "/images/docs_gear.png" },
-        ...(WEB_MODE ? [{ href: "/billing", label: "Billing Gear", icon: CreditCard, color: "text-teal-500", image: "/images/billing_gear.png" }] : [])
+        { href: "/billing", label: "Billing Gear", icon: CreditCard, color: "text-amber-400", image: "/images/comfyui_gear.png" },
+        { href: "/docs", label: "Docs Gear", icon: LifeBuoy, color: "text-yellow-400", image: "/images/docs_gear.png" }
       ]
     },
     ...(groups.includes("admin") || groups.includes("dev") ? [{
@@ -88,17 +89,19 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     }] : [])
   ];
 
-  const { mode, setMode, palette, activeImageProviderId, activeVideoProviderId, providers } = useSettings();
+  const { mode, setMode, palette, activeImageProviderId, activeVideoProviderId, providers, loadFromDb } = useSettings();
   const load = useLibrary((s) => s.load); const loaded = useLibrary((s) => s.loaded);
   const activeImg = providers.find((p) => p.id === activeImageProviderId);
   const activeVid = providers.find((p) => p.id === activeVideoProviderId);
-  
+
+  useEffect(() => { loadFromDb(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!loaded) load(); }, [loaded, load]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden relative">
       <aside 
-        className={`shrink-0 border-r border-border bg-surface flex flex-col transition-all duration-300 ease-in-out ${collapsed ? "w-20" : "w-72"}`}
+        onMouseLeave={() => setCollapsed(true)}
+        className={`absolute left-0 top-0 h-full z-50 shrink-0 border-r border-border bg-surface flex flex-col transition-all duration-300 ease-in-out ${collapsed ? "w-20" : "w-72"}`}
       >
         <div 
           onClick={() => setCollapsed(!collapsed)}
@@ -181,7 +184,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
           )}
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto">{children}</main>
+      <main className="flex-1 w-full h-full overflow-y-auto pl-20">{children}</main>
     </div>
   );
 }

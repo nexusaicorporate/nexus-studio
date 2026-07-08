@@ -569,80 +569,20 @@ export default function WorkflowStudioPage() {
   const iframeUrl = localProvider.url;
 
   return (
-    <Page
-      title="ComfyUI Gear"
-      subtitle="Local ComfyUI instance with cloud-GPU offloading capabilities."
-      actions={
-        <div className="flex gap-2 items-center">
-          <ComfyEnvDropdown />
-          <button
-            type="button"
-            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
-            onClick={() => comfy.set("runModeLocked", false)}
-          >
-            <Layers size={13} /> Change Env
-          </button>
-          
-          <button
-            type="button"
-            className={`btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px] ${showApiPanel ? "bg-primary/10 border-primary text-primary-light" : ""}`}
-            onClick={() => setShowApiPanel(!showApiPanel)}
-            title="Toggle API Prompt Panel"
-          >
-            <Sliders size={13} /> API Panel
-          </button>
-
-          {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
-            <button
-              type="button"
-              className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow"
-              onClick={() => comfy.set("showPlansModal", true)}
-            >
-              <Cloud size={14} /> Subscribe
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5"
-              disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
-              onClick={handleExecute}
-            >
-              {comfy.runMode === "hybrid" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
-              {comfy.runMode === "hybrid" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
-            </button>
-          )}
-        </div>
-      }
-    >
+    <div className="w-full h-screen flex overflow-hidden bg-black relative fade-in">
       <ComfyEnvSelector />
 
-      <div className="flex flex-col lg:flex-row gap-5 h-[calc(100vh-165px)] min-h-[600px] overflow-hidden">
-        {/* Main Workspace Iframe */}
-        <div className="flex-1 flex flex-col border border-border rounded-xl bg-black/40 shadow-xl overflow-hidden h-full">
-          <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
-            <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "hybrid" ? "bg-emerald-400" : "bg-primary-light"} animate-pulse`} />
-              <span>Live Workspace: <strong>{iframeUrl}</strong></span>
-              <span className="chip text-[10px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
-                {comfy.runMode} Mode
-              </span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              {comfy.runMode === "hybrid" && (
-                <span className="text-xs text-primary-light font-bold flex items-center gap-1.5 bg-primary/5 px-2 py-0.5 rounded border border-primary/20">
-                  <Cloud size={12} /> Cloud GPU Active
-                </span>
-              )}
-              <a 
-                href={iframeUrl} 
-                target="_blank" 
-                rel="noreferrer" 
-                className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
-              >
-                Open in Browser <ExternalLink size={11} />
-              </a>
-            </div>
-          </div>
+      <div className="flex-1 w-full h-full flex flex-col relative overflow-hidden">
+        <button 
+          className={`absolute top-2 right-4 z-40 bg-surface/90 backdrop-blur border border-border px-3 py-1.5 rounded-lg shadow-lg hover:bg-surface transition-all flex items-center gap-2 ${showApiPanel ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+          onClick={() => setShowApiPanel(true)}
+          title="Open ComfyUI Settings"
+        >
+          <Sliders size={14} className="text-primary-light" />
+          <span className="text-xs font-bold text-primary-light">ComfyUI Gear Settings</span>
+        </button>
+
+        <div className="flex-1 flex flex-col bg-black overflow-hidden h-full">
           {modelScan && modelScan.missing > 0 && serverOnline && (
             <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 flex items-center justify-between gap-3 text-xs shrink-0">
               <span className="text-amber-200"><strong>{modelScan.missing}</strong> of {modelScan.total} models this workflow needs are missing.</span>
@@ -815,16 +755,88 @@ export default function WorkflowStudioPage() {
           ) : (
             <iframe
               src={iframeUrl}
-              className="flex-1 w-full border-0 bg-white"
+              className="flex-1 w-full h-full border-0 bg-white"
               title="ComfyUI Node Workspace"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
             />
           )}
         </div>
+      </div>
 
-        {/* Collapsible API Panel */}
-        {showApiPanel && (
-          <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4 overflow-y-auto h-full pr-1 pb-4 scrollbar-thin">
+      {/* Collapsible Panel */}
+      {showApiPanel && (
+        <div className="w-full lg:w-[420px] shrink-0 flex flex-col h-full bg-surface border-l border-border/60 shadow-2xl relative z-50">
+          <button 
+            className="absolute top-4 right-4 text-muted hover:text-text z-50 p-2"
+            onClick={() => setShowApiPanel(false)}
+          >
+            ✕
+          </button>
+
+          <div className="p-5 border-b border-border/40 space-y-4">
+            <div className="pr-8">
+              <h1 className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2">ComfyUI Gear</h1>
+              <p className="text-[11px] text-muted mt-1">Local ComfyUI instance with cloud-GPU offloading capabilities.</p>
+            </div>
+            
+            <div className="flex flex-wrap gap-2 items-center">
+              <ComfyEnvDropdown />
+              <button
+                type="button"
+                className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
+                onClick={() => comfy.set("runModeLocked", false)}
+              >
+                <Layers size={13} /> Change Env
+              </button>
+              
+              {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
+                <button
+                  type="button"
+                  className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow w-full mt-1 justify-center"
+                  onClick={() => comfy.set("showPlansModal", true)}
+                >
+                  <Cloud size={14} /> Subscribe
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center justify-center gap-1.5 w-full mt-1"
+                  disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
+                  onClick={handleExecute}
+                >
+                  {comfy.runMode === "hybrid" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
+                  {comfy.runMode === "hybrid" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
+                </button>
+              )}
+            </div>
+
+            <div className="bg-surface2/50 border border-border/40 rounded-xl p-3 flex flex-col gap-2.5 text-[11px] text-muted-more">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${comfy.runMode === "hybrid" ? "bg-emerald-400" : "bg-primary-light"} animate-pulse`} />
+                  <span className="chip text-[9px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
+                    {comfy.runMode} Mode
+                  </span>
+                </div>
+                {comfy.runMode === "hybrid" && (
+                  <span className="text-[10px] text-primary-light font-bold flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20">
+                    <Cloud size={10} /> Cloud GPU Active
+                  </span>
+                )}
+              </div>
+              <div className="truncate">Live: <strong>{iframeUrl}</strong></div>
+              <a 
+                href={iframeUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn-outline px-2 py-1.5 text-[11px] flex items-center justify-center gap-1.5 hover:text-primary-light w-full"
+              >
+                Open in Browser <ExternalLink size={12} />
+              </a>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
             {Object.keys(parsedNodes).length === 0 ? (
               <div className="card p-5 bg-primary/5 border border-primary/20 text-center">
                 <FileJson className="mx-auto text-primary-light mb-3" size={28} />
@@ -1029,9 +1041,9 @@ export default function WorkflowStudioPage() {
               </div>
             )}
           </div>
-        )}
-      </div>
-    </Page>
+        </div>
+      )}
+    </div>
   );
 }
 

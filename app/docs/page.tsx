@@ -763,6 +763,102 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
       </>
     ),
   },
+  {
+    id: "comfy-api", label: "ComfyUI API Reference", group: "Studio Gears", icon: Sparkles,
+    keywords: "comfy api prompt queue websockets history remote hybrid",
+    body: (
+      <>
+        <H2>ComfyUI API Reference</H2>
+        <Lede>
+          The ComfyUI backend server acts as a powerful headless JSON execution engine. By sending workflow node specifications in API prompt formats, you can run complex Stable Diffusion and FLUX model chains programmatically.
+        </Lede>
+        
+        <H3>Enabling Developer API Mode</H3>
+        <P>
+          By default, saving a workflow in the ComfyUI web UI outputs a user interface layout JSON file containing visual placements. To retrieve the execution-compatible minimized JSON:
+        </P>
+        <Steps items={[
+          <>Open your local ComfyUI interface (usually at <Code>http://localhost:8188</Code>).</>,
+          <>Click the <b>Settings</b> gear icon on the floating menu.</>,
+          <>Check the box labeled <b>"Enable Dev mode"</b>.</>,
+          <>A new button labeled <b>"Save (API Format)"</b> will appear on your side panel.</>,
+          <>Click this button to save the api-compatible JSON. You can load this file into our <b>ComfyUI Gear</b> API panel.</>
+        ]} />
+
+        <H3>POST /prompt (Queueing Prompts)</H3>
+        <P>
+          To trigger a workflow execution, send a POST request with the API JSON structure placed under the <Code>prompt</Code> field.
+        </P>
+        <Block>{`POST http://localhost:8188/prompt
+
+{
+  "client_id": "nexus_studio_client",
+  "prompt": {
+    "3": {
+      "class_type": "KSampler",
+      "inputs": {
+        "seed": 12345678,
+        "steps": 20,
+        "cfg": 8,
+        "sampler_name": "euler",
+        "scheduler": "normal",
+        "model": ["4", 0],
+        "positive": ["6", 0],
+        "negative": ["7", 0],
+        "latent_image": ["5", 0]
+      }
+    },
+    ...
+  }
+}`}</Block>
+
+        <H3>WebSocket Monitoring (/ws)</H3>
+        <P>
+          To listen to execution updates in real-time, connect to the WebSocket stream using the client ID passed during queueing.
+        </P>
+        <Block>{`WebSocket URL: ws://localhost:8188/ws?clientId=nexus_studio_client
+
+Key Event Messages:
+{"type": "status", "data": {"status": {"exec_info": {"queue_remaining": 1}}}}
+{"type": "execution_start", "data": {"prompt_id": "uuid"}}
+{"type": "executing", "data": {"node": "3", "prompt_id": "uuid"}}
+{"type": "progress", "data": {"value": 10, "max": 20}}
+{"type": "executed", "data": {"node": "9", "output": {"images": [...]}}}`}</Block>
+
+        <H3>GET /history/{"{prompt_id}"} (History & Outputs)</H3>
+        <P>
+          For serverless architectures where long-running persistent WebSockets are not feasible, you can fetch completion details and media output URLs directly from the history cache.
+        </P>
+        <Block>{`GET http://localhost:8188/history/prompt-uuid-here
+
+{
+  "prompt-uuid-here": {
+    "status": {
+      "status_str": "success",
+      "completed": true
+    },
+    "outputs": {
+      "9": {
+        "images": [
+          { "filename": "ComfyUI_00001_.png", "subfolder": "", "type": "output" }
+        ]
+      }
+    }
+  }
+}`}</Block>
+
+        <H3>Hybrid Remote GPU Node Configuration</H3>
+        <P>
+          To execute local workflow graphs using remote cloud GPUs, configure the <b>nathannlu/comfyui-cloud</b> custom node.
+        </P>
+        <Steps items={[
+          <>Install the custom node repository: <Code>https://github.com/nathannlu/comfyui-cloud</Code>.</>,
+          <>In your local ComfyUI settings or config file, input your remote cloud worker URL and secret GPU authentication key.</>,
+          <>When you queue a prompt, the custom node will serialize your tensors and offload processing tasks seamlessly to the remote backend, returning completed outputs directly to your local UI.</>
+        ]} />
+      </>
+    ),
+  },
 ];
 
 const GROUP_ORDER = ["Getting Started", "Workspace Gears", "Studio Gears", "Library Gears", "System Gears", "Engineering"];
