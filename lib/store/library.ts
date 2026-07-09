@@ -45,6 +45,9 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
     };
 
     if (saved) {
+      if (saved.prompts) {
+        saved.prompts = saved.prompts.map((p: any) => p.category === "System Prompt" ? { ...p, category: "Analyze Prompt" } : p);
+      }
       if (!saved.promptsImported || !saved.templatesTranslated) {
         const seeds = await fetchSeeds();
         const pk = (p: PromptItem) => p.category + "|" + (p.subcategory || "") + "|" + p.title + "|" + p.body;
@@ -85,7 +88,9 @@ export const useLibrary = create<LibraryState>((set, getState) => ({
         set(merged);
         await idbSet(KEY, snapshot(merged));
       } else {
-        set({ ...saved, loaded: true });
+        const migrated = { ...saved, loaded: true };
+        set(migrated);
+        await idbSet(KEY, snapshot(migrated));
       }
     } else {
       const seeds = await fetchSeeds();

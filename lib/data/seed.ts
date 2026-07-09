@@ -104,14 +104,14 @@ export const SEED_RECIPES: Recipe[] = [
 
 function sys(subcategory: string, title: string, body: string, modes: string[] = ["T2T"], nsfw = false): PromptItem {
   const mediaType: PromptItem["mediaType"] = modes.some((m) => m.includes("V")) ? "video" : modes.some((m) => m.includes("I")) ? "image" : "text";
-  return { id: uid(), title, category: "System Prompt", subcategory, body, tags: [], modes, nsfw, mediaType, createdAt: now, updatedAt: now };
+  return { id: uid(), title, category: "Analyze Prompt", subcategory, body, tags: [], modes, nsfw, mediaType, createdAt: now, updatedAt: now };
 }
 
-// Built-in System Prompts grouped into subcategories that mirror the original app.
+// Built-in Analyze Prompts grouped into subcategories that mirror the original app.
 // Mode tags: T2I/I2I/I2T/IT2I (image), T2V/I2V/V2V/IT2V/V2T/VT2T (video), T2T (text).
 // Import your original predefined_prompts.json to add the full set (incl. your own) under these subcategories.
 export const SYSTEM_PROMPTS: PromptItem[] = [
-  sys("General", "No System Prompt", "", ["T2T"]),
+  sys("General", "No Analyze Prompt", "", ["T2T"]),
   sys("General", "Default Image-to-Prompt", "Describe this image in detail.", ["I2T"]),
   sys("General", "Story Starter", "Use the image as inspiration to write the opening of a short story.", ["I2T", "T2T"]),
   sys("General", "Scene Description", "Provide a comprehensive scene description covering setting, lighting, atmosphere, and mood.", ["I2T"]),

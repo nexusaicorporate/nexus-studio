@@ -106,7 +106,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <Page title="Settings / Control Panel" subtitle="Configure providers, system prompt, comfyui workflow servers, and appearance.">
+    <Page title="Settings / Control Panel" subtitle="Configure providers, analyze prompt, comfyui workflow servers, and appearance.">
       <div className="flex gap-2 mb-5">
         {(["providers", "appearance", "comfy"] as const).map((t) => (
           <button

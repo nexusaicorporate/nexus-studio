@@ -16,11 +16,11 @@ function ModeTags({ modes }: { modes?: string[] }) {
   return <span className="flex gap-1 flex-wrap">{modes.map((m) => <span key={m} className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${modeColor(m)}`}>{m}</span>)}</span>;
 }
 
-// Resolve the active system prompt body for a task.
+// Resolve the active analyze prompt body for a task.
 export function useTaskSystemPrompt(taskKey: string, currentMode?: string): string {
   const prompts = useLibrary((s) => s.prompts);
   const { taskPrompts, autoSystemPrompt } = useSettings();
-  const sysPrompts = prompts.filter((p) => p.category === "System Prompt");
+  const sysPrompts = prompts.filter((p) => p.category === "Analyze Prompt");
   if (autoSystemPrompt && currentMode) {
     const auto = sysPrompts.find((p) => p.modes?.includes(currentMode) && p.body.trim());
     if (auto) return auto.body;
@@ -37,7 +37,7 @@ export function useTaskSystemPrompt(taskKey: string, currentMode?: string): stri
   return glob || "";
 }
 
-export default function PromptPicker({ taskKey, label = "System prompt", filterModes }: { taskKey: string; label?: string; filterModes?: string[] }) {
+export default function PromptPicker({ taskKey, label = "Analyze prompt", filterModes }: { taskKey: string; label?: string; filterModes?: string[] }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const prompts = useLibrary((s) => s.prompts);
@@ -48,9 +48,9 @@ export default function PromptPicker({ taskKey, label = "System prompt", filterM
   const groups = useMemo(() => {
     let list = prompts.filter((p) => {
       if (taskKey === "analyze") {
-        return p.category.toLowerCase() === "analyze" || (p.tags && p.tags.map(t => t.toLowerCase()).includes("analyze"));
+        return p.category.toLowerCase() === "analyze" || p.category === "Analyze Prompt" || (p.tags && p.tags.map(t => t.toLowerCase()).includes("analyze"));
       }
-      return p.category === "System Prompt";
+      return p.category === "Analyze Prompt";
     });
     if (q) list = list.filter((p) => (p.title + (p.subcategory || "")).toLowerCase().includes(q.toLowerCase()));
     if (filterModes?.length) list = list.filter((p) => !p.modes?.length || p.modes.some((m) => filterModes.includes(m)));
@@ -61,19 +61,19 @@ export default function PromptPicker({ taskKey, label = "System prompt", filterM
 
   return (
     <>
-      <button className="btn-outline px-2.5 py-1.5 text-xs" onClick={() => setOpen(true)} title="Choose system prompt for this task">
+      <button className="btn-outline px-2.5 py-1.5 text-xs" onClick={() => setOpen(true)} title="Choose analyze prompt for this task">
         <Settings2 size={14} /> {sel ? sel.title : selId === "none" ? "No prompt" : autoSystemPrompt ? "Auto prompt" : label}
       </button>
-      <Modal open={open} onClose={() => setOpen(false)} title="System Prompt">
+      <Modal open={open} onClose={() => setOpen(false)} title="Analyze Prompt">
         <div className="flex items-center justify-between mb-3">
-          <div><div className="text-sm font-medium">Auto System Prompt</div><div className="text-[11px] text-muted">Picks a prompt by the task's output type</div></div>
+          <div><div className="text-sm font-medium">Auto Analyze Prompt</div><div className="text-[11px] text-muted">Picks a prompt by the task's output type</div></div>
           <Toggle checked={autoSystemPrompt} onChange={setAutoSystemPrompt} />
         </div>
         <div className="relative mb-3"><Search size={15} className="absolute left-3 top-2.5 text-muted" /><input className="input pl-9" placeholder="Search prompts…" value={q} onChange={(e) => setQ(e.target.value)} /></div>
         <div className="max-h-[55vh] overflow-y-auto pr-1 space-y-3">
           <button className={`w-full flex items-center gap-3 rounded-xl px-3 py-2 text-left ${selId === "none" ? "bg-surface2" : "hover:bg-surface2"}`} onClick={() => { setTaskPrompt(taskKey, "none"); setOpen(false); }}>
             <span className={`w-4 h-4 rounded-full border ${selId === "none" ? "border-primary bg-primary" : "border-border"} grid place-items-center`}>{selId === "none" && <Check size={11} className="text-primary-fg" />}</span>
-            <span className="text-sm">No System Prompt</span>
+            <span className="text-sm">No Analyze Prompt</span>
           </button>
           {Object.keys(groups).sort().map((sub) => (
             <div key={sub}>
@@ -92,7 +92,7 @@ export default function PromptPicker({ taskKey, label = "System prompt", filterM
               </div>
             </div>
           ))}
-          {Object.keys(groups).length === 0 && <div className="text-sm text-muted text-center py-6">No system prompts. Add some in the Prompt Library, or import your original predefined_prompts.json there.</div>}
+          {Object.keys(groups).length === 0 && <div className="text-sm text-muted text-center py-6">No analyze prompts. Add some in the Prompt Library, or import your original predefined_prompts.json there.</div>}
         </div>
       </Modal>
     </>

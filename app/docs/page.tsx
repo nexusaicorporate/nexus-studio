@@ -115,7 +115,7 @@ const SECTIONS: Section[] = [
           ["Workspace Gears", <>Chat &amp; Analyze (multi-provider chat + image captioning) and Bulk Analyze (batch caption many files).</>],
           ["Studio Gears", <>Character, Image, Video, Workflow and Comfy Hub — the generative production tools.</>],
           ["Library Gears", <>Prompts, Environments, Ingredients and Recipes — reusable building blocks with full CRUD + import/export.</>],
-          ["System Gears", <>Settings / Control Panel — providers, system prompts, appearance and ComfyUI configuration.</>],
+          ["System Gears", <>Settings / Control Panel — providers, analyze prompts, appearance and ComfyUI configuration.</>],
         ]} />
         <H3>What makes it different</H3>
         <UL items={[
@@ -163,7 +163,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   },
   {
     id: "concepts", label: "Core Concepts", group: "Getting Started", icon: Compass,
-    keywords: "provider model system prompt task uncensored persistence",
+    keywords: "provider model analyze prompt task uncensored persistence",
     body: (
       <>
         <H2>Core Concepts</H2>
@@ -171,13 +171,13 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <KV rows={[
           ["Active provider", <>The provider chosen in Settings is the one every chat/analyze/enhance action uses. The current provider &amp; model are shown in the sidebar footer.</>],
           ["Model", <>Each provider carries a list of models and a selected model. Many providers can fetch their live model list on demand.</>],
-          ["System prompt", <>Steers how the model responds. It can be set globally, picked per task, or chosen automatically based on the task's output type.</>],
-          ["Task", <>Each surface (chat, image, video, bulk) is a named task. Tasks can each remember their own preferred system prompt via the gear button.</>],
-          ["Uncensored mode", <>A toggle that prepends an adult-creator preamble to the system prompt for unrestricted creative/captioning work on capable models.</>],
+          ["Analyze prompt", <>Steers how the model responds. It can be set globally, picked per task, or chosen automatically based on the task's output type.</>],
+          ["Task", <>Each surface (chat, image, video, bulk) is a named task. Tasks can each remember their own preferred analyze prompt via the gear button.</>],
+          ["Uncensored mode", <>A toggle that prepends an adult-creator preamble to the analyze prompt for unrestricted creative/captioning work on capable models.</>],
           ["Local persistence", <>Libraries live in IndexedDB; settings live in localStorage. Nothing is uploaded. Use Export/Import per library for backups.</>],
         ]} />
         <H3>Mode tags</H3>
-        <P>System prompts are tagged with the I/O shape they suit, so the right prompts surface for the right task:</P>
+        <P>Analyze prompts are tagged with the I/O shape they suit, so the right prompts surface for the right task:</P>
         <Chips items={["T2T text→text", "T2I text→image", "I2I image→image", "IT2I image+text→image", "I2T image→text", "T2V text→video", "I2V image→video", "V2V video→video", "V2T video→text"]} />
       </>
     ),
@@ -190,11 +190,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     body: (
       <>
         <H2>Chat &amp; Analyze Gear</H2>
-        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your active provider, model and system prompt.</Lede>
+        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your active provider, model and analyze prompt.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Pick your provider/model in Settings (shown in the sidebar footer).</>,
-          <>Optionally choose an analysis system prompt with the gear button in the header.</>,
+          <>Optionally choose an analysis analyze prompt with the gear button in the header.</>,
           <>Type a message, or attach one or more images with the image button to caption/analyze them.</>,
           <>Press Enter to send (Shift+Enter for a newline). Responses stream in token-by-token.</>,
           <>Use Copy on any assistant reply, or "New chat" to clear the thread.</>,
@@ -206,7 +206,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <H3>Engineering notes</H3>
         <UL items={[
           <>Images are read as base64 data URLs and sent inline; vision support depends on the provider/model.</>,
-          <>The system prompt is resolved by <Code>useTaskSystemPrompt("chat", …)</Code>, which passes an <Code>I2T</Code> mode when images are attached and <Code>T2T</Code> otherwise.</>,
+          <>The analyze prompt is resolved by <Code>useTaskSystemPrompt("chat", …)</Code>, which passes an <Code>I2T</Code> mode when images are attached and <Code>T2T</Code> otherwise.</>,
           <>Streaming is handled per-provider in <Code>lib/providers.ts → chat()</Code> via <Code>onChunk</Code> callbacks.</>,
         ]} />
       </>
@@ -425,11 +425,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   // ===================== LIBRARY =====================
   {
     id: "prompts", label: "Prompt Gear", group: "Library Gears", icon: BookOpen,
-    keywords: "prompt library crud import export url system prompt categories modes",
+    keywords: "prompt library crud import export url analyze prompt categories modes",
     body: (
       <>
         <H2>Prompt Gear</H2>
-        <Lede>Your prompt template library — categorized, searchable, taggable, and fully import/export-able. Also the home of System Prompts.</Lede>
+        <Lede>Your prompt template library — categorized, searchable, taggable, and fully import/export-able. Also the home of Analyze Prompts.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Filter by category tabs, search by text, or toggle 18+ visibility.</>,
@@ -440,10 +440,10 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <H3>Import formats</H3>
         <P>
           The importer is tolerant: arrays of objects map common fields (<Code>title/name</Code>, <Code>prompt/content/body</Code>, <Code>category</Code>,
-          <Code>image/cover</Code>, <Code>tags</Code>). A nested object of <Code>{"{ collection: { title: body } }"}</Code> is read as System Prompts, and modes are
+          <Code>image/cover</Code>, <Code>tags</Code>). A nested object of <Code>{"{ collection: { title: body } }"}</Code> is read as Analyze Prompts, and modes are
           inferred from the title/category text. This is how the original <Code>predefined_prompts.json</Code> loads.
         </P>
-        <H3>System Prompts</H3>
+        <H3>Analyze Prompts</H3>
         <P>
           Prompts in the <Code>System Prompt</Code> category appear in every task's prompt picker, grouped by subcategory (General, Captioning,
           Image Editing, Video Generation, Analysis, and more). Built-ins are seeded on first run and can be merged or reset from Settings.
@@ -542,7 +542,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         ]} />
         <H3>Uncensored mode</H3>
         <P>
-          When on, an adult-creator preamble is prepended to the system prompt for unrestricted creative/captioning output on capable
+          When on, an adult-creator preamble is prepended to the analyze prompt for unrestricted creative/captioning output on capable
           (typically local) models. Hosted providers still enforce their own policies.
         </P>
         <H3>Engineering notes</H3>
@@ -554,14 +554,14 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     ),
   },
   {
-    id: "system-prompts", label: "System Prompts & Builder", group: "System Gears", icon: Wand2,
-    keywords: "system prompt builder caption length extras auto prompt default fallback picker",
+    id: "system-prompts", label: "Analyze Prompts & Builder", group: "System Gears", icon: Wand2,
+    keywords: "analyze prompt builder caption length extras auto prompt default fallback picker",
     body: (
       <>
-        <H2>System Prompts &amp; Builder</H2>
+        <H2>Analyze Prompts &amp; Builder</H2>
         <Lede>Control how the model behaves globally, per task, or automatically — and compose new prompts with the builder.</Lede>
         <H3>Resolution order</H3>
-        <P>For any task, the active system prompt is resolved by <Code>useTaskSystemPrompt()</Code> in this order:</P>
+        <P>For any task, the active analyze prompt is resolved by <Code>useTaskSystemPrompt()</Code> in this order:</P>
         <Steps items={[
           <><b>Auto prompt</b> (if enabled): the first System Prompt whose mode tags match the current task's I/O type.</>,
           <>The task's own picked prompt (set with its gear button).</>,

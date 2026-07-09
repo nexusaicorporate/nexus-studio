@@ -237,7 +237,7 @@ export default function ChatPage() {
           {openSection === "Configuration" && (
             <div className="p-5 flex flex-col gap-6 bg-black/20 border-t border-border/10">
               
-              {/* System Prompts Section */}
+              {/* Analyze Prompts Section */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>

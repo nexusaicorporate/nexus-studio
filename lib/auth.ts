@@ -29,8 +29,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id;
         const g = (user as any).groups || [];
         let p = (user as any).plan || "free";
-        if (g.includes("studio")) p = "studio";
-        else if (g.includes("pro")) p = "pro";
+        if (g.includes("studio") || g.includes("studio-plan")) p = "studio";
+        else if (g.includes("pro") || g.includes("pro-plan")) p = "pro";
         token.plan = p;
         token.groups = g;
       }
@@ -53,9 +53,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             g = dbUser.groups || [];
           }
           
-          if (g.includes("studio")) {
+          if (g.includes("studio") || g.includes("studio-plan")) {
             p = "studio";
-          } else if (g.includes("pro")) {
+          } else if (g.includes("pro") || g.includes("pro-plan")) {
             p = "pro";
           }
           
@@ -64,8 +64,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         } catch {
           let p = token.plan as string || "free";
           let g = (token.groups as string[]) || [];
-          if (g.includes("studio")) p = "studio";
-          else if (g.includes("pro")) p = "pro";
+          if (g.includes("studio") || g.includes("studio-plan")) p = "studio";
+          else if (g.includes("pro") || g.includes("pro-plan")) p = "pro";
           
           (session.user as any).plan = p;
           (session.user as any).groups = g;

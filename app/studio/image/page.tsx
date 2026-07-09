@@ -44,7 +44,7 @@ function ImageStudioInner() {
       <div className="grid lg:grid-cols-[400px_1fr] gap-5">
         <div className="card p-4 space-y-3 h-max">
           <div className="flex gap-2"><button className={`tab flex-1 ${mode === "t2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("t2i")}>Text → Image</button><button className={`tab flex-1 ${mode === "i2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("i2i")}>Image → Image</button><button className={`tab flex-1 ${mode === "r2i" ? "tab-active" : "tab-idle"}`} onClick={() => setMode("r2i")}>Ref → Image</button></div>
-          <div className="flex items-center justify-between"><span className="label mb-0">System prompt</span><PromptPicker taskKey="image" filterModes={mode === "i2i" || mode === "r2i" ? ["IT2I", "I2I"] : ["T2I"]} /></div>
+          <div className="flex items-center justify-between"><span className="label mb-0">Analyze prompt</span><PromptPicker taskKey="image" filterModes={mode === "i2i" || mode === "r2i" ? ["IT2I", "I2I"] : ["T2I"]} /></div>
           {library.characters.length > 0 && (
             <Field label="Lock to character (keeps persona consistent)">
               <div className="flex gap-2">

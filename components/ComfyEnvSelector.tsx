@@ -2,7 +2,15 @@
 import { useState } from "react";
 import { useComfyStore } from "@/lib/store/comfy";
 import { Toggle } from "./ui";
-import { Sparkles, Cpu, Cloud, Lock, Unlock, X, Check, Globe } from "lucide-react";
+import { Sparkles, Cpu, Cloud, Lock, Unlock, X, Check, Globe, Zap, Box } from "lucide-react";
+import { useSettings } from "@/lib/store/settings";
+import { deployModalBackend } from "@/lib/comfy-runtime";
+
+const DEPLOY_GPUS = ["T4", "L4", "A10G", "L40S", "A100", "A100-80GB", "H100"];
+const DEPLOY_MODALITIES = [
+  { id: "image", label: "Image (diffusers & ComfyUI)", ph: "e.g. stabilityai/stable-diffusion-xl-base-1.0" },
+  { id: "video", label: "Video (LTX & ComfyUI)", ph: "e.g. Lightricks/LTX-Video" },
+] as const;
 
 export function ComfyEnvDropdown() {
   const comfy = useComfyStore();
@@ -35,8 +43,46 @@ interface ComfyEnvSelectorProps {
 
 export default function ComfyEnvSelector({ onClose }: ComfyEnvSelectorProps) {
   const comfy = useComfyStore();
+  const s = useSettings();
   const [showPlans, setShowPlans] = useState(false);
   const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly");
+  
+  // Wizard state
+  const [step, setStep] = useState(1);
+  const [deployProvider, setDeployProvider] = useState<"modal" | "">("");
+  
+  // Deploy state
+  const [deploy, setDeploy] = useState({ modality: "image", gpu: "L40S", gpuCount: 1, cpu: 8, ramGb: 48, model: "", secret: "", hfToken: "" });
+  const [deploying, setDeploying] = useState(false);
+  const [deployMsg, setDeployMsg] = useState<{ ok: boolean; text: string; log?: string } | null>(null);
+
+  async function runDeploy() {
+    setDeploying(true); setDeployMsg(null);
+    const r = await deployModalBackend({
+      modality: deploy.modality as "image" | "video",
+      gpu: deploy.gpu, gpuCount: deploy.gpuCount, cpu: deploy.cpu,
+      ramMb: deploy.ramGb ? deploy.ramGb * 1024 : undefined,
+      model: deploy.model.trim(), secret: deploy.secret.trim(), hfToken: deploy.hfToken.trim(),
+    });
+    setDeploying(false);
+    if (r.ok && r.url) {
+      const name = `Modal ${deploy.modality} · ${deploy.gpu}`;
+      const id = s.addModalProvider({ name, baseUrl: r.url, apiKey: deploy.secret.trim(), models: [deploy.model.trim()] });
+      if (deploy.modality === "image") s.setActiveImageProvider(id); else s.setActiveVideoProvider(id);
+      
+      // We also auto-fill the hybrid config just in case they are routing ComfyUI there
+      comfy.updateHybridConfig({ remoteGpuUrl: r.url, remoteGpuKey: deploy.secret.trim() });
+      
+      s.setModalDeploy(deploy.modality, {
+        gpu: deploy.gpu, gpuCount: deploy.gpuCount, cpu: deploy.cpu, ramGb: deploy.ramGb,
+        model: deploy.model.trim(), secret: deploy.secret.trim(), hfToken: deploy.hfToken.trim(),
+        url: r.url, stopped: false,
+      });
+      setDeployMsg({ ok: true, text: `Deployed successfully!`, log: r.log });
+    } else {
+      setDeployMsg({ ok: false, text: r.message, log: r.log });
+    }
+  }
 
   const plans = [
     {
@@ -232,13 +278,21 @@ export default function ComfyEnvSelector({ onClose }: ComfyEnvSelectorProps) {
             <span className="px-2 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold uppercase tracking-wider text-primary">
               ComfyUI Desktop-Like Provisioning
             </span>
-            <h2 className="text-xl font-bold mt-2">Initialize ComfyUI Resources</h2>
+            <h2 className="text-xl font-bold mt-2">
+              {step === 1 ? "Initialize ComfyUI Resources" : step === 2 ? "Select GPU Provider" : `Configure ${deployProvider} Deployment`}
+            </h2>
             <p className="text-xs text-muted max-w-md mx-auto mt-1">
-              Select how your Nexusaigear app should route workflows. You can change this selection later in Settings.
+              {step === 1 
+                ? "Select how your Nexusaigear app should route workflows. You can change this selection later in Settings."
+                : step === 2 
+                ? "Choose where you want to provision your remote GPU compute."
+                : "Enter the hardware requirements and launch the remote instance."}
             </p>
           </div>
 
           <div className="grid gap-3 mb-6">
+            {step === 1 && (
+              <>
             {/* Hybrid */}
             <button
               type="button"
@@ -289,27 +343,162 @@ export default function ComfyEnvSelector({ onClose }: ComfyEnvSelectorProps) {
                 </span>
               </div>
             </button>
+            </>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4">
+                <button
+                  type="button"
+                  className={`card p-4 w-full text-left border flex items-center justify-between transition-all ${
+                    deployProvider === "modal" ? "border-primary bg-primary/5 shadow-glow" : "border-border hover:border-primary/40"
+                  }`}
+                  onClick={() => setDeployProvider("modal")}
+                >
+                  <div className="flex gap-3 items-center">
+                    <div className={`p-2 rounded-xl bg-surface2/60 border border-border/40 text-primary-light`}>
+                      <Box size={20} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-sm">Modal (Serverless GPU)</div>
+                      <div className="text-[11px] text-muted leading-tight mt-0.5">
+                        Spin up on-demand GPUs (L40S, A100, H100) instantly. Billed per second of compute.
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  disabled
+                  className="card p-4 w-full text-left border border-border/40 opacity-50 bg-surface2/40 cursor-not-allowed"
+                >
+                  <div className="flex gap-3 items-center">
+                    <div className="p-2 rounded-xl bg-surface2 border border-border/40 text-muted">
+                      <Cloud size={20} />
+                    </div>
+                    <div>
+                      <div className="font-bold text-sm">AWS EC2 / RunPod</div>
+                      <div className="text-[11px] text-muted leading-tight mt-0.5">
+                        Persistent VM deployment coming soon.
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4">
+                <div className="p-4 border border-primary/30 bg-primary/5 rounded-2xl">
+                  <div className="font-semibold text-sm mb-1 flex items-center gap-2 text-text"><Zap size={16} className="text-primary-light" /> One-click Deploy (Modal)</div>
+                  <p className="text-xs text-muted mb-4 max-w-2xl leading-relaxed">
+                    Spin up a Modal GPU backend. On success, this will securely register the URL and secret for your workflows.
+                  </p>
+                  
+                  <div className="grid md:grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">Modality</label>
+                      <select className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" value={deploy.modality} onChange={(e) => setDeploy({ ...deploy, modality: e.target.value, model: "" })}>
+                        {DEPLOY_MODALITIES.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">GPU Type</label>
+                      <select className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" value={deploy.gpu} onChange={(e) => setDeploy({ ...deploy, gpu: e.target.value })}>
+                        {DEPLOY_GPUS.map((g) => <option key={g} value={g}>{g}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">GPU Count</label>
+                      <input className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" type="number" min={1} max={8} value={deploy.gpuCount} onChange={(e) => setDeploy({ ...deploy, gpuCount: Math.max(1, +e.target.value || 1) })} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">CPU Cores</label>
+                      <input className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" type="number" min={1} value={deploy.cpu} onChange={(e) => setDeploy({ ...deploy, cpu: Math.max(1, +e.target.value || 1) })} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">RAM (GB)</label>
+                      <input className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" type="number" min={0} value={deploy.ramGb} onChange={(e) => setDeploy({ ...deploy, ramGb: Math.max(0, +e.target.value || 0) })} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-xs text-muted font-medium">Auth Secret (Bearer)</label>
+                      <input className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" type="password" placeholder="pick a long random string" value={deploy.secret} onChange={(e) => setDeploy({ ...deploy, secret: e.target.value })} />
+                    </div>
+
+                    <div className="space-y-1 md:col-span-2">
+                      <label className="text-xs text-muted font-medium">HuggingFace Token (Optional for gated models)</label>
+                      <input className="w-full bg-surface border border-border/60 rounded-lg px-3 py-2 text-xs text-text focus:outline-none focus:border-primary transition-colors" type="password" placeholder="hf_..." value={deploy.hfToken} onChange={(e) => setDeploy({ ...deploy, hfToken: e.target.value })} />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-border/40">
+                    <button className="btn-primary w-full py-2 flex justify-center items-center font-bold text-xs shadow-glow" disabled={deploying} onClick={runDeploy}>
+                      {deploying ? "Deploying... (can take a few minutes)" : "Deploy to Modal"}
+                    </button>
+                    {deployMsg && (
+                      <div className={`mt-3 text-xs text-center font-medium ${deployMsg.ok ? "text-emerald-400" : "text-red-400"}`}>
+                        {deployMsg.text}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
           </div>
 
           <div className="flex items-center justify-between border-t border-border/40 pt-4">
-            <div className="flex items-center gap-3">
-              <Toggle
-                checked={comfy.runModeLocked}
-                onChange={(b) => comfy.set("runModeLocked", b)}
-              />
-              <span className="text-xs text-muted flex items-center gap-1">
-                {comfy.runModeLocked ? <Lock size={12} className="text-primary" /> : <Unlock size={12} />} Remember choice & lock selection
-              </span>
-            </div>
+            {step === 3 ? (
+              <div className="flex items-center gap-3">
+                <Toggle
+                  checked={comfy.runModeLocked}
+                  onChange={(b) => comfy.set("runModeLocked", b)}
+                />
+                <span className="text-[11px] font-semibold text-muted flex items-center gap-1">
+                  {comfy.runModeLocked ? <Lock size={12} className="text-primary" /> : <Unlock size={12} />} Lock choice
+                </span>
+              </div>
+            ) : step > 1 ? (
+              <button
+                type="button"
+                className="btn-outline px-4 py-2 rounded-xl text-xs font-semibold"
+                onClick={() => setStep(step - 1)}
+              >
+                Back
+              </button>
+            ) : (
+              <div></div> // Spacing placeholder
+            )}
+            
             <button
               type="button"
               className="btn-primary font-bold px-6 py-2 rounded-xl text-xs flex items-center gap-1 shadow-glow"
+              disabled={step === 3 && !deployMsg?.ok}
               onClick={() => {
-                comfy.set("runModeLocked", true);
-                if (onClose) onClose();
+                if (step === 1) {
+                  if (comfy.runMode === "hybrid") setStep(2);
+                  else {
+                    // Cloud API mode - directly lock and close for now
+                    comfy.set("runModeLocked", true);
+                    if (onClose) onClose();
+                  }
+                } else if (step === 2) {
+                  if (deployProvider) setStep(3);
+                } else if (step === 3) {
+                  if (deployMsg?.ok) {
+                    comfy.set("runModeLocked", true);
+                    setStep(1);
+                    if (onClose) onClose();
+                  }
+                }
               }}
             >
-              Confirm & Launch
+              {step === 1 ? (comfy.runMode === "hybrid" ? "Next: Select Provider" : "Confirm & Launch") : step === 2 ? "Next: Configure Provider" : "Finish & Launch"}
             </button>
           </div>
         </div>

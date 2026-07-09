@@ -1,0 +1,16 @@
+{
+  "name": "Prompt Fill",
+  "short_name": "Prompt Fill",
+  "description": "专业的 AI 提示词管理与优化工具",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#DFDFDF",
+  "theme_color": "#D6D6D6",
+  "icons": [
+    {
+      "src": "/Logo_icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -75,7 +75,7 @@ function VideoInner() {
         <div className="card p-4 space-y-3 h-max">
           <Field label="Input mode"><div className="grid grid-cols-2 gap-2">{(Object.keys(MODE_LABEL) as Mode[]).map((m) => (<button key={m} className={`tab ${mode === m ? "tab-active" : "tab-idle"}`} onClick={() => setMode(m)}>{MODE_LABEL[m]}</button>))}</div></Field>
           <Field label="Operation"><div className="flex gap-2">{(["create", "edit", "extend"] as const).map((o) => <button key={o} className={`tab flex-1 capitalize ${op === o ? "tab-active" : "tab-idle"}`} onClick={() => setOp(o)}>{o}</button>)}</div></Field>
-          <div className="flex items-center justify-between"><span className="label mb-0">System prompt</span><PromptPicker taskKey="video" filterModes={["T2V", "I2V", "V2V", "IT2V", "VT2T"]} /></div>
+          <div className="flex items-center justify-between"><span className="label mb-0">Analyze prompt</span><PromptPicker taskKey="video" filterModes={["T2V", "I2V", "V2V", "IT2V", "VT2T"]} /></div>
           {library.characters.length > 0 && (
             <Field label="Lock to character (keeps persona consistent)">
               <div className="flex gap-2">

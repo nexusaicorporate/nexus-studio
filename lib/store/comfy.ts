@@ -15,7 +15,9 @@ export const DEFAULT_COMFY_PROVIDERS: ComfyProvider[] = [
 ];
 
 // Canvas server URL — ComfyUI always runs here for workflow editing and custom nodes
-export const COMFY_CANVAS_URL = "http://studio:8188";
+export const COMFY_CANVAS_URL = typeof window !== "undefined" && window.location.origin.includes("studio.nexusaigear.com") 
+  ? "https://studio.nexusaigear.com/comfyui-api" 
+  : "http://localhost:8188";
 
 export interface ComfyState {
   workflows: ComfyWorkflow[];

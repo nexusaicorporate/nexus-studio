@@ -151,22 +151,22 @@ function EditForm({ item, onSave }: { item: PromptItem; onSave: (p: PromptItem) 
   function applyBuilder() {
     const extras = b.extras.length ? " " + b.extras.join(" ") : "";
     const built = `${b.caption.prompt} Aim for a ${b.length.toLowerCase()} description.${extras}`.trim();
-    setP({ ...p, body: built, category: "System Prompt" });
+    setP({ ...p, body: built, category: "Analyze Prompt" });
   }
 
   return (
     <div className="space-y-4 max-h-[75vh] overflow-y-auto pr-2">
       <div className="flex items-center justify-between p-3 bg-primary/10 border border-primary/20 rounded-xl mb-1">
         <div>
-          <div className="font-semibold text-primary text-sm flex items-center gap-2"><ChefHat size={16} /> Is this a System Prompt?</div>
-          <div className="text-[11px] text-muted mt-0.5">Enable this to reveal auto-prompt builder options and categorize this as a System Prompt.</div>
+          <div className="font-semibold text-primary text-sm flex items-center gap-2"><ChefHat size={16} /> Is this an Analyze Prompt?</div>
+          <div className="text-[11px] text-muted mt-0.5">Enable this to reveal auto-prompt builder options and categorize this as an Analyze Prompt.</div>
         </div>
-        <Toggle checked={p.category === "System Prompt"} onChange={(checked) => setP({ ...p, category: checked ? "System Prompt" : "General" })} />
+        <Toggle checked={p.category === "Analyze Prompt"} onChange={(checked) => setP({ ...p, category: checked ? "Analyze Prompt" : "General" })} />
       </div>
 
-      {p.category === "System Prompt" && (
+      {p.category === "Analyze Prompt" && (
         <div className="card p-4 border border-primary/30 bg-surface2/50 mb-2">
-          <div className="font-semibold mb-3 text-primary text-sm">System Prompt Builder</div>
+          <div className="font-semibold mb-3 text-primary text-sm">Analyze Prompt Builder</div>
           <div className="grid md:grid-cols-2 gap-3 mb-3">
             <Field label="Caption type">
               <select className="input text-xs" value={b.caption.name} onChange={(e) => setB({ ...b, caption: PROMPT_BUILDER.captionTypes.find((c) => c.name === e.target.value)! })}>
@@ -208,7 +208,7 @@ function EditForm({ item, onSave }: { item: PromptItem; onSave: (p: PromptItem) 
               value={p.category} 
               onChange={(e) => setP({ ...p, category: e.target.value })}
             >
-              {Array.from(new Set(["General", "System Prompt", "Analyze", ...lib.prompts.map(x => x.category), p.category])).filter(Boolean).map(c => (
+              {Array.from(new Set(["General", "Analyze Prompt", "Analyze", ...lib.prompts.map(x => x.category), p.category])).filter(Boolean).map(c => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -376,7 +376,7 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
       const j = await r.json();
       const arr = Array.isArray(j) ? j : (j.prompts || j.data || j.items || j.results || []);
       const mapped = mapGalleryItems(arr);
-      if (isSystem) mapped.forEach(p => p.category = "System Prompt");
+      if (isSystem) mapped.forEach(p => p.category = "Analyze Prompt");
       onImport({ prompts: mapped });
       alert(`Imported ${mapped.length} prompts.`);
       onClose();
@@ -395,7 +395,7 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
       
       const arr = j.prompts || [];
       const mapped = mapGalleryItems(arr);
-      if (isSystem) mapped.forEach(p => p.category = "System Prompt");
+      if (isSystem) mapped.forEach(p => p.category = "Analyze Prompt");
       
       if (mapped.length > 0) {
         onImport({ prompts: mapped });
@@ -424,12 +424,12 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
         else if (Array.isArray(j.data) || Array.isArray(j.items) || Array.isArray(j.results)) arr = j.data || j.items || j.results;
         else if (j && !Array.isArray(j) && !j.prompts) {
           for (const c of Object.keys(j)) for (const title of Object.keys(j[c])) {
-            allItems.push({ ...blank(), category: isSystem ? "System Prompt" : "Imported", subcategory: c, title, body: j[c][title], modes: inferModes(title + " " + c), nsfw: /nsfw|adult|nude/i.test(c + " " + title) });
+            allItems.push({ ...blank(), category: isSystem ? "Analyze Prompt" : "Imported", subcategory: c, title, body: j[c][title], modes: inferModes(title + " " + c), nsfw: /nsfw|adult|nude/i.test(c + " " + title) });
           }
           continue;
         }
         const mapped = mapGalleryItems(arr);
-        if (isSystem) mapped.forEach(p => p.category = "System Prompt");
+        if (isSystem) mapped.forEach(p => p.category = "Analyze Prompt");
         allItems.push(...mapped);
       }
       onImport({ prompts: allItems });
@@ -461,7 +461,7 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
         } catch (err) { /* ignore parse errors for individual files */ }
 
         if (promptText) {
-          allItems.push({ ...blank(), title: f.name, body: promptText, category: isSystem ? "System Prompt" : "Imported", subcategory: "Image EXIF", modes: ["T2I"] });
+          allItems.push({ ...blank(), title: f.name, body: promptText, category: isSystem ? "Analyze Prompt" : "Imported", subcategory: "Image EXIF", modes: ["T2I"] });
         }
       }
       
@@ -482,7 +482,7 @@ function ImportModal({ open, onClose, onImport }: { open: boolean, onClose: () =
     <Modal open={open} onClose={onClose} title="Import Prompts">
       <div className="space-y-4">
         <div className="flex items-center justify-between p-3 bg-surface2 rounded-xl">
-          <div><div className="font-semibold text-sm">Mark as System Prompts</div><div className="text-[11px] text-muted">Imported items will be categorized as System Prompts.</div></div>
+          <div><div className="font-semibold text-sm">Mark as Analyze Prompts</div><div className="text-[11px] text-muted">Imported items will be categorized as Analyze Prompts.</div></div>
           <Toggle checked={isSystem} onChange={setIsSystem} />
         </div>
         
