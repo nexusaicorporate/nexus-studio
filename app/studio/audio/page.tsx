@@ -71,32 +71,81 @@ export default function AudioStudio() {
                             </div>
                         </div>
 
-                        {/* Editor */}
-                        <div className="flex-1 flex flex-col p-6 gap-4">
-                            <textarea
-                                value={inputText}
-                                onChange={(e) => setInputText(e.target.value)}
-                                placeholder="Enter text to synthesize..."
-                                className="w-full flex-1 bg-transparent border-none outline-none resize-none text-xl leading-relaxed text-white/90 placeholder-white/20"
-                            />
+                        {/* Editor Content */}
+                        <div className="flex-1 flex flex-col p-6 gap-4 overflow-y-auto">
+                            {activeTab === "tts" ? (
+                                <>
+                                    <textarea
+                                        value={inputText}
+                                        onChange={(e) => setInputText(e.target.value)}
+                                        placeholder="Enter text to synthesize..."
+                                        className="w-full flex-1 bg-transparent border-none outline-none resize-none text-xl leading-relaxed text-white/90 placeholder-white/20"
+                                    />
+        
+                                    {/* Sliders (ElevenLabs Style) */}
+                                    <div className="bg-[#1a1a1a] rounded-xl p-4 border border-white/5 flex gap-8">
+                                        <div className="flex-1">
+                                            <div className="flex justify-between text-xs text-white/50 mb-2">
+                                                <span>Stability</span> <span>{stability}%</span>
+                                            </div>
+                                            <input type="range" min="0" max="100" value={stability} onChange={(e) => setStability(Number(e.target.value))} className="w-full accent-emerald-400" />
+                                            <div className="flex justify-between text-[10px] text-white/30 mt-1"><span>Variable</span><span>Stable</span></div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between text-xs text-white/50 mb-2">
+                                                <span>Similarity Enhancement</span> <span>{similarity}%</span>
+                                            </div>
+                                            <input type="range" min="0" max="100" value={similarity} onChange={(e) => setSimilarity(Number(e.target.value))} className="w-full accent-emerald-400" />
+                                            <div className="flex justify-between text-[10px] text-white/30 mt-1"><span>Low</span><span>High</span></div>
+                                        </div>
+                                    </div>
+                                </>
+                            ) : activeTab === "music" ? (
+                                /* Suno-like Music Generation Studio */
+                                <div className="flex-1 flex flex-col gap-5 animate-in fade-in">
+                                    <div className="flex items-center justify-between bg-[#1a1a1a] p-1 rounded-xl border border-white/5 w-fit">
+                                        <button className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-[#2c2c2c] text-white">Custom Mode</button>
+                                        <button className="px-4 py-1.5 rounded-lg text-sm font-semibold text-white/50 hover:text-white">Auto Mode</button>
+                                    </div>
+                                    
+                                    <div className="flex flex-col gap-2 flex-1">
+                                        <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">Lyrics</label>
+                                        <textarea
+                                            placeholder="Write your own lyrics here, or click 'Make Random Lyrics'..."
+                                            className="w-full flex-1 bg-[#1a1a1a] border border-white/10 rounded-xl p-4 text-sm resize-none focus:outline-none focus:border-emerald-400/50"
+                                        />
+                                        <button className="text-xs font-semibold text-emerald-400 self-end hover:text-emerald-300">Make Random Lyrics ✨</button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">Style of Music</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="e.g. acoustic pop, electronic synthwave"
+                                                className="w-full bg-[#1a1a1a] border border-white/10 h-10 rounded-xl px-4 text-sm focus:outline-none focus:border-emerald-400/50"
+                                            />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-xs font-semibold text-white/50 uppercase tracking-wider">Title</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="My hit song"
+                                                className="w-full bg-[#1a1a1a] border border-white/10 h-10 rounded-xl px-4 text-sm focus:outline-none focus:border-emerald-400/50"
+                                            />
+                                        </div>
+                                    </div>
 
-                            {/* Sliders (ElevenLabs Style) */}
-                            <div className="bg-[#1a1a1a] rounded-xl p-4 border border-white/5 flex gap-8">
-                                <div className="flex-1">
-                                    <div className="flex justify-between text-xs text-white/50 mb-2">
-                                        <span>Stability</span> <span>{stability}%</span>
+                                    <div className="flex items-center gap-3 mt-2 bg-[#1a1a1a] border border-white/5 p-4 rounded-xl">
+                                        <input type="checkbox" id="instrumental" className="w-4 h-4 accent-emerald-400" />
+                                        <label htmlFor="instrumental" className="text-sm font-semibold text-white/80 cursor-pointer">Instrumental (No Vocals)</label>
                                     </div>
-                                    <input type="range" min="0" max="100" value={stability} onChange={(e) => setStability(Number(e.target.value))} className="w-full accent-emerald-400" />
-                                    <div className="flex justify-between text-[10px] text-white/30 mt-1"><span>Variable</span><span>Stable</span></div>
                                 </div>
-                                <div className="flex-1">
-                                    <div className="flex justify-between text-xs text-white/50 mb-2">
-                                        <span>Similarity Enhancement</span> <span>{similarity}%</span>
-                                    </div>
-                                    <input type="range" min="0" max="100" value={similarity} onChange={(e) => setSimilarity(Number(e.target.value))} className="w-full accent-emerald-400" />
-                                    <div className="flex justify-between text-[10px] text-white/30 mt-1"><span>Low</span><span>High</span></div>
+                            ) : (
+                                <div className="flex-1 flex items-center justify-center text-white/40 italic">
+                                    {activeTab === "sfx" ? "Sound Effects Generator coming soon..." : "Voice Cloning Studio coming soon..."}
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         {/* Footer Action */}
@@ -106,7 +155,7 @@ export default function AudioStudio() {
                                 onClick={() => setIsGenerating(!isGenerating)}
                                 className="bg-emerald-500 hover:bg-emerald-400 text-black font-bold px-8 py-3 rounded-xl flex items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all"
                             >
-                                {isGenerating ? <><Loader2 size={18} className="animate-spin" /> Synthesizing...</> : <><Play size={18} className="fill-black" /> Generate</>}
+                                {isGenerating ? <><Loader2 size={18} className="animate-spin" /> {activeTab === "music" ? "Generating Track..." : "Synthesizing..."}</> : <><Play size={18} className="fill-black" /> Generate</>}
                             </button>
                         </div>
                     </div>
@@ -120,24 +169,52 @@ export default function AudioStudio() {
                             </div>
                             <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-2">
                                 {/* Dummy History Item */}
-                                <div className="bg-[#1a1a1a] p-3 rounded-xl border border-white/5 hover:border-white/20 cursor-pointer group">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <div className="text-xs font-semibold text-emerald-400">Antoni (Narration)</div>
-                                        <div className="text-[10px] text-white/40">2 mins ago</div>
-                                    </div>
-                                    <div className="text-xs text-white/60 line-clamp-2 mb-3">Hello, this is a cinematic audio generation test. The soundscapes are rich and immersive.</div>
-                                    
-                                    {/* Mini Player */}
-                                    <div className="bg-black/40 rounded-lg p-2 flex items-center gap-3">
-                                        <button className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 hover:bg-emerald-500/30 transition-colors">
-                                            <Play size={14} className="fill-emerald-400 ml-0.5" />
-                                        </button>
-                                        <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
-                                            <div className="h-full bg-emerald-400 w-1/3"></div>
+                                {activeTab === "music" ? (
+                                    <div className="bg-[#1a1a1a] p-3 rounded-xl border border-white/5 hover:border-white/20 cursor-pointer group flex flex-col gap-2">
+                                        <div className="flex gap-3">
+                                            <div className="w-12 h-12 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                                                <Music size={20} className="text-emerald-400" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex justify-between items-start">
+                                                    <div className="text-xs font-semibold text-white truncate">Neon City Nights</div>
+                                                    <div className="text-[10px] text-white/40 shrink-0">Just now</div>
+                                                </div>
+                                                <div className="text-[10px] text-emerald-400 truncate mt-0.5">Synthwave • Female Vocals</div>
+                                                <div className="text-[10px] text-white/40 mt-1">3:14</div>
+                                            </div>
                                         </div>
-                                        <button className="text-white/40 hover:text-white transition-colors opacity-0 group-hover:opacity-100"><Download size={14}/></button>
+                                        {/* Mini Player */}
+                                        <div className="bg-black/40 rounded-lg p-2 flex items-center gap-3">
+                                            <button className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 hover:bg-emerald-500/30 transition-colors">
+                                                <Play size={14} className="fill-emerald-400 ml-0.5" />
+                                            </button>
+                                            <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div className="h-full bg-emerald-400 w-1/3"></div>
+                                            </div>
+                                            <button className="text-white/40 hover:text-white transition-colors opacity-0 group-hover:opacity-100"><Download size={14}/></button>
+                                        </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className="bg-[#1a1a1a] p-3 rounded-xl border border-white/5 hover:border-white/20 cursor-pointer group">
+                                        <div className="flex items-center justify-between mb-2">
+                                            <div className="text-xs font-semibold text-emerald-400">Antoni (Narration)</div>
+                                            <div className="text-[10px] text-white/40">2 mins ago</div>
+                                        </div>
+                                        <div className="text-xs text-white/60 line-clamp-2 mb-3">Hello, this is a cinematic audio generation test. The soundscapes are rich and immersive.</div>
+                                        
+                                        {/* Mini Player */}
+                                        <div className="bg-black/40 rounded-lg p-2 flex items-center gap-3">
+                                            <button className="w-8 h-8 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 hover:bg-emerald-500/30 transition-colors">
+                                                <Play size={14} className="fill-emerald-400 ml-0.5" />
+                                            </button>
+                                            <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                                                <div className="h-full bg-emerald-400 w-1/3"></div>
+                                            </div>
+                                            <button className="text-white/40 hover:text-white transition-colors opacity-0 group-hover:opacity-100"><Download size={14}/></button>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
