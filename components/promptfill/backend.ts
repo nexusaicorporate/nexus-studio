@@ -11,7 +11,9 @@ async function fetchState() {
     if (!state.banks) state.banks = {};
     if (!state.categories) state.categories = {};
     if (!state.history) state.history = [];
-    if (!state.config) state.config = {};
+    if (!state.config || !state.config.providers) {
+      state.config = { providers: [], activeProvider: "" };
+    }
     
     // Load defaults if empty
     if (state.templates.length === 0) {
