@@ -345,7 +345,7 @@ export function BankManager() {
             )}
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden bg-white dark:bg-popover">
+                <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
                     <DialogHeader className="p-6 border-b bg-muted/10">
                         <DialogTitle className="text-lg font-semibold tracking-tight">
                             {editingKey ? t.editBank : t.newBank}
