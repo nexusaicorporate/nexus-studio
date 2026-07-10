@@ -379,7 +379,7 @@ export function TemplateWorkstation({ template: initialTemplate, onBack, onUpdat
                                             >
                                                 {displayText}
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-56 p-0 bg-[rgb(var(--surface))] shadow-xl border-[rgb(var(--border))] z-[100]" align="start">
+                                            <PopoverContent className="w-56 p-0 shadow-2xl border border-border" style={{ backgroundColor: "rgb(var(--surface))", zIndex: 99999 }} align="start">
                                                 <div className="p-2 border-b text-xs font-medium text-muted-foreground bg-muted/30">
                                                     {categoryLabel}
                                                 </div>
