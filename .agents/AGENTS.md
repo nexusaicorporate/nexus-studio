@@ -119,3 +119,7 @@ LTX-2.3 generates synchronized video and audio in a single pass. Prompts should 
 - Avoid readable text/logos (LTX cannot generate text reliably).
 - Avoid conflicting light sources. Keep lighting details consistent.
 - Avoid overloaded scenes with too many subjects/actions.
+
+# STRICT RULE
+All work, development, testing, and deployment MUST be done directly on the remote server (IP: 47.236.51.230). Do not execute any local changes, builds, or tests. Always use SSH or remote execution commands to perform work on the server.
+
