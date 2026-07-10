@@ -24,7 +24,8 @@ import {
   ScanSearch,
   Megaphone,
   Terminal,
-  Menu
+  Menu,
+  Volume2
 } from "lucide-react";
 import { useSettings } from "@/lib/store/settings";
 import { useLibrary } from "@/lib/store/library";
