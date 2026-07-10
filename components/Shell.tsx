@@ -51,6 +51,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
         { href: "/analyze", label: "Analyze Gear", icon: ScanSearch, color: "text-cyan-400", image: "/images/analyze_gear.png" },
         { href: "/studio/image", label: "Image Gear", icon: ImageIcon, color: "text-violet-400", image: "/images/image_gear.png" },
         { href: "/studio/video", label: "Video Gear", icon: Clapperboard, color: "text-lime-400", image: "/images/video_gear.png" },
+        { href: "/studio/audio", label: "Audio Gear", icon: Volume2, color: "text-emerald-400", image: "/images/docs_gear.png" },
         { href: "/studio/character", label: "Character Gear", icon: User, color: "text-orange-400", image: "/images/character_gear.jpg" }
       ]
     },
