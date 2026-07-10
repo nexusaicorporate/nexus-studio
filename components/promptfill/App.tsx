@@ -141,6 +141,12 @@ function AppRoot() {
                             <BlurFade delay={0.4} inView>
                                 <div className="flex flex-col items-end gap-2 shrink-0">
                                     <div className="flex items-center gap-3">
+                                        <Button onClick={() => setView('banks')} variant="outline" size="sm" className="h-7 text-xs">
+                                            Manage Banks
+                                        </Button>
+                                        <Button onClick={() => setView('settings')} variant="outline" size="sm" className="h-7 text-xs">
+                                            Settings
+                                        </Button>
                                         <div className="px-3 py-1 rounded-full bg-secondary text-xs font-medium text-secondary-foreground border border-border/50">
                                             Total: {filteredTemplates.length}
                                         </div>
@@ -172,25 +178,29 @@ function AppRoot() {
         }
     };
     return (
-        <Layout currentView={view} onNavigate={(v) => setView(v as ViewState)}>
+        <div className="w-full h-full flex flex-col">
+            {/* Simple local navigation if needed, or rely on Page actions if hoisted */}
+            {view !== 'gallery' && (
+                <div className="flex items-center gap-2 mb-4">
+                    <Button variant="ghost" size="sm" onClick={handleBackToGallery} className="gap-2">
+                        ← Back to Gallery
+                    </Button>
+                </div>
+            )}
             {renderContent()}
-        </Layout>
+        </div>
     );
 }
 
 import { LanguageProvider } from "@/components/promptfill/contexts/LanguageContext";
-import { ThemeProvider } from "@/components/promptfill/contexts/ThemeContext";
 import { Toaster } from "@/components/promptfill/components/ui/sonner";
-
 
 function App() {
     return (
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-            <LanguageProvider>
-                <AppRoot />
-                <Toaster />
-            </LanguageProvider>
-        </ThemeProvider>
+        <LanguageProvider>
+            <AppRoot />
+            <Toaster />
+        </LanguageProvider>
     );
 }
 
