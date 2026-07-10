@@ -388,19 +388,12 @@ export function BankManager() {
                                     </Select>
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 gap-6">
                                 <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">{t.labelCn}</Label>
+                                    <Label className="text-xs text-muted-foreground">Label</Label>
                                     <Input
-                                        value={formData.label.cn}
-                                        onChange={e => setFormData({ ...formData, label: { ...formData.label, cn: e.target.value } })}
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label className="text-xs text-muted-foreground">{t.labelEn}</Label>
-                                    <Input
-                                        value={formData.label.en}
-                                        onChange={e => setFormData({ ...formData, label: { ...formData.label, en: e.target.value } })}
+                                        value={formData.label.en || formData.label.cn}
+                                        onChange={e => setFormData({ ...formData, label: { ...formData.label, en: e.target.value, cn: e.target.value } })}
                                     />
                                 </div>
                             </div>
@@ -419,15 +412,12 @@ export function BankManager() {
                                         <div key={i} className="flex gap-2 items-center group">
                                             <span className="w-6 text-xs text-muted-foreground font-mono text-center">{i + 1}</span>
                                             <Input
-                                                value={opt.cn}
-                                                onChange={e => updateOption(i, 'cn', e.target.value)}
-                                                placeholder="CN"
-                                                className="h-8 text-sm"
-                                            />
-                                            <Input
-                                                value={opt.en}
-                                                onChange={e => updateOption(i, 'en', e.target.value)}
-                                                placeholder="EN"
+                                                value={opt.en || opt.cn}
+                                                onChange={e => {
+                                                    updateOption(i, 'en', e.target.value);
+                                                    updateOption(i, 'cn', e.target.value);
+                                                }}
+                                                placeholder="Option Text"
                                                 className="h-8 text-sm"
                                             />
                                             <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-50 group-hover:opacity-100" onClick={() => removeOption(i)}>
