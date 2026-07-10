@@ -12,6 +12,21 @@ async function fetchState() {
     if (!state.categories) state.categories = {};
     if (!state.history) state.history = [];
     if (!state.config) state.config = {};
+    
+    // Load defaults if empty
+    if (state.templates.length === 0) {
+      try {
+        const tRes = await fetch('/data/templates.json');
+        if (tRes.ok) state.templates = await tRes.json();
+      } catch (e) {}
+    }
+    if (Object.keys(state.banks).length === 0) {
+      try {
+        const bRes = await fetch('/data/banks.json');
+        if (bRes.ok) state.banks = await bRes.json();
+      } catch (e) {}
+    }
+    
     return state;
   } catch (e) {
     return { templates: [], banks: {}, categories: {}, history: [], config: {} };

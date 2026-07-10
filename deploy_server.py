@@ -13,7 +13,6 @@ try:
     print(f"Connecting to {host}...")
     client.connect(hostname=host, port=port, username=user, password=password)
     
-    # Locate project root
     stdin, stdout, stderr = client.exec_command('find / -name "nexus-studio" -type d 2>/dev/null | grep -v node_modules | head -n 1')
     project_dir = stdout.read().decode('utf-8').strip()
     
@@ -21,10 +20,9 @@ try:
         print("Could not find nexus-studio directory on the server")
         sys.exit(1)
         
-    print(f"Found project at: {project_dir}")
-    
     commands = [
-        "git pull origin main",
+        "git fetch origin main",
+        "git reset --hard origin/main",
         "npm install",
         "npm run build",
         "pm2 restart all"
@@ -40,8 +38,6 @@ try:
                 print(stdout.channel.recv(1024).decode('utf-8', errors='ignore'), end='')
             
         exit_status = stdout.channel.recv_exit_status()
-        
-        # flush remaining
         while stdout.channel.recv_ready():
             print(stdout.channel.recv(1024).decode('utf-8', errors='ignore'), end='')
             
