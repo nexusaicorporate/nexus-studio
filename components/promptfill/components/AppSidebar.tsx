@@ -20,6 +20,7 @@ export function AppSidebar({ currentView, onNavigate, className }: AppSidebarPro
         { id: 'gallery', label: t.navGallery, icon: LayoutGrid },
         { id: 'history', label: t.history, icon: History },
         { id: 'banks', label: t.vocabularyBanks, icon: Database },
+        { id: 'settings', label: t.settings, icon: Settings },
     ];
 
     return (
@@ -33,7 +34,7 @@ export function AppSidebar({ currentView, onNavigate, className }: AppSidebarPro
             <div className="space-y-8 relative z-10">
                 <div className="flex items-center gap-2 px-2 pt-2">
                     <Disc className="w-6 h-6 animate-spin-slow" />
-                    <span className="font-semibold tracking-tight">SparkPrompt</span>
+                    <span className="font-semibold tracking-tight">Recipies Gear</span>
                 </div>
 
                 <nav className="space-y-1">

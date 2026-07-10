@@ -68,7 +68,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       items: [
         { href: "/library/assets", label: "Assets Gear", icon: Boxes, color: "text-rose-400", image: "/images/image_gear.png" },
         { href: "/library/prompts", label: "Prompts Gear", icon: BookOpen, color: "text-blue-400", image: "/images/library_gear.png" },
-        { href: "/library/promptfill", label: "Prompt Fill", icon: Layers, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" },
+        { href: "/library/promptfill", label: "Recipies Gear", icon: Layers, color: "text-teal-400", image: "/images/prompt_director_gear.jpg" },
         { href: "/library/ingredients", label: "Ingredients Gear", icon: ChefHat, color: "text-purple-400", image: "/images/ingredients_gear.png" }
       ]
     },

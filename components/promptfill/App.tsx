@@ -16,6 +16,8 @@ import { Search } from "lucide-react";
 import { Plus } from "lucide-react";
 import { useLanguage } from "@/components/promptfill/contexts/LanguageContext";
 import { translations } from "@/components/promptfill/utils/i18n";
+import { ImportPromptDialog } from "@/components/promptfill/features/ImportPromptDialog";
+import { Download } from "lucide-react";
 
 type ViewState = 'gallery' | 'workstation' | 'settings' | 'history' | 'banks';
 
@@ -25,6 +27,7 @@ function AppRoot() {
     const [banks, setBanks] = useState<BankMap>({});
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [importDialogOpen, setImportDialogOpen] = useState(false);
 
     // Access language for filtering
     const { language } = useLanguage();
@@ -144,6 +147,9 @@ function AppRoot() {
                                         <div className="px-3 py-1 rounded-full bg-secondary text-xs font-medium text-secondary-foreground border border-border/50">
                                             Total: {filteredTemplates.length}
                                         </div>
+                                        <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm" className="h-7 gap-2 text-xs">
+                                            <Download className="w-3.5 h-3.5" /> Import
+                                        </Button>
                                         <Button onClick={handleCreateTemplate} size="sm" className="h-7 gap-2 text-xs">
                                             <Plus className="w-3.5 h-3.5" /> {(t as any).createTemplate || (language === 'cn' ? "新建模版" : "Create Template")}
                                         </Button>
@@ -162,10 +168,19 @@ function AppRoot() {
                                 </div>
                             </BlurFade>
                         </div>
-                        <TemplateGallery
-                            templates={filteredTemplates}
-                            banks={banks}
-                            onSelect={handleTemplateSelect}
+                        <TemplateGallery 
+                            templates={filteredTemplates} 
+                            banks={banks} 
+                            onSelect={handleTemplateSelect} 
+                        />
+                        <ImportPromptDialog 
+                            open={importDialogOpen}
+                            onOpenChange={setImportDialogOpen}
+                            onImported={(tpl) => {
+                                handleTemplateUpdate(tpl);
+                                // Also trigger a reload from backend to be safe
+                                loadData();
+                            }}
                         />
                     </div>
                 );
