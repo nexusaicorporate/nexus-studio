@@ -17,13 +17,22 @@ async function fetchState() {
     if (state.templates.length === 0) {
       try {
         const tRes = await fetch('/data/templates.json');
-        if (tRes.ok) state.templates = await tRes.json();
+        if (tRes.ok) {
+          const tData = await tRes.json();
+          state.templates = tData.config || tData;
+        }
       } catch (e) {}
     }
     if (Object.keys(state.banks).length === 0) {
       try {
         const bRes = await fetch('/data/banks.json');
-        if (bRes.ok) state.banks = await bRes.json();
+        if (bRes.ok) {
+          const bData = await bRes.json();
+          state.banks = bData.banks || bData;
+          if (Object.keys(state.categories).length === 0 && bData.categories) {
+            state.categories = bData.categories;
+          }
+        }
       } catch (e) {}
     }
     
