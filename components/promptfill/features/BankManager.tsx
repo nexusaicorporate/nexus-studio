@@ -294,7 +294,7 @@ export function BankManager() {
                                     <CardHeader className="p-4 bg-muted/30 pb-3">
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
-                                                <CardTitle className="text-base font-semibold">{item.label[language] || item.label.cn || item.label.en}</CardTitle>
+                                                <CardTitle className="text-base font-semibold">{item.label.en || item.label.cn}</CardTitle>
                                                 <code className="text-[10px] bg-muted px-1.5 py-0.5 rounded text-muted-foreground block w-fit">{key}</code>
                                             </div>
                                             <div className="flex gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
@@ -322,9 +322,7 @@ export function BankManager() {
                                             {item.options.slice(0, 5).map((opt, i) => (
                                                 <div key={i} className="text-xs flex gap-2 items-center text-foreground/80">
                                                     <div className="w-1 h-1 rounded-full bg-border" />
-                                                    <span className="font-medium truncate">{language === 'cn' ? opt.cn : (opt.en || opt.cn)}</span>
-                                                    {language === 'cn' && opt.en && <span className="text-muted-foreground/60 italic truncate max-w-[100px]">- {opt.en}</span>}
-                                                    {language === 'en' && opt.cn !== opt.en && <span className="text-muted-foreground/60 italic truncate max-w-[100px]">- {opt.cn}</span>}
+                                                    <span className="font-medium truncate">{opt.en || opt.cn}</span>
                                                 </div>
                                             ))}
                                             {item.options.length > 5 && (
