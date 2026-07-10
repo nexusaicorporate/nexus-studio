@@ -19,6 +19,7 @@ import { useAuth } from "@/components/AuthProvider";
 import { canUseFeature, canUseModel } from "@/lib/entitlements";
 import UpgradePrompt from "@/components/UpgradePrompt";
 import { Toggle } from "@/components/ui";
+import { CinemaChat } from "@/components/cinema/CinemaChat";
 
 export default function CinemaStudio() {
   const { projects, loaded, load, saveProject, deleteProject } = useCinema();
@@ -469,7 +470,7 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
       </div>
 
       {/* Bottom Panel - Timeline & Director Chat */}
-      <div className="h-64 border-t border-white/10 flex flex-col bg-[#0f0f0f] shrink-0">
+      <div className="h-auto pb-4 border-t border-white/10 flex flex-col bg-[#0f0f0f] shrink-0">
         
         {/* Timeline Strip */}
         <div className="flex-1 p-4 overflow-x-auto flex items-center gap-2 scrollbar-thin">
@@ -808,6 +809,11 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
               </div>
             </div>
           </div>
+        </div>
+        
+        {/* Cinema Chat Assistant (Below Prompt) */}
+        <div className="h-[300px] w-full max-w-4xl mx-auto mt-4 shrink-0">
+           <CinemaChat />
         </div>
       </div>
       
