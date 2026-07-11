@@ -56,8 +56,6 @@ export default function WorkflowStudioPage() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
   const [outputImage, setOutputImage] = useState<string | null>(null);
   const [showApiPanel, setShowApiPanel] = useState(false);
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [modalUrl, setModalUrl] = useState("");
 
   // Managed local ComfyUI status (the app-managed instance in its fixed subfolder)
   const [serverOnline, setServerOnline] = useState<boolean | null>(null);
@@ -74,7 +72,7 @@ export default function WorkflowStudioPage() {
   const [connecting, setConnecting] = useState(false); // web: waiting for an externally-started ComfyUI
 
   const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
-  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || (typeof window !== "undefined" && !isDesktop() ? window.location.origin + "/comfyui-api/" : "http://localhost:8188");
+  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
 
   // Poll whether the managed ComfyUI is up; resolve its folder for display (desktop).
   useEffect(() => {
@@ -118,15 +116,6 @@ export default function WorkflowStudioPage() {
   async function connectWeb() {
     setLaunchError(null);
     setConnecting(true);
-    setLaunchPhase("Triggering background engine…");
-    
-    // Auto-trigger the new server-side daemon API
-    try {
-      await fetch('/api/comfy/start', { method: 'POST' });
-    } catch (e) {
-      console.error("Failed to trigger daemon:", e);
-    }
-
     setLaunchPhase("Connecting to ComfyUI…");
     const deadline = Date.now() + 60000;
     const poll = async () => {
@@ -134,7 +123,7 @@ export default function WorkflowStudioPage() {
       if (ok) { setServerOnline(true); setConnecting(false); return; }
       if (Date.now() > deadline) {
         setConnecting(false);
-        setLaunchError(`Couldn't reach ComfyUI at ${localUrl}. The daemon might have failed to start.`);
+        setLaunchError(`Couldn't reach ComfyUI at ${localUrl}. Make sure \`npm run comfyui\` is running and has finished starting, then click Connect again.`);
         return;
       }
       setTimeout(poll, 2000);
@@ -150,45 +139,6 @@ export default function WorkflowStudioPage() {
     setLaunchError(null);
     setLaunching(true);
     const firstRun = provisioned === false;
-    setLaunchPhase(firstRun ? "Setting up ComfyUI (first run)…" : "Starting ComfyUI…");
-
-    // On local GPU, check and download large models if missing
-    const tauri = (window as any).__TAURI__;
-    if (tauri && comfy.deviceMode === "gpu") {
-      setLaunchPhase("Checking local GPU models…");
-      try {
-        const statusList = await tauri.core.invoke("check_model_downloads_status");
-        const missingModels = statusList.filter((s: any) => !s.complete);
-        
-        if (missingModels.length > 0) {
-          setLaunchPhase("Initializing model downloads from Hugging Face…");
-          await tauri.core.invoke("start_model_downloads");
-          
-          let downloadsComplete = false;
-          while (!downloadsComplete) {
-            await new Promise((resolve) => setTimeout(resolve, 2000));
-            const currentStatus = await tauri.core.invoke("check_model_downloads_status");
-            const stillMissing = currentStatus.filter((s: any) => !s.complete);
-            
-            if (stillMissing.length === 0) {
-              downloadsComplete = true;
-            } else {
-              const progressStrings = currentStatus.map((s: any) => {
-                const pct = s.total_bytes > 0 ? Math.min(100, Math.round((s.current_bytes / s.total_bytes) * 100)) : 0;
-                const sizeGb = (s.current_bytes / (1024 * 1024 * 1024)).toFixed(1);
-                const totalGb = (s.total_bytes / (1024 * 1024 * 1024)).toFixed(1);
-                const shortName = s.file_name.length > 25 ? s.file_name.slice(0, 22) + "..." : s.file_name;
-                return `${shortName}: ${pct}% (${sizeGb}GB/${totalGb}GB)`;
-              });
-              setLaunchPhase(`Downloading local GPU models (this may take a while):\n${progressStrings.join("\n")}`);
-            }
-          }
-        }
-      } catch (e: any) {
-        console.error("Model downloader failed", e);
-      }
-    }
-
     setLaunchPhase(firstRun ? "Setting up ComfyUI (first run)…" : "Starting ComfyUI…");
     const res = await launchComfy(comfy.deviceMode === "cpu", 8188, comfy.gpuType || "cpu", comfy.extraModelPaths, comfy.cliArgs, comfy.apiKeys);
     // A failed spawn (not desktop, no bundle, etc.) — show why, don't silently revert.
@@ -433,7 +383,92 @@ export default function WorkflowStudioPage() {
       }, 6000);
     };
 
-    if (comfy.runMode === "hybrid") {
+    if (comfy.runMode === "local") {
+      try {
+        setExecLogs((prev) => [...prev, `[Local ComfyUI] Connection enqueuing to ${activeProvider.url}...`]);
+        
+        const clientId = "nexus_studio_" + Math.random().toString(36).substring(2, 9);
+        const wsUrl = activeProvider.url.replace(/^http/, "ws") + `/ws?clientId=${clientId}`;
+        
+        const ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          setExecLogs((prev) => [...prev, `[WebSocket] Connected to local ComfyUI stream.`]);
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "status") {
+              const queueRemaining = msg.data.status.exec_info.queue_remaining;
+              setExecLogs((prev) => [...prev, `[Local ComfyUI] Queue remaining: ${queueRemaining}`]);
+            } else if (msg.type === "execution_start") {
+              setExecStatus("running");
+              setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution started: ${msg.data.prompt_id}`]);
+            } else if (msg.type === "executing") {
+              const node = msg.data.node;
+              if (node === null) {
+                setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution flow ended.`]);
+              } else {
+                setActiveNode(node);
+                setExecLogs((prev) => [...prev, `[Local ComfyUI] Executing Node ${node}`]);
+              }
+            } else if (msg.type === "progress") {
+              const { value, max } = msg.data;
+              setExecProgress(Math.round((value / max) * 100));
+            } else if (msg.type === "executed") {
+              const { node, output } = msg.data;
+              setExecLogs((prev) => [...prev, `[Local ComfyUI] Node ${node} completed.`]);
+              
+              if (output.images && output.images.length > 0) {
+                const img = output.images[0];
+                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(img.filename)}&subfolder=${encodeURIComponent(img.subfolder)}&type=${encodeURIComponent(img.type)}`;
+                setOutputImage(viewUrl);
+                setExecStatus("completed");
+                setExecProgress(100);
+                setActiveNode(null);
+                ws.close();
+              } else if (output.gifs && output.gifs.length > 0) {
+                const gif = output.gifs[0];
+                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(gif.filename)}&subfolder=${encodeURIComponent(gif.subfolder)}&type=${encodeURIComponent(gif.type)}`;
+                setOutputImage(viewUrl);
+                setExecStatus("completed");
+                setExecProgress(100);
+                setActiveNode(null);
+                ws.close();
+              }
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+
+        ws.onerror = () => {
+          setExecLogs((prev) => [...prev, `[WebSocket] Error connecting to local ComfyUI event stream.`]);
+        };
+
+        const res = await fetch(`${activeProvider.url}/prompt`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ client_id: clientId, prompt: executionPayload })
+        });
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+        }
+
+        const data = await res.json();
+        setExecLogs((prev) => [...prev, `[Local ComfyUI] Prompt enqueued successfully (Prompt ID: ${data.prompt_id})`]);
+      } catch (err: any) {
+        setExecLogs((prev) => [
+          ...prev,
+          `[Local API Error] Connect failed: ${err.message}`,
+          `[Nexus] Local ComfyUI is offline or CORS is not enabled. Running simulated prompt execution instead...`
+        ]);
+        runSimulatedExecution();
+      }
+    } else if (comfy.runMode === "hybrid") {
       try {
         setExecLogs((prev) => [
           ...prev,
@@ -576,24 +611,84 @@ export default function WorkflowStudioPage() {
     alert("Workflow saved to local repository.");
   }
 
-  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: (typeof window !== "undefined" && !isDesktop() ? window.location.origin + "/comfyui-api/" : "http://localhost:8188") };
-  const iframeUrl = modalUrl || localProvider.url;
+  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: "http://localhost:8188" };
+  const iframeUrl = localProvider.url;
 
   return (
-    <div className="w-full h-screen flex overflow-hidden bg-black relative fade-in">
+    <Page
+      title="ComfyUI Gear"
+      subtitle="Local ComfyUI instance with cloud-GPU offloading capabilities."
+      actions={
+        <div className="flex gap-2 items-center">
+          <ComfyEnvDropdown />
+          <button
+            type="button"
+            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
+            onClick={() => comfy.set("runModeLocked", false)}
+          >
+            <Layers size={13} /> Change Env
+          </button>
+          
+          <button
+            type="button"
+            className={`btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px] ${showApiPanel ? "bg-primary/10 border-primary text-primary-light" : ""}`}
+            onClick={() => setShowApiPanel(!showApiPanel)}
+            title="Toggle API Prompt Panel"
+          >
+            <Sliders size={13} /> API Panel
+          </button>
+
+          {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
+            <button
+              type="button"
+              className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow"
+              onClick={() => comfy.set("showPlansModal", true)}
+            >
+              <Cloud size={14} /> Subscribe
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5"
+              disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
+              onClick={handleExecute}
+            >
+              {comfy.runMode === "local" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
+              {comfy.runMode === "local" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
+            </button>
+          )}
+        </div>
+      }
+    >
       <ComfyEnvSelector />
 
-      <div className="flex-1 w-full h-full flex flex-col relative overflow-hidden">
-        <button 
-          className={`absolute top-2 right-4 z-40 bg-surface/90 backdrop-blur border border-border px-3 py-1.5 rounded-lg shadow-lg hover:bg-surface transition-all flex items-center gap-2 ${showApiPanel ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
-          onClick={() => setShowApiPanel(true)}
-          title="Open ComfyUI Settings"
-        >
-          <Sliders size={14} className="text-primary-light" />
-          <span className="text-xs font-bold text-primary-light">ComfyUI Gear Settings</span>
-        </button>
-
-        <div className="flex-1 flex flex-col bg-black overflow-hidden h-full">
+      <div className="flex flex-col lg:flex-row gap-5 h-[calc(100vh-165px)] min-h-[600px] overflow-hidden">
+        {/* Main Workspace Iframe */}
+        <div className="flex-1 flex flex-col border border-border rounded-xl bg-black/40 shadow-xl overflow-hidden h-full">
+          <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "local" ? "bg-emerald-400" : comfy.runMode === "hybrid" ? "bg-cyan-400" : "bg-primary-light"} animate-pulse`} />
+              <span>Live Workspace: <strong>{iframeUrl}</strong></span>
+              <span className="chip text-[10px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
+                {comfy.runMode} Mode
+              </span>
+            </div>
+            <div className="flex items-center gap-2.5">
+              {comfy.runMode === "hybrid" && (
+                <span className="text-xs text-primary-light font-bold flex items-center gap-1.5 bg-primary/5 px-2 py-0.5 rounded border border-primary/20">
+                  <Cloud size={12} /> Cloud GPU Active
+                </span>
+              )}
+              <a 
+                href={iframeUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
+              >
+                Open in Browser <ExternalLink size={11} />
+              </a>
+            </div>
+          </div>
           {modelScan && modelScan.missing > 0 && serverOnline && (
             <div className="bg-amber-500/10 border-b border-amber-500/30 px-4 py-2 flex items-center justify-between gap-3 text-xs shrink-0">
               <span className="text-amber-200"><strong>{modelScan.missing}</strong> of {modelScan.total} models this workflow needs are missing.</span>
@@ -609,40 +704,13 @@ export default function WorkflowStudioPage() {
                     <div className="text-sm text-muted">Checking for ComfyUI…</div>
                   </div>
                 ) : (launching || connecting) ? (
-                  <div className="animate-in fade-in zoom-in duration-500 py-6 max-w-3xl mx-auto w-full">
-                    {provisioned === false ? (
-                      <div className="mb-6 rounded-xl overflow-hidden border-2 border-primary/20 shadow-[0_0_30px_rgba(var(--primary),0.1)] relative w-full pt-[56.25%] bg-black">
-                        <iframe 
-                          src="https://www.youtube.com/embed/AbBVDjiETmE?autoplay=1&mute=1&loop=1&playlist=AbBVDjiETmE&controls=0&showinfo=0&rel=0" 
-                          title="ComfyUI Setup Overview"
-                          className="absolute top-0 left-0 w-full h-full border-0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                        <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold text-primary-light flex items-center gap-2 border border-primary/30">
-                          <Loader2 size={12} className="animate-spin" /> Setting up ComfyUI Workspace
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative w-full max-w-sm mx-auto mb-6 rounded-xl overflow-hidden border border-primary/20 shadow-[0_0_20px_rgba(var(--primary),0.05)] pt-[56.25%] bg-black">
-                        <iframe 
-                          src="https://www.youtube.com/embed/hjei8lC1oE4?autoplay=1&mute=1&loop=1&playlist=hjei8lC1oE4&controls=0&showinfo=0&rel=0" 
-                          title="ComfyUI Tips"
-                          className="absolute top-0 left-0 w-full h-full border-0 opacity-80"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                        ></iframe>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px]">
-                          <div className="relative w-16 h-16 mb-2">
-                            <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
-                            <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin delay-150"></div>
-                            <Cpu size={24} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
-                          </div>
-                          <div className="text-[10px] font-bold text-primary-light uppercase tracking-wider bg-black/60 px-2 py-1 rounded">Booting Core Engine...</div>
-                        </div>
-                      </div>
-                    )}
-                    
+                  <div className="animate-in fade-in zoom-in duration-500 py-10">
+                    <div className="relative w-24 h-24 mx-auto mb-6">
+                      <div className="absolute inset-0 rounded-full border-t-2 border-primary animate-spin"></div>
+                      <div className="absolute inset-2 rounded-full border-r-2 border-accent animate-spin delay-150"></div>
+                      <div className="absolute inset-4 rounded-full border-b-2 border-emerald-400 animate-spin delay-300"></div>
+                      <Cpu size={32} className="absolute inset-0 m-auto text-primary-light animate-pulse" />
+                    </div>
                     <div className="text-lg font-bold mb-1">{launchPhase || "Starting ComfyUI…"}</div>
                     <div className="text-xs text-muted mb-3">
                       {BOOT_MSGS[Math.min(BOOT_MSGS.length - 1, Math.floor(launchElapsed / 5))]}
@@ -653,24 +721,16 @@ export default function WorkflowStudioPage() {
                     </div>
                     <p className="text-[11px] text-muted max-w-sm mx-auto">
                       {provisioned === false
-                        ? "First run copies the bundled ComfyUI into place and installs dependencies — this can take a minute or two. Check out the overview above while you wait."
+                        ? "First run copies the bundled ComfyUI into place and installs dependencies — this can take a minute or two. You can leave this open."
                         : "Initializing the local server and loading nodes. This usually takes 10–20 seconds."}
                     </p>
-                    
-                    {/* Fallback to standard carousel if they disable videos or the iframe fails. */}
-                    {provisioned === false && (
-                      <div className="mt-8 pt-6 border-t border-border/40">
-                        <div className="text-xs font-bold uppercase tracking-wider text-muted-more mb-4">What's Happening Under The Hood</div>
-                        <ComfyInstallHowto />
-                      </div>
-                    )}
-
+                    {provisioned === false && <div className="mt-6"><ComfyInstallHowto /></div>}
                     <button
                       type="button"
-                      className="btn-ghost text-[11px] mt-6 inline-flex items-center justify-center gap-1.5 text-muted"
+                      className="btn-ghost text-[11px] mt-4 inline-flex items-center justify-center gap-1.5 text-muted"
                       onClick={() => checkComfyReachable(localUrl).then((ok) => { if (ok) { setServerOnline(true); setLaunching(false); setConnecting(false); } })}
                     >
-                      <RotateCw size={12} /> Check connection now
+                      <RotateCw size={12} /> Check now
                     </button>
                   </div>
                 ) : (
@@ -725,16 +785,19 @@ export default function WorkflowStudioPage() {
                           : <><Power size={15} /> {provisioned === false ? "Set up & Start ComfyUI" : `Start ComfyUI (${comfy.deviceMode.toUpperCase()})`}</>}
                       </button>
                     ) : (
-                      <button
-                        type="button"
-                        className="btn-primary text-sm py-2 px-5 font-bold inline-flex items-center gap-2"
-                        disabled={connecting}
-                        onClick={connectWeb}
-                      >
-                        {connecting
-                          ? <><Loader2 size={15} className="animate-spin" /> Starting Engine…</>
-                          : <><Power size={15} /> Start ComfyUI Background Engine</>}
-                      </button>
+                      <div className="text-xs text-muted bg-surface2/60 border border-border/50 rounded-xl p-3 text-left leading-relaxed">
+                        <div className="font-bold text-text mb-1">Browser mode — start ComfyUI in a terminal:</div>
+                        <div className="mb-2.5">Run <code className="text-accent">npm run comfyui</code> in the project folder. It launches the bundled ComfyUI on <code className="text-accent">{localUrl}</code> (CPU, CORS enabled). When it finishes starting, click Connect.</div>
+                        <button
+                          type="button"
+                          className="btn-primary text-xs py-1.5 px-4 inline-flex items-center gap-1.5"
+                          disabled={connecting}
+                          onClick={connectWeb}
+                        >
+                          {connecting ? <><Loader2 size={13} className="animate-spin" /> Connecting…</> : <><Power size={13} /> Connect to ComfyUI</>}
+                        </button>
+                        <div className="mt-2.5 opacity-70">For one-click start + GPU config, run <code className="text-accent">npm run desktop:dev</code> (the desktop window) instead.</div>
+                      </div>
                     )}
                     <button type="button" className="btn-ghost text-xs mt-3 inline-flex items-center justify-center gap-1.5 w-full" onClick={() => checkComfyReachable(localUrl).then(setServerOnline)}>
                       <RotateCw size={12} /> Re-check connection
@@ -763,105 +826,16 @@ export default function WorkflowStudioPage() {
           ) : (
             <iframe
               src={iframeUrl}
-              className="flex-1 w-full h-full border-0 bg-white"
+              className="flex-1 w-full border-0 bg-white"
               title="ComfyUI Node Workspace"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
             />
           )}
         </div>
-      </div>
 
-      {/* Collapsible Panel */}
-      {showApiPanel && (
-        <div className="w-full lg:w-[420px] shrink-0 flex flex-col h-full bg-surface border-l border-border/60 shadow-2xl relative z-50">
-          <button 
-            className="absolute top-4 right-4 text-muted hover:text-text z-50 p-2"
-            onClick={() => setShowApiPanel(false)}
-          >
-            ✕
-          </button>
-
-          <div className="p-5 border-b border-border/40 space-y-4">
-            <div className="pr-8">
-              <h1 className="text-xl font-extrabold tracking-tight text-primary flex items-center gap-2">ComfyUI Gear</h1>
-              <p className="text-[11px] text-muted mt-1">Local ComfyUI instance with cloud-GPU offloading capabilities.</p>
-            </div>
-            
-            <div className="flex flex-wrap gap-2 items-center">
-              <ComfyEnvDropdown />
-              <button
-                type="button"
-                className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
-                onClick={() => comfy.set("runModeLocked", false)}
-              >
-                <Layers size={13} /> Change Env
-              </button>
-              
-              {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
-                <button
-                  type="button"
-                  className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow w-full mt-1 justify-center"
-                  onClick={() => comfy.set("showPlansModal", true)}
-                >
-                  <Cloud size={14} /> Subscribe
-                </button>
-              ) : comfy.runMode === "hybrid" && !modalUrl ? (
-                <button
-                  type="button"
-                  className="btn-primary bg-indigo-600 hover:bg-indigo-500 border-indigo-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5 shadow-glow w-full mt-1 justify-center"
-                  disabled={isDeploying}
-                  onClick={async () => {
-                    setIsDeploying(true);
-                    // Simulate Modal deployment delay for the UI
-                    setTimeout(() => {
-                      setModalUrl("https://nexus-cloud-comfyui-demo.modal.run");
-                      setIsDeploying(false);
-                    }, 3500);
-                  }}
-                >
-                  <Cloud size={13} />
-                  {isDeploying ? "Deploying Container..." : "Deploy Cloud Workspace"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center justify-center gap-1.5 w-full mt-1"
-                  disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
-                  onClick={handleExecute}
-                >
-                  {comfy.runMode === "hybrid" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
-                  {comfy.runMode === "hybrid" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
-                </button>
-              )}
-            </div>
-
-            <div className="bg-surface2/50 border border-border/40 rounded-xl p-3 flex flex-col gap-2.5 text-[11px] text-muted-more">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${comfy.runMode === "hybrid" ? "bg-emerald-400" : "bg-primary-light"} animate-pulse`} />
-                  <span className="chip text-[9px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
-                    {comfy.runMode} Mode
-                  </span>
-                </div>
-                {comfy.runMode === "hybrid" && (
-                  <span className="text-[10px] text-primary-light font-bold flex items-center gap-1 bg-primary/5 px-1.5 py-0.5 rounded border border-primary/20">
-                    <Cloud size={10} /> Cloud GPU Active
-                  </span>
-                )}
-              </div>
-              <div className="truncate">Live: <strong>{iframeUrl}</strong></div>
-              <a 
-                href={iframeUrl} 
-                target="_blank" 
-                rel="noreferrer" 
-                className="btn-outline px-2 py-1.5 text-[11px] flex items-center justify-center gap-1.5 hover:text-primary-light w-full"
-              >
-                Open in Browser <ExternalLink size={12} />
-              </a>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin">
+        {/* Collapsible API Panel */}
+        {showApiPanel && (
+          <div className="w-full lg:w-96 shrink-0 flex flex-col gap-4 overflow-y-auto h-full pr-1 pb-4 scrollbar-thin">
             {Object.keys(parsedNodes).length === 0 ? (
               <div className="card p-5 bg-primary/5 border border-primary/20 text-center">
                 <FileJson className="mx-auto text-primary-light mb-3" size={28} />
@@ -1066,9 +1040,9 @@ export default function WorkflowStudioPage() {
               </div>
             )}
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </Page>
   );
 }
 
