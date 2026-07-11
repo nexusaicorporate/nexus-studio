@@ -4,7 +4,7 @@ import { useMounted } from "@/components/ui";
 import {
   BookOpen, Rocket, Compass, MessageSquare, Images, User, Image as ImageIcon,
   Clapperboard, Layers, Sparkles, Mountain, Boxes, ChefHat, Settings, Server,
-  Database, Cpu, Package, FolderTree, Search, ChevronRight, Wand2, ShieldAlert,
+  Database, Cpu, Package, FolderTree, Search, ChevronRight, Wand2, ShieldAlert, Mic
 } from "lucide-react";
 
 /* ------------------------------------------------------------------ *
@@ -115,7 +115,7 @@ const SECTIONS: Section[] = [
           ["Workspace Gears", <>Chat &amp; Analyze (multi-provider chat + image captioning) and Bulk Analyze (batch caption many files).</>],
           ["Studio Gears", <>Character, Image, Video, Workflow and Comfy Hub — the generative production tools.</>],
           ["Library Gears", <>Prompts, Environments, Ingredients and Recipes — reusable building blocks with full CRUD + import/export.</>],
-          ["System Gears", <>Settings / Control Panel — providers, analyze prompts, appearance and ComfyUI configuration.</>],
+          ["System Gears", <>Settings / Control Panel — providers, system prompts, appearance and ComfyUI configuration.</>],
         ]} />
         <H3>What makes it different</H3>
         <UL items={[
@@ -163,7 +163,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   },
   {
     id: "concepts", label: "Core Concepts", group: "Getting Started", icon: Compass,
-    keywords: "provider model analyze prompt task uncensored persistence",
+    keywords: "provider model system prompt task uncensored persistence",
     body: (
       <>
         <H2>Core Concepts</H2>
@@ -171,13 +171,13 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <KV rows={[
           ["Active provider", <>The provider chosen in Settings is the one every chat/analyze/enhance action uses. The current provider &amp; model are shown in the sidebar footer.</>],
           ["Model", <>Each provider carries a list of models and a selected model. Many providers can fetch their live model list on demand.</>],
-          ["Analyze prompt", <>Steers how the model responds. It can be set globally, picked per task, or chosen automatically based on the task's output type.</>],
-          ["Task", <>Each surface (chat, image, video, bulk) is a named task. Tasks can each remember their own preferred analyze prompt via the gear button.</>],
-          ["Uncensored mode", <>A toggle that prepends an adult-creator preamble to the analyze prompt for unrestricted creative/captioning work on capable models.</>],
+          ["System prompt", <>Steers how the model responds. It can be set globally, picked per task, or chosen automatically based on the task's output type.</>],
+          ["Task", <>Each surface (chat, image, video, bulk) is a named task. Tasks can each remember their own preferred system prompt via the gear button.</>],
+          ["Uncensored mode", <>A toggle that prepends an adult-creator preamble to the system prompt for unrestricted creative/captioning work on capable models.</>],
           ["Local persistence", <>Libraries live in IndexedDB; settings live in localStorage. Nothing is uploaded. Use Export/Import per library for backups.</>],
         ]} />
         <H3>Mode tags</H3>
-        <P>Analyze prompts are tagged with the I/O shape they suit, so the right prompts surface for the right task:</P>
+        <P>System prompts are tagged with the I/O shape they suit, so the right prompts surface for the right task:</P>
         <Chips items={["T2T text→text", "T2I text→image", "I2I image→image", "IT2I image+text→image", "I2T image→text", "T2V text→video", "I2V image→video", "V2V video→video", "V2T video→text"]} />
       </>
     ),
@@ -190,11 +190,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     body: (
       <>
         <H2>Chat &amp; Analyze Gear</H2>
-        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your active provider, model and analyze prompt.</Lede>
+        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your active provider, model and system prompt.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Pick your provider/model in Settings (shown in the sidebar footer).</>,
-          <>Optionally choose an analysis analyze prompt with the gear button in the header.</>,
+          <>Optionally choose an analysis system prompt with the gear button in the header.</>,
           <>Type a message, or attach one or more images with the image button to caption/analyze them.</>,
           <>Press Enter to send (Shift+Enter for a newline). Responses stream in token-by-token.</>,
           <>Use Copy on any assistant reply, or "New chat" to clear the thread.</>,
@@ -206,7 +206,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <H3>Engineering notes</H3>
         <UL items={[
           <>Images are read as base64 data URLs and sent inline; vision support depends on the provider/model.</>,
-          <>The analyze prompt is resolved by <Code>useTaskSystemPrompt("chat", …)</Code>, which passes an <Code>I2T</Code> mode when images are attached and <Code>T2T</Code> otherwise.</>,
+          <>The system prompt is resolved by <Code>useTaskSystemPrompt("chat", …)</Code>, which passes an <Code>I2T</Code> mode when images are attached and <Code>T2T</Code> otherwise.</>,
           <>Streaming is handled per-provider in <Code>lib/providers.ts → chat()</Code> via <Code>onChunk</Code> callbacks.</>,
         ]} />
       </>
@@ -369,6 +369,35 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           <><b>Prompt Embedding Interpolation:</b> Gradually transitions the text guidance vectors between scenes to morph environments smoothly.</>,
           <><b>FFmpeg Audio Stitching:</b> Compiles multiple generated clips and stitches voice/audio tracks onto precise frame offsets dynamically.</>,
         ]} />
+        <H3>Orchestration & Timeline (Bytecut / Director-AI)</H3>
+        <P>The Cinema Gear is powered by two major open-source orchestration projects:</P>
+        <KV rows={[
+          ["Backend (director-ai)", <>Sourced from <a href="https://github.com/cscannellnexus/director-ai" className="text-primary hover:underline" target="_blank">cscannellnexus/director-ai</a>. Runs as a standalone microservice alongside the Next.js app, wired up via <Code>ecosystem.config.js</Code> and <Code>lmrouter.yaml</Code> to handle the heavy lifting of payload compilation.</>],
+          ["Frontend (bytecut-director)", <>Sourced from <a href="https://github.com/heheok/bytecut-director" className="text-primary hover:underline" target="_blank">heheok/bytecut-director</a>. Powers the cascading parameter management (Global vs Per-Shot parameters) and the <Code>queue.zip</Code> export functionality within the UI timeline.</>],
+        ]} />
+      </>
+    ),
+  },
+  {
+    id: "audio", label: "Audio Gear", group: "Studio Gears", icon: Mic,
+    keywords: "audio music voice clone tts lip sync rapida heartmula rhubarb avatar",
+    body: (
+      <>
+        <H2>Audio Gear</H2>
+        <Lede>Generate music, clone voices, and sync speech to digital avatars using state-of-the-art audio models.</Lede>
+        <H3>How to use it</H3>
+        <Steps items={[
+          <>Open the <b>Music</b> tab to generate full songs. Provide lyrics or have the AI generate them, select a genre style, and toggle Instrumental mode.</>,
+          <>Open the <b>Voice Cloning</b> tab to upload a voice sample, train a quick clone, and generate TTS (Text-to-Speech).</>,
+          <>Use the <b>Talking Avatar</b> feature to sync your generated speech to a visual character.</>,
+        ]} />
+        <H3>Source Integrations</H3>
+        <P>The Audio Gear is composed of several specialized open-source integrations:</P>
+        <KV rows={[
+          ["Music UI (HeartMuLa)", <>Sourced from <a href="https://github.com/fspecii/HeartMuLa-Studio" className="text-primary hover:underline" target="_blank">fspecii/HeartMuLa-Studio</a>. Provides the React UI patterns for the lyrics input, genre styles, and history player.</>],
+          ["Voice Backend (Rapida)", <>Sourced from <a href="https://github.com/rapidaai/voice-ai" className="text-primary hover:underline" target="_blank">rapidaai/voice-ai</a>. Used for the underlying gRPC streaming backend to allow low-latency agentic voice synthesis.</>],
+          ["Talking Avatar", <>Sourced from <a href="https://github.com/asanchezyali/talking-avatar-with-ai" className="text-primary hover:underline" target="_blank">asanchezyali/talking-avatar-with-ai</a>. Provides the <Code>Rhubarb Lip Sync</Code> integration to visually sync TTS audio to characters.</>],
+        ]} />
       </>
     ),
   },
@@ -425,11 +454,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   // ===================== LIBRARY =====================
   {
     id: "prompts", label: "Prompt Gear", group: "Library Gears", icon: BookOpen,
-    keywords: "prompt library crud import export url analyze prompt categories modes",
+    keywords: "prompt library crud import export url system prompt categories modes",
     body: (
       <>
         <H2>Prompt Gear</H2>
-        <Lede>Your prompt template library — categorized, searchable, taggable, and fully import/export-able. Also the home of Analyze Prompts.</Lede>
+        <Lede>Your prompt template library — categorized, searchable, taggable, and fully import/export-able. Also the home of System Prompts.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Filter by category tabs, search by text, or toggle 18+ visibility.</>,
@@ -440,10 +469,10 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <H3>Import formats</H3>
         <P>
           The importer is tolerant: arrays of objects map common fields (<Code>title/name</Code>, <Code>prompt/content/body</Code>, <Code>category</Code>,
-          <Code>image/cover</Code>, <Code>tags</Code>). A nested object of <Code>{"{ collection: { title: body } }"}</Code> is read as Analyze Prompts, and modes are
+          <Code>image/cover</Code>, <Code>tags</Code>). A nested object of <Code>{"{ collection: { title: body } }"}</Code> is read as System Prompts, and modes are
           inferred from the title/category text. This is how the original <Code>predefined_prompts.json</Code> loads.
         </P>
-        <H3>Analyze Prompts</H3>
+        <H3>System Prompts</H3>
         <P>
           Prompts in the <Code>System Prompt</Code> category appear in every task's prompt picker, grouped by subcategory (General, Captioning,
           Image Editing, Video Generation, Analysis, and more). Built-ins are seeded on first run and can be merged or reset from Settings.
@@ -542,7 +571,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         ]} />
         <H3>Uncensored mode</H3>
         <P>
-          When on, an adult-creator preamble is prepended to the analyze prompt for unrestricted creative/captioning output on capable
+          When on, an adult-creator preamble is prepended to the system prompt for unrestricted creative/captioning output on capable
           (typically local) models. Hosted providers still enforce their own policies.
         </P>
         <H3>Engineering notes</H3>
@@ -554,14 +583,14 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     ),
   },
   {
-    id: "system-prompts", label: "Analyze Prompts & Builder", group: "System Gears", icon: Wand2,
-    keywords: "analyze prompt builder caption length extras auto prompt default fallback picker",
+    id: "system-prompts", label: "System Prompts & Builder", group: "System Gears", icon: Wand2,
+    keywords: "system prompt builder caption length extras auto prompt default fallback picker",
     body: (
       <>
-        <H2>Analyze Prompts &amp; Builder</H2>
+        <H2>System Prompts &amp; Builder</H2>
         <Lede>Control how the model behaves globally, per task, or automatically — and compose new prompts with the builder.</Lede>
         <H3>Resolution order</H3>
-        <P>For any task, the active analyze prompt is resolved by <Code>useTaskSystemPrompt()</Code> in this order:</P>
+        <P>For any task, the active system prompt is resolved by <Code>useTaskSystemPrompt()</Code> in this order:</P>
         <Steps items={[
           <><b>Auto prompt</b> (if enabled): the first System Prompt whose mode tags match the current task's I/O type.</>,
           <>The task's own picked prompt (set with its gear button).</>,
@@ -760,102 +789,6 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           The repo also contains <Code>character-forge/</Code> and <Code>character-x-ray/</Code> — earlier standalone prototypes
           (Vite + Firebase + Gemini) whose Character Forge and X-Ray concepts were ported into the main app's Character Gear.
         </Note>
-      </>
-    ),
-  },
-  {
-    id: "comfy-api", label: "ComfyUI API Reference", group: "Studio Gears", icon: Sparkles,
-    keywords: "comfy api prompt queue websockets history remote hybrid",
-    body: (
-      <>
-        <H2>ComfyUI API Reference</H2>
-        <Lede>
-          The ComfyUI backend server acts as a powerful headless JSON execution engine. By sending workflow node specifications in API prompt formats, you can run complex Stable Diffusion and FLUX model chains programmatically.
-        </Lede>
-        
-        <H3>Enabling Developer API Mode</H3>
-        <P>
-          By default, saving a workflow in the ComfyUI web UI outputs a user interface layout JSON file containing visual placements. To retrieve the execution-compatible minimized JSON:
-        </P>
-        <Steps items={[
-          <>Open your local ComfyUI interface (usually at <Code>http://localhost:8188</Code>).</>,
-          <>Click the <b>Settings</b> gear icon on the floating menu.</>,
-          <>Check the box labeled <b>"Enable Dev mode"</b>.</>,
-          <>A new button labeled <b>"Save (API Format)"</b> will appear on your side panel.</>,
-          <>Click this button to save the api-compatible JSON. You can load this file into our <b>ComfyUI Gear</b> API panel.</>
-        ]} />
-
-        <H3>POST /prompt (Queueing Prompts)</H3>
-        <P>
-          To trigger a workflow execution, send a POST request with the API JSON structure placed under the <Code>prompt</Code> field.
-        </P>
-        <Block>{`POST http://localhost:8188/prompt
-
-{
-  "client_id": "nexus_studio_client",
-  "prompt": {
-    "3": {
-      "class_type": "KSampler",
-      "inputs": {
-        "seed": 12345678,
-        "steps": 20,
-        "cfg": 8,
-        "sampler_name": "euler",
-        "scheduler": "normal",
-        "model": ["4", 0],
-        "positive": ["6", 0],
-        "negative": ["7", 0],
-        "latent_image": ["5", 0]
-      }
-    },
-    ...
-  }
-}`}</Block>
-
-        <H3>WebSocket Monitoring (/ws)</H3>
-        <P>
-          To listen to execution updates in real-time, connect to the WebSocket stream using the client ID passed during queueing.
-        </P>
-        <Block>{`WebSocket URL: ws://localhost:8188/ws?clientId=nexus_studio_client
-
-Key Event Messages:
-{"type": "status", "data": {"status": {"exec_info": {"queue_remaining": 1}}}}
-{"type": "execution_start", "data": {"prompt_id": "uuid"}}
-{"type": "executing", "data": {"node": "3", "prompt_id": "uuid"}}
-{"type": "progress", "data": {"value": 10, "max": 20}}
-{"type": "executed", "data": {"node": "9", "output": {"images": [...]}}}`}</Block>
-
-        <H3>GET /history/{"{prompt_id}"} (History & Outputs)</H3>
-        <P>
-          For serverless architectures where long-running persistent WebSockets are not feasible, you can fetch completion details and media output URLs directly from the history cache.
-        </P>
-        <Block>{`GET http://localhost:8188/history/prompt-uuid-here
-
-{
-  "prompt-uuid-here": {
-    "status": {
-      "status_str": "success",
-      "completed": true
-    },
-    "outputs": {
-      "9": {
-        "images": [
-          { "filename": "ComfyUI_00001_.png", "subfolder": "", "type": "output" }
-        ]
-      }
-    }
-  }
-}`}</Block>
-
-        <H3>Hybrid Remote GPU Node Configuration</H3>
-        <P>
-          To execute local workflow graphs using remote cloud GPUs, configure the <b>nathannlu/comfyui-cloud</b> custom node.
-        </P>
-        <Steps items={[
-          <>Install the custom node repository: <Code>https://github.com/nathannlu/comfyui-cloud</Code>.</>,
-          <>In your local ComfyUI settings or config file, input your remote cloud worker URL and secret GPU authentication key.</>,
-          <>When you queue a prompt, the custom node will serialize your tensors and offload processing tasks seamlessly to the remote backend, returning completed outputs directly to your local UI.</>
-        ]} />
       </>
     ),
   },

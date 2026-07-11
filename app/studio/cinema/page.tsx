@@ -20,6 +20,10 @@ import { canUseFeature, canUseModel } from "@/lib/entitlements";
 import UpgradePrompt from "@/components/UpgradePrompt";
 import { Toggle } from "@/components/ui";
 import { CinemaChat } from "@/components/cinema/CinemaChat";
+import { CinemaTimeline } from "@/components/cinema/CinemaTimeline";
+import { ParameterEditor } from "@/components/cinema/ParameterEditor";
+import { ExportPanel } from "@/components/cinema/ExportPanel";
+import { DEFAULT_LTX_PARAMS } from "@/lib/types";
 
 export default function CinemaStudio() {
   const { projects, loaded, load, saveProject, deleteProject } = useCinema();
@@ -141,7 +145,8 @@ export default function CinemaStudio() {
 // WORKSPACE COMPONENT
 // ----------------------------------------------------------------------
 function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { project: CinemaProject, onBack: () => void, saveProject: (p: CinemaProject) => void, library: any, settings: any }) {
-  const [activeTab, setActiveTab] = useState<"editor" | "images" | "videos" | "characters" | "voices" | "assets" | "scenes">("editor");
+  const [activeTab, setActiveTab] = useState<"editor" | "images" | "videos" | "characters" | "voices" | "assets" | "scenes" | "settings">("editor");
+  const [showExportPanel, setShowExportPanel] = useState(false);
   const { plan } = useAuth();
 
   // AI Director State
@@ -179,6 +184,7 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
     { id: "characters", label: "Characters", icon: User },
     { id: "voices", label: "Voices", icon: Volume2 },
     { id: "scenes", label: "Scenes", icon: Film },
+    { id: "settings", label: "Settings", icon: Settings },
   ] as const;
 
   function addMediaToTimeline(media: PromptItem) {
@@ -293,7 +299,7 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
           />
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-1.5 rounded bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors flex items-center gap-2">
+          <button onClick={() => setShowExportPanel(true)} className="px-4 py-1.5 rounded bg-white/10 hover:bg-white/20 text-sm font-medium transition-colors flex items-center gap-2">
             <Download size={14} /> Export
           </button>
         </div>
@@ -326,51 +332,13 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
              </div>
              
              {/* Timeline UI */}
-             <div className="absolute bottom-0 inset-x-0 h-64 border-t border-white/10 bg-[#0a0a0a] p-4 flex flex-col gap-2 overflow-y-auto">
-                <div className="text-[10px] text-white/40 mb-2 font-mono flex gap-8">
-                  <span>00:00:00</span>
-                  <span>00:00:05</span>
-                  <span>00:00:10</span>
-                  <span>00:00:15</span>
-                  <span>00:00:20</span>
-                </div>
-                
-                {/* Video Track */}
-                <div className="text-xs text-white/40 font-semibold mb-1">V1 (Video & Images)</div>
-                <div className="h-14 bg-white/5 rounded-lg border border-white/10 relative overflow-hidden flex gap-1 p-1">
-                   {project.scenes.filter(s => s.mediaType !== "audio").map((s,i) => (
-                     <div key={s.id} 
-                          onClick={() => setSelectedSceneId(s.id)}
-                          className={`h-full w-40 rounded border ${selectedSceneId === s.id ? 'border-primary bg-primary/20' : 'border-white/10 bg-blue-500/20'} flex flex-col justify-center px-2 cursor-pointer hover:bg-blue-500/30 transition-colors`}>
-                       <div className="text-[10px] font-bold truncate flex items-center gap-1">
-                         {s.mediaType === "image" ? <ImageIcon size={10}/> : <Film size={10}/>} 
-                         Scene {i+1}
-                       </div>
-                       <div className="text-[9px] text-white/60 truncate">{s.prompt.substring(0, 30)}...</div>
-                     </div>
-                   ))}
-                   {project.scenes.filter(s => s.mediaType !== "audio").length === 0 && (
-                     <div className="text-[10px] text-white/20 my-auto ml-2">Drag or generate video/image clips here...</div>
-                   )}
-                </div>
-
-                {/* Audio Track */}
-                <div className="text-xs text-white/40 font-semibold mt-2 mb-1">A1 (Audio & Voices)</div>
-                <div className="h-14 bg-white/5 rounded-lg border border-white/10 relative overflow-hidden flex gap-1 p-1">
-                   {project.scenes.filter(s => s.mediaType === "audio").map((s,i) => (
-                     <div key={s.id} 
-                          onClick={() => setSelectedSceneId(s.id)}
-                          className={`h-full w-48 rounded border ${selectedSceneId === s.id ? 'border-primary bg-primary/20' : 'border-emerald-500/30 bg-emerald-500/10'} flex flex-col justify-center px-2 cursor-pointer hover:bg-emerald-500/20 transition-colors`}>
-                       <div className="text-[10px] font-bold text-emerald-400 truncate flex items-center gap-1">
-                         <Volume2 size={10}/> Audio Track {i+1}
-                       </div>
-                       <div className="text-[9px] text-white/60 truncate">{s.prompt.substring(0, 30)}...</div>
-                     </div>
-                   ))}
-                   {project.scenes.filter(s => s.mediaType === "audio").length === 0 && (
-                     <div className="text-[10px] text-white/20 my-auto ml-2">Drag or generate audio clips here...</div>
-                   )}
-                </div>
+             <div className="absolute bottom-0 inset-x-0 h-64 border-t border-white/10 bg-[#0a0a0a]">
+                <CinemaTimeline
+                  project={project}
+                  selectedSceneId={selectedSceneId}
+                  onSelectScene={setSelectedSceneId}
+                  onAddScene={() => document.getElementById("director-chat")?.focus()}
+                />
              </div>
           </div>
         ) : (
@@ -434,6 +402,40 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
                     </div>
                   ))}
                   
+                  {activeTab === "settings" && (
+                    <div className="col-span-full max-w-2xl">
+                      <ParameterEditor
+                        isGlobal={true}
+                        globalParams={project.defaultParams || DEFAULT_LTX_PARAMS}
+                        onChange={(newParams) => {
+                          saveProject({
+                            ...project,
+                            defaultParams: {
+                              ...(project.defaultParams || DEFAULT_LTX_PARAMS),
+                              ...newParams
+                            } as any
+                          });
+                        }}
+                      />
+                      
+                      {activeScene && (
+                        <div className="mt-8 border-t border-white/10 pt-8">
+                          <ParameterEditor
+                            isGlobal={false}
+                            globalParams={project.defaultParams || DEFAULT_LTX_PARAMS}
+                            params={activeScene.params}
+                            onChange={(newParams) => {
+                              saveProject({
+                                ...project,
+                                scenes: project.scenes.map(s => s.id === activeScene.id ? { ...s, params: newParams } : s)
+                              });
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
                 </div>
               </div>
             </div>
@@ -473,33 +475,13 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
       <div className="h-auto pb-4 border-t border-white/10 flex flex-col bg-[#0f0f0f] shrink-0">
         
         {/* Timeline Strip */}
-        <div className="flex-1 p-4 overflow-x-auto flex items-center gap-2 scrollbar-thin">
-          {project.scenes.map((scene, i) => (
-            <div 
-              key={scene.id}
-              onClick={() => setSelectedSceneId(scene.id)}
-              className={`shrink-0 w-40 h-24 rounded-lg overflow-hidden relative cursor-pointer border-2 transition-colors ${selectedSceneId === scene.id ? "border-primary shadow-[0_0_15px_rgba(var(--color-primary),0.3)]" : "border-white/10 hover:border-white/30"}`}
-            >
-              {scene.videoUrl ? (
-                 <video src={scene.videoUrl} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full bg-white/5 flex items-center justify-center p-2 text-center">
-                  <p className="text-[10px] text-white/50 line-clamp-3 leading-tight">{scene.prompt}</p>
-                </div>
-              )}
-              <div className="absolute top-1 left-1 bg-black/60 backdrop-blur px-1.5 py-0.5 rounded text-[9px] font-bold text-white/80">
-                Scene {i + 1}
-              </div>
-            </div>
-          ))}
-          
-          <div 
-            onClick={() => document.getElementById("director-chat")?.focus()}
-            className="shrink-0 w-24 h-24 rounded-lg border-2 border-dashed border-white/10 hover:border-white/30 hover:bg-white/5 cursor-pointer flex flex-col items-center justify-center text-white/40 transition-colors"
-          >
-            <Plus size={20} className="mb-1" />
-            <span className="text-xs font-medium">Add</span>
-          </div>
+        <div className="flex-1 relative h-64">
+          <CinemaTimeline
+            project={project}
+            selectedSceneId={selectedSceneId}
+            onSelectScene={setSelectedSceneId}
+            onAddScene={() => document.getElementById("director-chat")?.focus()}
+          />
         </div>
 
         {/* AI Director Chatbar */}
@@ -817,6 +799,12 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
         </div>
       </div>
       
+      {showExportPanel && (
+        <ExportPanel 
+          project={project} 
+          onClose={() => setShowExportPanel(false)} 
+        />
+      )}
     </div>
   );
 }

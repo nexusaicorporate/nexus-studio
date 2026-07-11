@@ -27,6 +27,7 @@ const GEAR_GROUPS: { group: string; gears: GearDef[] }[] = [
       { href: "/analyze", label: "Analyze Gear", desc: "Inspect, caption, and extract detailed attributes from media and text, ensuring content integrity.", image: "/images/analyze_gear.png", colorRgb: "34,211,238" },
       { href: "/studio/image", label: "Image Gear", desc: "Generate high-fidelity illustrations, concept art, and images via SDXL & Flux.", image: "/images/image_gear.png", colorRgb: "167,139,250" },
       { href: "/studio/video", label: "Video Gear", desc: "Produce cinematic clips and fluid motion from text descriptions or images.", image: "/images/video_gear.png", colorRgb: "163,230,53" },
+      { href: "/studio/audio", label: "Audio Gear", desc: "Synthesize voiceovers, create sound effects, and generate music with Rapida.", image: "/images/audio_gear.png", colorRgb: "234,88,12" },
       { href: "/studio/character", label: "Character Gear", desc: "Design persistent characters and reference sheets for identity consistency.", image: "/images/character_gear.jpg", colorRgb: "251,146,60" },
     ],
   },

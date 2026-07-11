@@ -118,6 +118,15 @@ export default function WorkflowStudioPage() {
   async function connectWeb() {
     setLaunchError(null);
     setConnecting(true);
+    setLaunchPhase("Triggering background engine…");
+    
+    // Auto-trigger the new server-side daemon API
+    try {
+      await fetch('/api/comfy/start', { method: 'POST' });
+    } catch (e) {
+      console.error("Failed to trigger daemon:", e);
+    }
+
     setLaunchPhase("Connecting to ComfyUI…");
     const deadline = Date.now() + 60000;
     const poll = async () => {
@@ -125,7 +134,7 @@ export default function WorkflowStudioPage() {
       if (ok) { setServerOnline(true); setConnecting(false); return; }
       if (Date.now() > deadline) {
         setConnecting(false);
-        setLaunchError(`Couldn't reach ComfyUI at ${localUrl}. Make sure \`npm run comfyui\` is running and has finished starting, then click Connect again.`);
+        setLaunchError(`Couldn't reach ComfyUI at ${localUrl}. The daemon might have failed to start.`);
         return;
       }
       setTimeout(poll, 2000);
@@ -716,19 +725,16 @@ export default function WorkflowStudioPage() {
                           : <><Power size={15} /> {provisioned === false ? "Set up & Start ComfyUI" : `Start ComfyUI (${comfy.deviceMode.toUpperCase()})`}</>}
                       </button>
                     ) : (
-                      <div className="text-xs text-muted bg-surface2/60 border border-border/50 rounded-xl p-3 text-left leading-relaxed">
-                        <div className="font-bold text-text mb-1">Browser mode — start ComfyUI in a terminal:</div>
-                        <div className="mb-2.5">Run <code className="text-accent">npm run comfyui</code> in the project folder. It launches the bundled ComfyUI on <code className="text-accent">{localUrl}</code> (CPU, CORS enabled). When it finishes starting, click Connect.</div>
-                        <button
-                          type="button"
-                          className="btn-primary text-xs py-1.5 px-4 inline-flex items-center gap-1.5"
-                          disabled={connecting}
-                          onClick={connectWeb}
-                        >
-                          {connecting ? <><Loader2 size={13} className="animate-spin" /> Connecting…</> : <><Power size={13} /> Connect to ComfyUI</>}
-                        </button>
-                        <div className="mt-2.5 opacity-70">For one-click start + GPU config, run <code className="text-accent">npm run desktop:dev</code> (the desktop window) instead.</div>
-                      </div>
+                      <button
+                        type="button"
+                        className="btn-primary text-sm py-2 px-5 font-bold inline-flex items-center gap-2"
+                        disabled={connecting}
+                        onClick={connectWeb}
+                      >
+                        {connecting
+                          ? <><Loader2 size={15} className="animate-spin" /> Starting Engine…</>
+                          : <><Power size={15} /> Start ComfyUI Background Engine</>}
+                      </button>
                     )}
                     <button type="button" className="btn-ghost text-xs mt-3 inline-flex items-center justify-center gap-1.5 w-full" onClick={() => checkComfyReachable(localUrl).then(setServerOnline)}>
                       <RotateCw size={12} /> Re-check connection

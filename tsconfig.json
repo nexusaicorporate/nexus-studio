@@ -17,5 +17,5 @@
     "paths": { "@/*": ["./*"] }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "character-forge", "character-x-ray", "supabase", "Prompt-Builders", "promptfill"]
+  "exclude": ["node_modules", "character-forge", "character-x-ray", "supabase", "Prompt-Builders", "promptfill", "director-ai", "temp-lmrouter"]
 }

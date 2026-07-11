@@ -4,7 +4,7 @@ import Page from "@/components/Page";
 import { Field, Toggle, useMounted } from "@/components/ui";
 import { useSettings } from "@/lib/store/settings";
 import { fetchModels } from "@/lib/providers";
-import { Check, Cpu, Eye, EyeOff, FolderCog, Lock, Plus, RefreshCw, Sparkles, Trash2, Zap, FolderOpen, ShieldCheck } from "lucide-react";
+import { Check, Cpu, Eye, EyeOff, FolderCog, Lock, Plus, RefreshCw, Sparkles, Trash2, Zap, FolderOpen, ShieldCheck, Film } from "lucide-react";
 import PromptPicker, { useTaskSystemPrompt } from "@/components/PromptPicker";
 import { useLibrary, newId } from "@/lib/store/library";
 import type { PromptItem } from "@/lib/types";
@@ -150,6 +150,9 @@ export default function SettingsPage() {
                         <button onClick={() => s.setActiveVideoProvider(p.id)} className={`btn text-[10px] py-1 px-2 ${isVideoActive ? "btn-primary" : "btn-outline"}`}>
                           {isVideoActive ? <><Check size={12} /> Video</> : "Set Video"}
                         </button>
+                        <button onClick={() => s.setActiveAudioProvider(p.id)} className={`btn text-[10px] py-1 px-2 ${s.activeAudioProviderId === p.id ? "btn-primary" : "btn-outline"}`}>
+                          {s.activeAudioProviderId === p.id ? <><Check size={12} /> Audio</> : "Set Audio"}
+                        </button>
                       </div>
                       <div>
                         <div className="font-medium">{p.name}</div>
@@ -189,6 +192,30 @@ export default function SettingsPage() {
               <input className="input" placeholder="API key (optional)" value={custom.apiKey} onChange={(e) => setCustom({ ...custom, apiKey: e.target.value })} />
             </div>
             <button className="btn-primary mt-3" onClick={() => { if (custom.baseUrl) { s.addCustomProvider(custom); setCustom({ name: "", baseUrl: "", apiKey: "" }); } }}>Add provider</button>
+          </div>
+
+          <div className="card p-4 border border-amber-500/30 bg-amber-500/5">
+            <div className="font-medium mb-3 flex items-center gap-2 text-amber-500"><Film size={16} /> Cinema API Provider Selection</div>
+            <p className="text-xs text-muted mb-4 max-w-2xl leading-relaxed">
+              Designate exactly which underlying API provider should be used for the distinct components of a cinematic generation. When using the Cinema Gear, these providers will be orchestrated together.
+            </p>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Field label="Image Provider">
+                <select className="input" value={s.cinemaConfig?.imageProviderId || "pollinations"} onChange={(e) => s.setCinemaConfig({ imageProviderId: e.target.value })}>
+                  {s.providers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </Field>
+              <Field label="Video Provider">
+                <select className="input" value={s.cinemaConfig?.videoProviderId || "pollinations"} onChange={(e) => s.setCinemaConfig({ videoProviderId: e.target.value })}>
+                  {s.providers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </Field>
+              <Field label="Audio Provider">
+                <select className="input" value={s.cinemaConfig?.audioProviderId || "pollinations"} onChange={(e) => s.setCinemaConfig({ audioProviderId: e.target.value })}>
+                  {s.providers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </Field>
+            </div>
           </div>
 
           <div className="card p-4 border border-primary/30 bg-primary/5">

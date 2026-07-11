@@ -515,56 +515,7 @@ export function TemplateWorkstation({ template: initialTemplate, onBack, onUpdat
                         </Button>
                     </div>
 
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => setDisplayLang(prev => prev === 'cn' ? 'en' : 'cn')}
-                        className="h-7 w-12 text-xs font-mono font-medium text-muted-foreground hover:text-foreground"
-                    >
-                        {displayLang === 'cn' ? "CN" : "EN"}
-                    </Button>
 
-                    <div className="h-6 w-px bg-border/50 mx-2" />
-
-                    <div className="flex items-center gap-2">
-                        <Select value={genSettings.provider} onValueChange={val => {
-                            const p = config?.providers.find(p => p.id === val);
-                            setGenSettings({
-                                provider: val,
-                                model: p?.models?.[0] || "",
-                                size: p?.sizeOptions?.[p?.models?.[0] || ""]?.[0] || ""
-                            });
-                        }}>
-                            <SelectTrigger className="h-8 w-[140px] text-xs">
-                                <SelectValue placeholder={t.provider} />
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                                {config?.providers.map(p => <SelectItem key={p.id} value={p.id} className="text-xs">{p.name}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-
-                        <Select value={genSettings.model} onValueChange={val => setGenSettings({ ...genSettings, model: val })}>
-                            <SelectTrigger className="h-8 w-[140px] text-xs">
-                                <SelectValue placeholder={t.model} />
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                                {config?.providers.find(p => p.id === genSettings.provider)?.models.map(m => <SelectItem key={m} value={m} className="text-xs">{m}</SelectItem>)}
-                            </SelectContent>
-                        </Select>
-
-                        <Select value={genSettings.size} onValueChange={val => setGenSettings({ ...genSettings, size: val })}>
-                            <SelectTrigger className="h-8 w-[100px] text-xs">
-                                <SelectValue placeholder={t.size}>
-                                    {genSettings.size ? getAspectRatio(genSettings.size) : t.size}
-                                </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent align="end">
-                                {config?.providers.find(p => p.id === genSettings.provider)?.sizeOptions[genSettings.model]?.map(s => (
-                                    <SelectItem key={s} value={s} className="text-xs">{getAspectRatio(s)}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
                 </div>
             </header>
 

@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { Layout } from "@/components/promptfill/components/Layout";
+import Page from "@/components/Page";
+import { LayoutGrid, History as HistoryIcon, Database, Settings as SettingsIcon } from "lucide-react";
 import { TemplateGallery } from "@/components/promptfill/features/TemplateGallery";
 import { TemplateWorkstation } from "@/components/promptfill/features/TemplateWorkstation";
 import { Settings } from "@/components/promptfill/features/Settings";
@@ -186,10 +188,33 @@ function AppRoot() {
                 );
         }
     };
+    const navActions = (
+        <div className="flex items-center gap-2">
+            <button className={`btn-outline ${view === 'gallery' ? 'bg-secondary/50' : ''}`} onClick={() => setView('gallery')} title={t.navGallery}>
+                <LayoutGrid size={15} /> {t.navGallery}
+            </button>
+            <button className={`btn-outline ${view === 'history' ? 'bg-secondary/50' : ''}`} onClick={() => setView('history')} title={t.history}>
+                <HistoryIcon size={15} /> {t.history}
+            </button>
+            <button className={`btn-outline ${view === 'banks' ? 'bg-secondary/50' : ''}`} onClick={() => setView('banks')} title={t.vocabularyBanks}>
+                <Database size={15} /> {t.vocabularyBanks}
+            </button>
+            <button className={`btn-outline ${view === 'settings' ? 'bg-secondary/50' : ''}`} onClick={() => setView('settings')} title={t.settings}>
+                <SettingsIcon size={15} /> {t.settings}
+            </button>
+        </div>
+    );
+
     return (
-        <Layout currentView={view} onNavigate={(v) => setView(v as ViewState)}>
-            {renderContent()}
-        </Layout>
+        <Page 
+            title="Recipies Gear" 
+            subtitle="Manage PromptFill templates, vocabulary banks, and history"
+            actions={navActions}
+        >
+            <div className="max-w-6xl mx-auto h-full p-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                {renderContent()}
+            </div>
+        </Page>
     );
 }
 

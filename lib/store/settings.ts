@@ -41,6 +41,8 @@ function serializeForDb(s: Partial<SettingsState>) {
     onboardingRole: s.onboardingRole,
     onboardingHardware: s.onboardingHardware,
     onboardingExperience: s.onboardingExperience,
+    activeAudioProviderId: s.activeAudioProviderId,
+    cinemaConfig: s.cinemaConfig,
   };
 }
 
@@ -88,6 +90,8 @@ export interface SettingsState {
   activeProviderId: string;       // text/chat provider (Chat, Bulk, enhance, X-Ray)
   activeImageProviderId: string;
   activeVideoProviderId: string;
+  activeAudioProviderId: string;
+  cinemaConfig: { imageProviderId: string; videoProviderId: string; audioProviderId: string };
   uncensored: boolean;
   hydrated: boolean;              // true once loadFromDb() has completed
   taskPrompts: Record<string, string>;
@@ -120,6 +124,8 @@ export interface SettingsState {
   setActiveProvider: (id: string) => void;
   setActiveImageProvider: (id: string) => void;
   setActiveVideoProvider: (id: string) => void;
+  setActiveAudioProvider: (id: string) => void;
+  setCinemaConfig: (config: { imageProviderId?: string; videoProviderId?: string; audioProviderId?: string }) => void;
   updateProvider: (id: string, patch: Partial<ProviderConfig>) => void;
   addCustomProvider: (p: Partial<ProviderConfig>) => void;
   addModalProvider: (p: Partial<ProviderConfig>) => string;
@@ -150,6 +156,8 @@ export const useSettings = create<SettingsState>()((set, get) => ({
   activeProviderId: "pollinations",
   activeImageProviderId: "pollinations",
   activeVideoProviderId: "pollinations",
+  activeAudioProviderId: "pollinations",
+  cinemaConfig: { imageProviderId: "pollinations", videoProviderId: "pollinations", audioProviderId: "pollinations" },
   uncensored: true,
   hydrated: false,
   taskPrompts: {},
@@ -180,6 +188,8 @@ export const useSettings = create<SettingsState>()((set, get) => ({
     // Guard defaults for fields that may be absent in a new/empty row
     if (!merged.activeImageProviderId) merged.activeImageProviderId = "pollinations";
     if (!merged.activeVideoProviderId) merged.activeVideoProviderId = "pollinations";
+    if (!merged.activeAudioProviderId) merged.activeAudioProviderId = "pollinations";
+    if (!merged.cinemaConfig) merged.cinemaConfig = { imageProviderId: "pollinations", videoProviderId: "pollinations", audioProviderId: "pollinations" };
     if (!merged.activeProviderId) merged.activeProviderId = merged.activeImageProviderId;
     if (!merged.devTest) merged.devTest = { enabled: false, backendId: "", prev: { text: "", image: "", video: "" } };
     if (!merged.modalDeploys) merged.modalDeploys = {};
@@ -213,6 +223,8 @@ export const useSettings = create<SettingsState>()((set, get) => ({
   setActiveProvider: (id) => { set({ activeProviderId: id }); scheduleSyncToDb(get()); },
   setActiveImageProvider: (id) => { set({ activeImageProviderId: id }); scheduleSyncToDb(get()); },
   setActiveVideoProvider: (id) => { set({ activeVideoProviderId: id }); scheduleSyncToDb(get()); },
+  setActiveAudioProvider: (id) => { set({ activeAudioProviderId: id }); scheduleSyncToDb(get()); },
+  setCinemaConfig: (config) => { set({ cinemaConfig: { ...get().cinemaConfig, ...config } }); scheduleSyncToDb(get()); },
   updateProvider: (id, patch) => {
     set({ providers: get().providers.map((p) => (p.id === id ? { ...p, ...patch } : p)) });
     scheduleSyncToDb(get());
