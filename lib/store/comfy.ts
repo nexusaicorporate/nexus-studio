@@ -26,7 +26,7 @@ export interface ComfyState {
   providers: ComfyProvider[];
   activeProviderId: string;
   hydrated: boolean;
-  runMode: 'hybrid' | 'cloud';
+  runMode: 'local' | 'hybrid' | 'cloud';
   runModeLocked: boolean;
   cloudPlan: 'standard' | 'creator' | 'pro' | null;
   cloudEnvironment: string;
