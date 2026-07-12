@@ -56,3 +56,685 @@
 [2026-07-11T04:39:41.343Z] Leave this running, then open the ComfyUI gear and click Connect.
 [2026-07-11T04:39:51.361Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
 [2026-07-11T04:40:01.362Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:40:11.379Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:40:21.392Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:40:21.394Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:40:21.647Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:40:21.649Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:40:24.657Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:40:24.658Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:40:34.674Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:40:44.691Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:40:54.691Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:41:04.695Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:41:04.697Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:41:04.957Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:41:04.958Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:41:07.970Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:41:07.971Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:41:17.995Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:41:28.000Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:41:38.015Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:41:48.022Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:41:48.024Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:41:48.187Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:41:48.188Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:41:51.195Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:41:51.196Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:42:01.212Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:42:11.217Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:42:21.218Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:42:31.218Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:42:31.220Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:42:31.428Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:42:31.430Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:42:34.436Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:42:34.437Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:42:44.452Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:42:54.454Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:43:04.454Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:43:14.466Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:43:14.469Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:43:14.644Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:43:14.645Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:43:17.660Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:43:17.661Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:43:27.676Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:43:37.685Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:43:47.694Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:43:57.702Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:43:57.704Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:43:57.859Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:43:57.860Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:44:00.870Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:44:00.874Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:44:10.908Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:44:20.922Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:44:30.937Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:44:40.941Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:44:40.945Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:44:41.134Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:44:41.135Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:44:44.136Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:44:44.137Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:44:54.152Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:45:04.166Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:45:14.167Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:45:24.180Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:45:24.182Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:45:24.361Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:45:24.363Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:45:27.375Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:45:27.376Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:45:37.405Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:45:47.411Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:45:57.417Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:46:07.427Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:46:07.430Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:46:07.617Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:46:07.618Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:46:10.621Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:46:10.622Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:46:20.633Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:46:30.636Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:46:40.647Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:46:50.650Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:46:50.653Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:46:50.850Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:46:50.851Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:46:53.861Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:46:53.862Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:47:03.879Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:47:13.881Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:47:23.894Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:47:33.902Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:47:33.904Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:47:34.070Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:47:34.071Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:47:37.072Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:47:37.073Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:47:47.089Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:47:57.101Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:48:07.109Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:48:17.109Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:48:17.112Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:48:17.290Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:48:17.290Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:48:20.294Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:48:20.295Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:48:30.309Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:48:40.317Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:48:50.332Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:49:00.343Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:49:00.355Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:49:00.587Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:49:00.588Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:49:03.601Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:49:03.602Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:49:13.612Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:49:23.625Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:49:33.635Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:49:43.638Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:49:43.640Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:49:43.822Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:49:43.824Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:49:46.838Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:49:46.839Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:49:56.858Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:50:06.864Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:50:16.865Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:50:26.876Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:50:26.879Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:50:27.047Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:50:27.048Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:50:30.060Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:50:30.061Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:50:40.080Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:50:50.089Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:51:00.091Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:51:10.101Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:51:10.118Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:51:10.561Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:51:10.564Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:51:13.574Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:51:13.580Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:51:23.615Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:51:33.622Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:51:43.627Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:51:53.629Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:51:53.634Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:51:53.748Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:51:53.756Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:51:56.774Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:51:56.778Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:52:06.835Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:52:16.841Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:52:26.858Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:52:36.865Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:52:36.872Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:52:36.968Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:52:36.970Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:52:39.988Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:52:39.999Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:52:50.121Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:53:00.130Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:53:10.138Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:53:20.146Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:53:20.158Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:53:20.233Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:53:20.235Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:53:23.249Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:53:23.260Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:53:33.308Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:53:43.318Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:53:53.322Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:54:03.322Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:54:03.331Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:54:03.423Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:54:03.426Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:54:06.432Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:54:06.437Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:54:16.492Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:54:26.495Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:54:36.492Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:54:46.494Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:54:46.496Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:54:46.536Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:54:46.537Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:54:49.538Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:54:49.539Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:54:59.560Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:55:09.573Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:55:19.573Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:55:29.583Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:55:29.586Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:55:29.747Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:55:29.749Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:55:32.758Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:55:32.759Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:55:42.775Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:55:52.775Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:56:02.781Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:56:12.783Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:56:12.786Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:56:12.971Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:56:12.972Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:56:15.980Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:56:15.981Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:56:26.001Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:56:36.008Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:56:46.019Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:56:56.031Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:56:56.034Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:56:56.221Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:56:56.223Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:56:59.237Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:56:59.238Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:57:09.254Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:57:19.256Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:57:29.261Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:57:39.273Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:57:39.275Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:57:39.454Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:57:39.456Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:57:42.466Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:57:42.467Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:57:52.482Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:58:02.496Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:58:12.504Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:58:22.503Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:58:22.506Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:58:22.669Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:58:22.670Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:58:25.686Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:58:25.687Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:58:35.696Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:58:45.709Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:58:55.712Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:59:05.726Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:59:05.728Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:59:05.903Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:59:05.904Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:59:08.918Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:59:08.919Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T04:59:18.934Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T04:59:28.940Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T04:59:38.951Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T04:59:48.954Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T04:59:48.957Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T04:59:49.132Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T04:59:49.134Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T04:59:52.137Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T04:59:52.138Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:00:02.147Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:00:12.158Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:00:22.162Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:00:32.165Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:00:32.168Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:00:32.454Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:00:32.465Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:00:35.470Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:00:35.471Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:00:45.488Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:00:55.492Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:01:05.497Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:01:15.511Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:01:15.514Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:01:15.705Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:01:15.706Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:01:18.711Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:01:18.712Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:01:28.736Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:01:38.745Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:01:48.749Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:01:58.754Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:01:58.757Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:01:58.941Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:01:58.942Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:02:01.949Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:02:01.950Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:02:11.967Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:02:21.975Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:02:31.989Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:02:41.993Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:02:41.996Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:02:42.194Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:02:42.195Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:02:45.198Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:02:45.199Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:02:55.214Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:03:05.221Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:03:15.230Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:03:25.240Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:03:25.243Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:03:25.413Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:03:25.414Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:03:28.421Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:03:28.422Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:03:38.448Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:03:48.462Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:03:58.473Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:04:08.487Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:04:08.490Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:04:08.671Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:04:08.672Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:04:11.674Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:04:11.675Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:04:21.687Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:04:31.688Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:04:41.702Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:04:51.711Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:04:51.714Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:04:51.911Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:04:51.912Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:04:54.922Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:04:54.923Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:05:04.940Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:05:14.950Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:05:24.957Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:05:34.968Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:05:34.970Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:05:35.156Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:05:35.158Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:05:38.169Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:05:38.171Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:05:48.185Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:05:58.199Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:06:08.209Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:06:18.213Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:06:18.217Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:06:18.404Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:06:18.405Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:06:21.411Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:06:21.412Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:06:31.429Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:06:41.440Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:06:51.442Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:07:01.453Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:07:01.456Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:07:01.646Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:07:01.646Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:07:04.652Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:07:04.652Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:07:14.674Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:07:24.686Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:07:34.699Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:07:44.711Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:07:44.713Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:07:44.862Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:07:44.863Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:07:47.874Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:07:47.875Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:07:57.895Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:08:07.896Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:08:17.911Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:08:27.924Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:08:27.927Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:08:28.099Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:08:28.101Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:08:31.107Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:08:31.109Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:08:41.122Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:08:51.123Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:09:01.131Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:09:11.136Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:09:11.138Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:09:11.296Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:09:11.297Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:09:14.301Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:09:14.303Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:09:24.313Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:09:34.316Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:09:44.325Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:09:54.327Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:09:54.335Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:09:54.534Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:09:54.535Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:09:57.542Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:09:57.543Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:10:07.564Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:10:17.574Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:10:27.589Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:10:37.589Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:10:37.591Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:10:37.778Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:10:37.779Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:10:40.785Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:10:40.786Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:10:50.808Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:11:00.819Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:11:10.829Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:11:20.832Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:11:20.835Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:11:21.022Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:11:21.023Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:11:24.030Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:11:24.031Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:11:34.042Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:11:44.045Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:11:54.045Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:12:04.053Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:12:04.056Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:12:04.264Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:12:04.265Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:12:07.276Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:12:07.277Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:12:17.288Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:12:27.297Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:12:37.304Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:12:47.310Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:12:47.312Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:12:47.497Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:12:47.498Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:12:50.499Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:12:50.501Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:13:00.516Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:13:10.517Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:13:20.526Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:13:30.526Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:13:30.530Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:13:30.694Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:13:30.695Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:13:33.713Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:13:33.714Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:13:43.750Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:13:53.759Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:14:03.765Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:14:13.769Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:14:13.774Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:14:14.000Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:14:14.001Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:14:17.005Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:14:17.008Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:14:27.038Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:14:37.049Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:14:47.051Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:14:57.057Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:14:57.059Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:14:57.208Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:14:57.209Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:15:00.223Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:15:00.224Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:15:10.250Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:15:20.261Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:15:30.275Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:15:40.288Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:15:40.294Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:15:40.493Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:15:40.494Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:15:43.504Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:15:43.505Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:15:53.524Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:16:03.536Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:16:13.550Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:16:23.552Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:16:23.555Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:16:23.721Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:16:23.722Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:16:26.733Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:16:26.738Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:16:36.756Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:16:46.774Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:16:56.768Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:17:06.771Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:17:06.773Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:17:06.929Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:17:06.931Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:17:09.935Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:17:09.936Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:17:19.947Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:17:29.956Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:17:39.964Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:17:49.967Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:17:49.971Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:17:50.164Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:17:50.165Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:17:53.169Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:17:53.170Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:18:03.180Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:18:13.185Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:18:23.199Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:18:33.205Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:18:33.208Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:18:33.390Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:18:33.392Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:18:36.396Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:18:36.398Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:18:46.408Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:18:56.411Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:19:06.414Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:19:16.423Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:19:16.429Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:19:16.652Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:19:16.653Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:19:19.659Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:19:19.660Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:19:29.683Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:19:39.683Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:19:49.697Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:19:59.697Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:19:59.700Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:19:59.857Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:19:59.858Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:20:02.873Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:20:02.873Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:20:12.895Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:20:22.940Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:20:32.947Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:20:42.962Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:20:42.971Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:20:43.163Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:20:43.164Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:20:46.174Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:20:46.175Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:20:56.207Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:21:06.223Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:21:16.251Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:21:26.247Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:21:26.250Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:21:26.415Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:21:26.416Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:21:29.417Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:21:29.418Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:21:39.432Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:21:49.444Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:21:59.445Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:22:09.454Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:22:09.456Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:22:09.642Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:22:09.643Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:22:12.660Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:22:12.661Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:22:22.680Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:22:32.682Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:22:42.690Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:22:52.696Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:22:52.699Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:22:52.901Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:22:52.902Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:22:55.912Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:22:55.914Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:23:05.927Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:23:15.935Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:23:25.946Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:23:35.956Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:23:35.958Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:23:36.129Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:23:36.130Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:23:39.134Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:23:39.135Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:23:49.152Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:23:59.158Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:24:09.163Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:24:19.173Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:24:19.176Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:24:19.356Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:24:19.358Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:24:22.371Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:24:22.373Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:24:32.396Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:24:42.410Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:24:52.425Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:25:02.429Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:25:02.431Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:25:02.593Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:25:02.594Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:25:05.599Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:25:05.601Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:25:15.628Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:25:25.630Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:25:35.639Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:25:45.651Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:25:45.653Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:25:45.794Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:25:45.795Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:25:48.799Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:25:48.800Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:25:58.815Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:26:08.821Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:26:18.821Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:26:28.832Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:26:28.835Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:26:29.002Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:26:29.003Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:26:32.006Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:26:32.007Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:26:42.017Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:26:52.020Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:27:02.028Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:27:12.035Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:27:12.037Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:27:12.234Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:27:12.235Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:27:15.237Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:27:15.238Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:27:25.250Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:27:35.261Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:27:45.272Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:27:55.286Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:27:55.288Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:27:55.500Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:27:55.501Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:27:58.517Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:27:58.518Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:28:08.527Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:28:18.532Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:28:28.546Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:28:38.552Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:28:38.555Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:28:38.751Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:28:38.752Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:28:41.756Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:28:41.757Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:28:51.777Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:29:01.786Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:29:11.791Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:29:21.791Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:29:21.799Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:29:22.087Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:29:22.088Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:29:25.106Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:29:25.107Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:29:35.129Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:29:45.131Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:29:55.132Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:30:05.139Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:30:05.142Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:30:05.328Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:30:05.329Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:30:08.338Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:30:08.341Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:30:18.363Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:30:28.369Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:30:38.383Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:30:48.398Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:30:48.405Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:30:48.458Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:30:48.459Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:30:51.472Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:30:51.473Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:31:01.487Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:31:11.489Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:31:21.492Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:31:31.504Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:31:31.510Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:31:31.716Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:31:31.717Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:31:34.720Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:31:34.721Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:31:44.736Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:31:54.750Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:32:04.751Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T05:32:14.761Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T05:32:14.764Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T05:32:14.950Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T05:32:14.951Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T05:32:17.966Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T05:32:17.967Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T05:32:27.991Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T05:32:37.992Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T05:32:47.996Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T12:24:10.750Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T12:24:10.759Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T12:24:13.102Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T12:24:13.103Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T12:24:16.183Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T12:24:16.184Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T12:24:26.246Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T12:24:36.264Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T12:24:46.266Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T12:24:56.276Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T12:24:56.278Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T12:24:56.359Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T12:24:56.361Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T12:24:59.369Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T12:24:59.370Z] Leave this running, then open the ComfyUI gear and click Connect.
+[2026-07-11T12:25:09.376Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (1/3)
+[2026-07-11T12:25:19.378Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (2/3)
+[2026-07-11T12:25:29.395Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (3/3)
+[2026-07-11T12:25:39.405Z] ComfyUI appears to be frozen (failed 3 health checks in a row). Forcing restart.
+[2026-07-11T12:25:39.407Z] Health check network error: connect ECONNREFUSED 127.0.0.1:8188 (4/3)
+[2026-07-11T12:25:39.669Z] ComfyUI process exited with code null and signal SIGKILL
+[2026-07-11T12:25:39.670Z] Waiting 3 seconds before restarting ComfyUI...
+[2026-07-11T12:25:42.672Z] Starting ComfyUI (CPU, CORS enabled) on http://localhost:8188 ...
+[2026-07-11T12:25:42.673Z] Leave this running, then open the ComfyUI gear and click Connect.
