@@ -129,7 +129,7 @@ export async function stopComfy(): Promise<ComfyLaunchResult> {
 // provider. `model` is the HF id; `secret` (NEXUS_SECRET) + `hfToken` optionally
 // (re)create the shared Modal secret so this is truly one-click.
 export interface ModalDeployArgs {
-  modality: "llm" | "image" | "video";
+  modality: "llm" | "image" | "video" | "audio";
   gpu: string;            // e.g. "L40S", "A10G", "T4"
   gpuCount?: number;      // >1 = tensor-parallel (LLM)
   cpu?: number;           // physical cores
@@ -189,6 +189,7 @@ export const MODAL_APP_NAMES: Record<string, string> = {
   llm: "nexus-llm",
   image: "nexus-image",
   video: "nexus-video",
+  audio: "nexus-audio",
 };
 
 // Rough Modal GPU list prices ($/hr) for cost ESTIMATES only — Modal's billing

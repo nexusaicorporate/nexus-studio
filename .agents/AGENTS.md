@@ -120,6 +120,12 @@ LTX-2.3 generates synchronized video and audio in a single pass. Prompts should 
 - Avoid conflicting light sources. Keep lighting details consistent.
 - Avoid overloaded scenes with too many subjects/actions.
 
-# STRICT RULE
 All work, development, testing, and deployment MUST be done directly on the remote server (IP: 47.236.51.230). Do not execute any local changes, builds, or tests. Always use SSH or remote execution commands to perform work on the server.
+
+## 7. Deployment Synchronization
+When finishing a coding task, you must always follow this strict deployment protocol before telling the user the task is complete:
+1. Sync local code to GitHub (commit and push).
+2. Sync GitHub to the server (pull changes on the production server).
+3. Restart/Rebuild any necessary processes on the server to apply the changes.
+4. Only once all environments are completely synchronized can you declare the task complete.
 

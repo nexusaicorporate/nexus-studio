@@ -17,6 +17,7 @@ const DEPLOY_MODALITIES = [
   { id: "llm", label: "Chat / LLM (vLLM)", ph: "e.g. TheBloke/dolphin-2.6-mistral-7B-AWQ" },
   { id: "image", label: "Image (diffusers)", ph: "e.g. stabilityai/stable-diffusion-xl-base-1.0" },
   { id: "video", label: "Video (LTX)", ph: "e.g. Lightricks/LTX-Video" },
+  { id: "audio", label: "Audio (TTS / FX)", ph: "e.g. parler-tts/parler_tts_mini_v0.1" },
 ] as const;
 
 const PALETTES = ["stitch", "ocean", "forest", "sunset", "rose", "slate", "corporate", "amoled"];
@@ -41,7 +42,7 @@ export default function SettingsPage() {
     if (!deploy.model.trim()) { setDeployMsg({ ok: false, text: "Enter a model id first." }); return; }
     setDeploying(true); setDeployMsg(null);
     const r = await deployModalBackend({
-      modality: deploy.modality as "llm" | "image" | "video",
+      modality: deploy.modality as "llm" | "image" | "video" | "audio",
       gpu: deploy.gpu, gpuCount: deploy.gpuCount, cpu: deploy.cpu,
       ramMb: deploy.ramGb ? deploy.ramGb * 1024 : undefined,
       model: deploy.model.trim(), secret: deploy.secret.trim(), hfToken: deploy.hfToken.trim(),
@@ -54,7 +55,9 @@ export default function SettingsPage() {
         s.setActiveProvider(id);
       } else {
         const id = s.addModalProvider({ name, baseUrl: r.url, apiKey: deploy.secret.trim(), models: [deploy.model.trim()] });
-        if (deploy.modality === "image") s.setActiveImageProvider(id); else s.setActiveVideoProvider(id);
+        if (deploy.modality === "image") s.setActiveImageProvider(id);
+        else if (deploy.modality === "video") s.setActiveVideoProvider(id);
+        else if (deploy.modality === "audio") s.setActiveAudioProvider(id);
       }
       // Remember the config so Start/Stop can redeploy or stop this backend.
       s.setModalDeploy(deploy.modality, {
@@ -73,7 +76,7 @@ export default function SettingsPage() {
     if (!d) return;
     setDeploying(true); setDeployMsg(null);
     const r = await deployModalBackend({
-      modality: modality as "llm" | "image" | "video",
+      modality: modality as "llm" | "image" | "video" | "audio",
       gpu: d.gpu, gpuCount: d.gpuCount, cpu: d.cpu, ramMb: d.ramGb ? d.ramGb * 1024 : undefined,
       model: d.model, secret: d.secret, hfToken: d.hfToken,
     });

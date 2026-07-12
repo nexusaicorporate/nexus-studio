@@ -16,6 +16,7 @@ export async function POST(request: Request) {
     if (modality === "llm" || modality === "chat") { file = "llm_vllm.py"; modelEnv = "LLM_MODEL"; }
     else if (modality === "image") { file = "image_diffusers.py"; modelEnv = "IMAGE_MODEL"; }
     else if (modality === "video") { file = "video_ltx.py"; modelEnv = "VIDEO_MODEL"; }
+    else if (modality === "audio") { file = "audio_tts.py"; modelEnv = "AUDIO_MODEL"; }
     else { return NextResponse.json({ ok: false, message: `Unknown modality '${modality}'`, log: "" }); }
 
     // Resolve the script path (assumes there is a modal/ directory in the project root)
