@@ -135,15 +135,14 @@ success "System packages installed"
 # ========================================================================
 
 info "Installing Python3 + pipx (for Modal CLI reference)..."
-apt-get install -y -qq python3 python3-pip python3-venv
-python3 -m pip install --upgrade pip setuptools wheel -q
+apt-get install -y -qq python3 python3-pip python3-venv pipx
+pipx ensurepath
 
-# Install pipx and modal (optional; used for GPU backend)
-python3 -m pip install pipx -q 2>/dev/null || true
+# Install modal (optional; used for GPU backend)
 if command -v pipx &> /dev/null; then
-  pipx install modal -q 2>/dev/null || warn "Modal installation via pipx failed; you can install manually later"
+  sudo -u "${SUDO_USER:-root}" pipx install modal -q 2>/dev/null || pipx install modal -q 2>/dev/null || warn "Modal installation via pipx failed"
 else
-  warn "pipx not available; Modal CLI skipped. Install manually with: pipx install modal"
+  warn "pipx not available; Modal CLI skipped"
 fi
 
 success "Python3 environment ready"
@@ -156,7 +155,7 @@ info "Installing Node.js 20 LTS + npm + PM2..."
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash - > /dev/null 2>&1
 apt-get install -y -qq nodejs
 
-npm install -g npm@latest pm2 -q
+npm install -g pm2 -q
 pm2 update -s 2>/dev/null || true
 
 success "Node.js $(node -v) + npm $(npm -v) installed"

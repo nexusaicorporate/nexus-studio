@@ -1,7 +1,7 @@
 # Nexus AI Studio — Handoff Document
 
-**Date**: July 8, 2026  
-**Status**: Ready for Launch (Week 1)  
+**Date**: July 18, 2026  
+**Status**: Deployed & Ready on New Production Server  
 **Owner**: Christopher Scannell (CEO)  
 **Handoff to**: Launch Team / Investors / Next Developer
 
@@ -56,14 +56,16 @@ All materials are in `/srv/nexus-studio/` and ready for presentation/launch.
 
 ---
 
-## ✅ System Status (July 8, 2026, 10 AM EDT)
+## ✅ System Status (July 18, 2026, 4 PM EDT)
 
 ### Infrastructure
-- ✓ Application running: http://47.236.51.230:3000
-- ✓ Database: PostgreSQL + Prisma configured
+- ✓ Application running: https://studio.nexusaigear.com (Local port 3000) on new production server (3.137.90.247)
+- ✓ Database: PostgreSQL + Prisma configured on local port 5432
 - ✓ Auth: NextAuth + credentials working
 - ✓ Features: All 7 gears operational (Chat, Image, Video, Cinema, Character, UGC, ComfyUI)
-- ✓ GPU backends: Modal configured
+- ✓ Local ComfyUI: running on port 8188 via PM2 with CPU execution and all required custom nodes
+- ✓ PM2 Monitoring: `nexus-web` and `nexus-comfyui` running and monitored
+- ✓ GPU backends: Modal configured for remote scaling
 - ✓ SSH/SFTP: Configured for ubuntu user (password auth enabled)
 - ✓ CrushFTP: Removed and disabled
 
@@ -111,7 +113,7 @@ All materials are in `/srv/nexus-studio/` and ready for presentation/launch.
 | **Fri** | Monitoring, engagement, report | Founder | Pending |
 
 **Success Criteria (Friday EOD):**
-- ✓ App live at https://nexusaigear.com:3000
+- ✓ App live at https://studio.nexusaigear.com (proxied to port 3000)
 - ✓ 99.5% uptime verified
 - ✓ 50+ free signups
 - ✓ 2-5 Pro conversions
@@ -253,9 +255,9 @@ This package represents **3 days of work** to prepare for:
 
 ## Sign-Off
 
-**Prepared by**: Claude Code  
-**Date**: July 8, 2026  
-**Status**: ✅ COMPLETE & READY FOR LAUNCH
+**Prepared by**: Antigravity (Google DeepMind)  
+**Date**: July 18, 2026  
+**Status**: ✅ COMPLETE & READY FOR PRODUCTION ON NEW SERVER
 
 ---
 

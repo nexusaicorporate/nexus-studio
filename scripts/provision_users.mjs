@@ -10,9 +10,12 @@
 // exactly like the Stripe webhook writes them. There is no `addons` column.
 
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 import bcrypt from "bcryptjs";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/nexus_studio";
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "cscannell@nexusaigear.com";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;

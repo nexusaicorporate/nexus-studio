@@ -11,13 +11,16 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 const root = path.resolve("src-tauri/resources/comfyui");
-const py = path.join(root, "python_embeded", "python.exe");
+const isWin = process.platform === "win32";
+const py = isWin
+  ? path.join(root, "python_embeded", "python.exe")
+  : path.join(root, "venv", "bin", "python");
 const mainPy = path.join(root, "ComfyUI", "main.py");
 
 if (!existsSync(py) || !existsSync(mainPy)) {
   console.error(
     "Bundled ComfyUI not found at src-tauri/resources/comfyui.\n" +
-    "Run `npm run prepare:comfyui` first to download/build it."
+    "Run `bash scripts/setup_comfyui_linux.sh` on Linux first to set up, or `npm run prepare:comfyui` on Windows."
   );
   process.exit(1);
 }

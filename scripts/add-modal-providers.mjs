@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
-const prisma = new PrismaClient();
+const connectionString = process.env.DATABASE_URL || "postgresql://postgres:postgres@localhost:5432/nexus_studio";
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
 
 const NEXUS_SECRET = "ZMCw486!75276";
 
