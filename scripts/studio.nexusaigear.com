@@ -1,7 +1,7 @@
 server {
     listen 80;
     listen [::]:80;
-    server_name studio.nexusaigear.com;
+    server_name studio.nexusaigear.com 3.137.90.247;
 
     # ComfyUI Proxy
     include /etc/nginx/comfyui-proxy.conf;
