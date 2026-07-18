@@ -59,7 +59,7 @@ All materials are in `/srv/nexus-studio/` and ready for presentation/launch.
 ## ✅ System Status (July 18, 2026, 4 PM EDT)
 
 ### Infrastructure
-- ✓ Application running: https://studio.nexusaigear.com (Local port 3000) on new production server (3.137.90.247)
+- ✓ Application running: http://3.137.90.247 or https://studio.nexusaigear.com (once DNS propagates) on new production server (3.137.90.247)
 - ✓ Database: PostgreSQL + Prisma configured on local port 5432
 - ✓ Auth: NextAuth + credentials working
 - ✓ Features: All 7 gears operational (Chat, Image, Video, Cinema, Character, UGC, ComfyUI)
