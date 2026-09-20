@@ -11,7 +11,6 @@ import { DirectorBrain } from "@/lib/services/director-brain";
 import { useCinema } from "@/lib/store/cinema";
 import { useLibrary, newId } from "@/lib/store/library";
 import { useSettings } from "@/lib/store/settings";
-import { chat, generateVideo } from "@/lib/providers";
 import { characterPrompt } from "@/lib/character";
 import { modelsFor } from "@/lib/model-catalog";
 import type { CinemaProject, CinemaScene, PromptItem, Character, Ingredient } from "@/lib/types";
@@ -661,9 +660,9 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
 
               {/* Model Dropdown */}
               {(() => {
-                const activeId = generateMode === "video" ? settings.activeVideoProviderId : settings.activeImageProviderId;
-                const activeProvider = settings.providers.find((p: any) => p.id === activeId);
-                const providerModels = activeProvider?.models || [];
+                const cat = generateMode === "image" ? "t2i" : generateMode === "video" ? "t2v" : null;
+                const opts = cat ? [...modelsFor(cat as any), ...(generateMode === "video" ? modelsFor("i2v") : [])].map((m) => ({ id: m.id, label: m.label })) : [];
+                if (!opts.some((m) => m.id === selectedModelId)) opts.unshift({ id: selectedModelId, label: selectedModelId });
                 return (
                   <select 
                     className="w-full bg-gradient-to-b from-[#2c2c2c] to-[#161616] border border-black shadow-[inset_0_2px_3px_rgba(255,255,255,0.2),inset_0_-4px_10px_rgba(0,0,0,0.8),0_20px_50px_rgba(0,0,0,0.9)] rounded-xl py-3 px-4 text-sm font-medium mb-3 outline-none"
@@ -673,8 +672,8 @@ function CinemaWorkspace({ project, onBack, saveProject, library, settings }: { 
                     {generateMode === "audio" ? (
                       <option value="suno-v3.5">🎵 Suno v3.5</option>
                     ) : (
-                      providerModels.map((m: string) => (
-                        <option key={m} value={m}>{m}</option>
+                      opts.map((m) => (
+                        <option key={m.id} value={m.id}>{m.label}</option>
                       ))
                     )}
                   </select>

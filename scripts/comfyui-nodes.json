@@ -4,7 +4,7 @@
     {
       "name": "comfyui-nexus-cloud",
       "local": "comfyui-nodes/comfyui-nexus-cloud",
-      "note": "OUR cloud-GPU node. Provider dropdown (Modal, Beam, Cerebrium, RunPod, Vast) in the sidebar; routes /prompt to the active provider with models on a persistent volume."
+      "note": "OUR cloud-GPU node — the single Nexus Cloud backend. Deployable to Modal or Beam (one app per provider serving /prompt, /v1/chat/completions, /generate/image, /generate/video behind the NEXUS_SECRET); models live on a persistent volume. Studio discovers it via /nexus-cloud/status."
     },
     {
       "name": "ComfyUI-Manager",

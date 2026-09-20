@@ -1,17 +1,17 @@
 # Nexus Cloud — provider adapter interface
 #
-# Every cloud-GPU provider (Modal, Beam, Cerebrium, RunPod, Vast, …) is one
-# adapter implementing THIS interface. The sidebar UI and the /prompt router
-# never know which provider is active — they only talk to `base.ProviderAdapter`.
+# Every cloud-GPU provider (Modal, Beam, …) is one adapter implementing THIS
+# interface. The sidebar UI, the account store and the /prompt router never know
+# which provider is active — they only talk to `base.ProviderAdapter`.
 #
 # Adding a provider = adding one file in this folder that subclasses
 # ProviderAdapter and is registered in REGISTRY (see __init__.py of this pkg).
 #
 # Two internal families exist behind the same interface:
-#   - SDK-deploy   (Modal, Beam, Cerebrium): provision() uses the provider's
-#                  Python SDK to deploy an app + persistent Volume + served ComfyUI.
-#   - API-provision (RunPod, Vast): provision() calls the provider's REST/GraphQL
-#                  to launch a prebuilt ComfyUI worker image + Network Volume.
+#   - SDK-deploy   (Modal, Beam): provision() uses the provider's Python SDK
+#                  to deploy an app + persistent Volume + served ComfyUI.
+#   - API-provision (future: RunPod, Vast): provision() calls the provider's
+#                  REST/GraphQL to launch a prebuilt ComfyUI worker image.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -66,12 +66,13 @@ class DeploySpec:
     ram_gb: int = 48
     volume_name: str = "nexus-models"
     volume_size_gb: int = 200
+    env: dict[str, Any] = field(default_factory=dict)  # extra container env (model ids, …)
 
 
 @dataclass
 class Endpoint:
     """A running provider endpoint the router/Studios can call."""
-    base_url: str                 # e.g. https://…modal.run  (ComfyUI or model API)
+    base_url: str                 # e.g. https://…modal.run  (ComfyUI web)
     secret: str = ""              # Bearer the app sends
     kind: str = "comfyui"         # "comfyui" | "model-api"
     meta: dict[str, Any] = field(default_factory=dict)
@@ -117,9 +118,11 @@ class ProviderAdapter:
     def status(self) -> Status:
         raise NotImplementedAdapter(self.spec.label)
 
-    def run(self, payload: dict[str, Any]) -> dict[str, Any]:
-        """Execute a ComfyUI prompt graph (or a studio gen request) on the
-        active endpoint and return the result."""
+    def run(self, workflow: dict[str, Any], input_images: dict[str, str] | None = None) -> dict[str, Any]:
+        """Execute a ComfyUI prompt graph on the active endpoint. Input images
+        for LoadImage nodes are sent as base64 and staged on the container.
+        Returns {"images": [{filename,data,node_id}], "videos": […]} so the
+        local node can replay the finished outputs into ComfyUI's UI."""
         raise NotImplementedAdapter(self.spec.label)
 
     def download_model(self, url: str, folder: str,

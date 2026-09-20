@@ -16,9 +16,8 @@ import UpgradePrompt from "@/components/UpgradePrompt";
 export default function AnalyzePage() {
   const mounted = useMounted();
   const settings = useSettings();
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId) || settings.providers[0];
   const { plan } = useAuth();
-  const model = provider?.selectedModel || provider?.models?.[0] || "openai";
+  const model = "Nexus Cloud";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState(""); 
   const [attach, setAttach] = useState<string | null>(null); 
@@ -52,7 +51,6 @@ export default function AnalyzePage() {
     let responseText = "";
     try {
       await chat({
-        provider,
         model,
         system: taskSystem,
         uncensored: settings.uncensored,
@@ -77,7 +75,7 @@ export default function AnalyzePage() {
   return (
     <Page 
       title="Analyze" 
-      subtitle={`Image & Video analysis · ${provider?.name} · ${model}`} 
+      subtitle={`Image & Video analysis · ${model}`} 
       actions={
         <>
           <PromptPicker taskKey="analyze" label="Analysis prompt" />
@@ -97,7 +95,7 @@ export default function AnalyzePage() {
                 <div>
                   <Bot size={40} className="mx-auto mb-3 opacity-50" />
                   <p className="max-w-md">
-                    Upload an image or video to caption or analyze it. Uses your active vision/multimodal provider, model and analysis prompt from Settings. (Pick a multimodal provider like GPT-4o, Claude, Gemini, or a local multimodal model that supports vision/video analysis.)
+                    Upload an image or video to caption or analyze it. Connections go through the Nexus Cloud backend (Settings → Comfy gear).
                   </p>
                 </div>
               </div>

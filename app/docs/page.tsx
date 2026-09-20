@@ -101,7 +101,7 @@ const SECTIONS: Section[] = [
       <>
         <H2>Nexus AI Studio</H2>
         <Lede>
-          A multi-provider AI prompt assistant and generative studio. It runs as a web app, a static site,
+          An AI prompt assistant and generative studio. It runs as a web app, a static site,
           or a native desktop app, and stores everything locally on your machine — no account, no backend.
         </Lede>
         <P>
@@ -112,16 +112,16 @@ const SECTIONS: Section[] = [
         <H3>The Gears</H3>
         <P>Every screen in the sidebar is a "Gear", grouped into four families:</P>
         <KV rows={[
-          ["Workspace Gears", <>Chat &amp; Analyze (multi-provider chat + image captioning) and Bulk Analyze (batch caption many files).</>],
+          ["Workspace Gears", <>Chat &amp; Analyze (chat + image captioning via your Nexus Cloud backend) and Bulk Analyze (batch caption many files).</>],
           ["Studio Gears", <>Character, Image, Video, Workflow and Comfy Hub — the generative production tools.</>],
           ["Library Gears", <>Prompts, Environments, Ingredients and Recipes — reusable building blocks with full CRUD + import/export.</>],
-          ["System Gears", <>Settings / Control Panel — providers, system prompts, appearance and ComfyUI configuration.</>],
+          ["System Gears", <>Settings / Control Panel — appearance, system prompts and ComfyUI configuration.</>],
         ]} />
         <H3>What makes it different</H3>
         <UL items={[
-          <>Works with hosted APIs <i>and</i> local/uncensored model servers (Ollama, LM Studio, KoboldCpp) interchangeably.</>,
-          <>A free, no-key route (Pollinations) for text and image generation out of the box.</>,
-          <>Persona consistency tooling: lock a Character into any generation, and optionally train a real LoRA via FAL.ai.</>,
+          <>A single unified compute layer: every Gear routes through the <b>Nexus Cloud</b> backend — your local ComfyUI or a connected cloud account (one deployed app per provider serving prompt, chat, image and video endpoints).</>,
+          <>No per-vendor API keys. The studio talks to one endpoint, secured with your own <Code>NEXUS_SECRET</Code>.</>,
+          <>Persona consistency tooling: lock a Character into any generation using reference images through the Nexus Cloud backend.</>,
           <>A visual, PromptFill-style recipe builder that turns <Code>{"{{variables}}"}</Code> into clickable option chips.</>,
           <>Everything stays on your device; per-library Export/Import gives you portable backups.</>,
         ]} />
@@ -155,22 +155,22 @@ docker run -p 3000:3000 nexus-ai-studio`}</Block>
         <Block>{`npm run desktop:dev     # hot-reload desktop window
 npm run desktop:build   # bundles installers into src-tauri/target/release/bundle/`}</Block>
         <P>
-          The desktop app has no browser CORS sandbox, so keyed providers and local model servers work without restriction —
-          it's the best target for local/uncensored models.
+          The desktop app has no browser CORS sandbox, so the bundled local ComfyUI and your Nexus Cloud connection work without restriction —
+          it's the best target for local and uncensored models.
         </P>
       </>
     ),
   },
   {
     id: "concepts", label: "Core Concepts", group: "Getting Started", icon: Compass,
-    keywords: "provider model system prompt task uncensored persistence",
+    keywords: "nexus cloud model system prompt task uncensored persistence",
     body: (
       <>
         <H2>Core Concepts</H2>
         <Lede>A handful of ideas thread through every Gear. Understanding these makes the rest obvious.</Lede>
         <KV rows={[
-          ["Active provider", <>The provider chosen in Settings is the one every chat/analyze/enhance action uses. The current provider &amp; model are shown in the sidebar footer.</>],
-          ["Model", <>Each provider carries a list of models and a selected model. Many providers can fetch their live model list on demand.</>],
+          ["Nexus Cloud", <>The single backend every chat/analyze/enhance/generate action uses. It defaults to your local ComfyUI; connecting a cloud account (Settings → Comfy → Nexus Cloud) switches all Gears to it. Status shows in the sidebar footer.</>],
+          ["Model", <>The active model comes from the Nexus Cloud backend's catalog. The backend exposes its available models per modality, and the studio picks from that list on demand.</>],
           ["System prompt", <>Steers how the model responds. It can be set globally, picked per task, or chosen automatically based on the task's output type.</>],
           ["Task", <>Each surface (chat, image, video, bulk) is a named task. Tasks can each remember their own preferred system prompt via the gear button.</>],
           ["Uncensored mode", <>A toggle that prepends an adult-creator preamble to the system prompt for unrestricted creative/captioning work on capable models.</>],
@@ -190,10 +190,10 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     body: (
       <>
         <H2>Chat &amp; Analyze Gear</H2>
-        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your active provider, model and system prompt.</Lede>
+        <Lede>A streaming chat surface that doubles as an image analyzer/captioner using your Nexus Cloud backend, its active model, and your system prompt.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
-          <>Pick your provider/model in Settings (shown in the sidebar footer).</>,
+          <>Make sure a Nexus Cloud backend is connected — locally the app manages its own ComfyUI; cloud accounts are added in Settings → Comfy → Nexus Cloud (status shows in the sidebar footer).</>,
           <>Optionally choose an analysis system prompt with the gear button in the header.</>,
           <>Type a message, or attach one or more images with the image button to caption/analyze them.</>,
           <>Press Enter to send (Shift+Enter for a newline). Responses stream in token-by-token.</>,
@@ -205,9 +205,9 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         </P>
         <H3>Engineering notes</H3>
         <UL items={[
-          <>Images are read as base64 data URLs and sent inline; vision support depends on the provider/model.</>,
+          <>Images are read as base64 data URLs and sent inline; vision support depends on the active backend model.</>,
           <>The system prompt is resolved by <Code>useTaskSystemPrompt("chat", …)</Code>, which passes an <Code>I2T</Code> mode when images are attached and <Code>T2T</Code> otherwise.</>,
-          <>Streaming is handled per-provider in <Code>lib/providers.ts → chat()</Code> via <Code>onChunk</Code> callbacks.</>,
+          <>Streaming is handled in <Code>lib/nexus-cloud.ts → chat()</Code> (OpenAI-compatible SSE) via <Code>onChunk</Code> callbacks.</>,
         ]} />
       </>
     ),
@@ -228,7 +228,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           <>Use "Download all" to get one combined <Code>bulk-prompts.txt</Code>, or copy/save individual rows.</>,
         ]} />
         <Note>
-          Video files only caption on video-capable providers (e.g. Google Gemini). In the web build, the <Code>.txt</Code> files
+          Video captioning requires a video-capable model on the connected Nexus Cloud backend. In the web build, the <Code>.txt</Code> files
           download; a future desktop update can write them straight into the source folder.
         </Note>
         <H3>Engineering notes</H3>
@@ -243,18 +243,18 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   // ===================== STUDIO =====================
   {
     id: "character", label: "Character Gear", group: "Studio Gears", icon: User,
-    keywords: "character persona lora fal training x-ray nsfw consistency trigger word",
+    keywords: "character persona x-ray nsfw consistency trigger word reference images",
     body: (
       <>
         <H2>Character Gear</H2>
-        <Lede>Create, store and reuse consistent personas. Lock an identity anchor so every generation stays on-model, train a real LoRA, or run a psychological X-Ray.</Lede>
+        <Lede>Create, store and reuse consistent personas. Lock an identity anchor so every generation stays on-model — reference images keep generations consistent through the Nexus Cloud backend — or run a psychological X-Ray.</Lede>
         <H3>Building a character</H3>
         <P>The editor captures an identity anchor plus structured attributes (each dropdown supports adding your own custom options):</P>
         <UL items={[
           <><b>Identity</b> — Name, Age (18+), Trigger Word / Token, Persona &amp; Bio.</>,
           <><b>Physical</b> — Hair Color, Body Shape, Eye Color, Skin Tone, Height, Body Build.</>,
           <><b>Anchors</b> — Locked Appearance (face features), Body attributes, Default outfits, Style Notes, Negative prompts.</>,
-          <><b>Reference images</b> — used for consistency and as the LoRA training set.</>,
+          <><b>Reference images</b> — used for character consistency across generations.</>,
           <><b>NSFW attributes</b> (only when 18+ is enabled) — an extended adult attribute set that is appended to the generated prompt.</>,
         ]} />
         <P>
@@ -266,14 +266,10 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           <>"Generate in Studio" sends the character to the Image Gear with its prompt pre-filled and persona locked.</>,
           <>In the Image Gear you can also pick "Lock to character" to keep the persona consistent across prompts.</>,
         ]} />
-        <H3>Train a LoRA (FAL.ai)</H3>
-        <P>The chip/button on each card opens the LoRA trainer, which runs <Code>fal-ai/flux-lora-fast-training</Code>:</P>
-        <Steps items={[
-          <>Add your FAL.ai API key (Settings → Providers, or in the trainer dialog).</>,
-          <>Provide at least 4 reference images (6–12 recommended) on the character.</>,
-          <>Set a trigger word and training steps, then start — the app zips the images, uploads them, submits the job and streams logs.</>,
-          <>State is tracked as <Code>none / training / completed / failed</Code>; on success you can download the <Code>.safetensors</Code> file. In-progress jobs resume polling when you reopen the dialog.</>,
-        ]} />
+        <H3>LoRA training &amp; consistency</H3>
+        <P>Standalone LoRA training is not available in this build. Character consistency is handled by the Nexus Cloud backend: the
+        reference images on a character are used directly by the Image and Video Gears to keep generations on-model — no training step or
+        extra API key required.</P>
         <H3>Character X-Ray</H3>
         <P>
           A creative profiling tool that asks the active model to return a structured psychological reading of the persona as
@@ -287,7 +283,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   },
   {
     id: "image", label: "Image Gear", group: "Studio Gears", icon: ImageIcon,
-    keywords: "image studio text-to-image image-to-image flux pollinations openai seed ratio enhance",
+    keywords: "image studio text-to-image image-to-image seed ratio enhance nexus cloud",
     body: (
       <>
         <H2>Image Gear</H2>
@@ -300,14 +296,14 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           <>Pick an aspect ratio (1:1, 16:9, 9:16, 4:5, 3:2), a model, and a seed (dice = randomize).</>,
           <>Generate. Download the result, "Use as reference" to feed it back into i2i, or Regenerate.</>,
         ]} />
-        <H3>Providers &amp; models</H3>
+        <H3>Backend &amp; models</H3>
         <KV rows={[
-          ["Free route", <>Pollinations <Code>image.pollinations.ai</Code> needs no key. Models: <Code>flux</Code>, <Code>flux-realism</Code>, <Code>flux-anime</Code>, <Code>turbo</Code>.</>],
-          ["OpenAI route", <>When the OpenAI provider has a key set, generation uses <Code>/images/generations</Code> (e.g. <Code>gpt-image-1</Code>).</>],
+          ["Nexus Cloud route", <>Every generation is sent to your connected Nexus Cloud backend (<Code>POST /generate/image</Code>) behind the <Code>NEXUS_SECRET</Code>. The model list comes from the backend's catalog.</>],
+          ["Local ComfyUI", <>When no cloud account is connected, the same endpoint is served by the app's locally managed ComfyUI installation.</>],
         ]} />
         <H3>Engineering notes</H3>
         <UL items={[
-          <>Generation lives in <Code>lib/providers.ts → generateImage()</Code>; the free path builds a deterministic Pollinations URL from prompt + size + seed + model.</>,
+          <>Generation routes through <Code>lib/nexus-cloud.ts → generateImage()</Code> to the Nexus Cloud endpoint (<Code>{"{prompt, negative_prompt, width, height, seed, image, steps, strength}"}</Code>).</>,
           <>Every result is stored in the local <Code>assets</Code> library (capped at 200) with its prompt and metadata, and shown under "Recent generations".</>,
           <>The page reads <Code>?prompt=</Code> and <Code>?character=</Code> query params, so Prompts, Recipes and Characters can deep-link into it.</>,
         ]} />
@@ -320,7 +316,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     body: (
       <>
         <H2>Video Gear</H2>
-        <Lede>A cinematic spec builder and renderer for Text/Image/Reference/Video → Video, with create · edit · extend operations. Bundled with direct support for local APIs, cloud GPUs, and optimized LTX engines.</Lede>
+        <Lede>A cinematic spec builder and renderer for Text/Image/Reference/Video → Video, with create · edit · extend operations. Rendering runs on your Nexus Cloud backend (local ComfyUI or a connected cloud account) with optimized LTX engines.</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Pick an input mode: <b>Text → Video</b>, <b>Image → Video</b>, <b>Reference → Video</b> or <b>Video → Video</b>.</>,
@@ -332,7 +328,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
         <H3>Optimized LTX-2.3 Engine</H3>
         <P>
           The Video Gear integrates the optimized backend pipeline from <Code>LTX2.3-Multifunctional</Code> directly. 
-          When rendering via the cloud GPU (Modal), it runs an FP8 quantized transformer which drops VRAM requirements 
+          When rendering via the Nexus Cloud backend, it runs an FP8 quantized transformer which drops VRAM requirements 
           down to 24GB, accelerating launch times and allowing runs on cheaper hardware tiers.
         </P>
         <H3>JSON enhance</H3>
@@ -403,24 +399,23 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   },
   {
     id: "workflow", label: "Workflow Gear", group: "Studio Gears", icon: Layers,
-    keywords: "workflow comfyui api json parse nodes canvas execute local hybrid cloud websocket",
+    keywords: "workflow comfyui api json parse nodes canvas execute local nexus cloud websocket",
     body: (
       <>
         <H2>Workflow Gear</H2>
-        <Lede>Import a ComfyUI API-format workflow, edit its key inputs through a form or canvas, then execute it locally, via hybrid GPU, or in the cloud.</Lede>
+        <Lede>Import a ComfyUI API-format workflow, edit its key inputs through a form or canvas, then execute it against your local ComfyUI (or the connected Nexus Cloud backend).</Lede>
         <H3>How to use it</H3>
         <Steps items={[
           <>Paste or upload a ComfyUI <b>API-format</b> workflow JSON (or load a built-in one from the Comfy Hub).</>,
           <>The parser walks every node and surfaces editable inputs — prompt text, seed, steps and image fields — with the node title.</>,
           <>Switch between the <b>Form</b> and <b>Canvas</b> tabs to edit values.</>,
-          <>Run it. The active ComfyUI provider/run-mode (from Settings) determines where execution is sent.</>,
+          <>Run it. Execution goes to your local ComfyUI over WebSocket; when a Nexus Cloud account is connected (Settings → Comfy → Nexus Cloud), it is used instead.</>,
           <>Save the workflow to your local repository for reuse.</>,
         ]} />
         <H3>Execution paths</H3>
         <KV rows={[
-          ["Local", <>Connects to a local ComfyUI instance (default <Code>http://localhost:8188</Code>) and streams progress over WebSocket. Falls back to a simulated run if offline or CORS-blocked.</>],
-          ["Hybrid", <>Offloads tensors to a remote GPU via the <Code>nathannlu/comfyui-cloud</Code> custom node, configured in Settings.</>],
-          ["Cloud", <>Targets a configured cloud ComfyUI API provider.</>],
+          ["Local", <>Connects to the app-managed local ComfyUI instance (default <Code>http://localhost:8188</Code>) and streams progress over WebSocket. Falls back to a simulated run if offline or CORS-blocked.</>],
+          ["Nexus Cloud", <>When a cloud account is connected, execution targets the deployed backend (<Code>/prompt</Code>) behind the <Code>NEXUS_SECRET</Code> — one app per provider, with a persistent model volume.</>],
         ]} />
         <H3>Model mapping</H3>
         <P>
@@ -432,20 +427,20 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
   },
   {
     id: "comfy-hub", label: "Comfy Hub Gear", group: "Studio Gears", icon: Sparkles,
-    keywords: "comfy hub workflow library api docs run mode environment provision",
+    keywords: "comfy hub workflow library api docs runtime environment provision",
     body: (
       <>
         <H2>Comfy Hub Gear</H2>
-        <Lede>Provision execution environments, browse a built-in library of ready-made workflow JSON configs, and read the ComfyUI API integration docs.</Lede>
+        <Lede>Manage your ComfyUI runtime (launch, provision, repair), browse a built-in library of ready-made workflow JSON configs, and read the ComfyUI API integration docs.</Lede>
         <H3>Tabs</H3>
         <KV rows={[
           ["Hub", <>A categorized gallery of built-in workflows (Image, Video, ControlNet, Flux, Utilities) with difficulty, node count and author. Open one to send it into the Workflow Gear.</>],
-          ["Docs", <>In-context explanation of running ComfyUI as a headless JSON execution engine, the WebSocket message shapes (<Code>executing</Code>, <Code>executed</Code>), and the hybrid cloud node setup.</>],
+          ["Docs", <>In-context explanation of running ComfyUI as a headless JSON execution engine, the WebSocket message shapes (<Code>executing</Code>, <Code>executed</Code>), and the Nexus Cloud plugin.</>],
         ]} />
-        <H3>Run modes</H3>
+        <H3>Runtime</H3>
         <P>
-          A startup resource dialog lets you choose <b>local</b>, <b>hybrid</b> or <b>cloud</b> execution; the choice can be locked so it
-          won't prompt again. Cloud plans and environments are configurable in Settings → ComfyUI API Settings.
+          On first run the Comfy gear provisions the managed local ComfyUI (GPU-type gate, then launch). Adding a Nexus Cloud account in
+          Settings → Comfy → Nexus Cloud connects cloud compute — the studio then routes through that backend.
         </P>
       </>
     ),
@@ -548,35 +543,27 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
 
   // ===================== SYSTEM =====================
   {
-    id: "settings", label: "Settings & Providers", group: "System Gears", icon: Settings,
-    keywords: "settings providers models api key custom openai compatible fal uncensored fetch",
+    id: "settings", label: "Settings", group: "System Gears", icon: Settings,
+    keywords: "settings appearance comfy nexus cloud model system prompt uncensored",
     body: (
       <>
-        <H2>Settings &amp; Providers</H2>
-        <Lede>The control panel has four tabs: Providers &amp; Models, System Prompt, Appearance, and ComfyUI API Settings.</Lede>
-        <H3>Built-in providers</H3>
-        <KV rows={[
-          ["Free (Pollinations)", "No key needed — default provider for text & image."],
-          ["Ollama / LM Studio / KoboldCpp", "Local, uncensored-capable servers (localhost). OpenAI-compatible or native."],
-          ["OpenAI / Anthropic / Google Gemini", "Hosted APIs — add your key; streaming supported for each."],
-          ["OpenRouter / Groq", "OpenAI-compatible aggregators (hidden by default; toggle visible)."],
-          ["Custom", "Add any OpenAI-compatible endpoint with a name, base URL and optional key."],
-        ]} />
-        <H3>How to configure a provider</H3>
-        <Steps items={[
-          <>Open the provider card; set its Base URL and API Key (Pollinations/Ollama need none).</>,
-          <>Click refresh to fetch its live model list, then pick a selected model.</>,
-          <>Toggle visibility to show/hide it in the active-provider switcher; set it active to use it everywhere.</>,
-          <>Add the <b>FAL.ai key</b> here to enable Character LoRA training.</>,
-        ]} />
+        <H2>Settings</H2>
+        <Lede>The control panel has two tabs: <b>Appearance</b> (theme, palettes, library data) and <b>Comfy</b> (ComfyUI runtime, GPU type, extra model paths, CLI args, API keys for Civitai/Hugging Face/Tavily, custom nodes, model mappings and workflows).</Lede>
+        <H3>Nexus Cloud compute</H3>
+        <P>
+          There are no per-vendor provider configs or API keys to manage. All chat, image and video generation routes through one backend:
+          the <b>Nexus Cloud</b> plugin (<Code>comfyui-nexus-cloud</Code>). Locally the app manages its own ComfyUI; to use cloud GPUs you
+          deploy the plugin to your provider (Modal / Beam / Cerebrium / RunPod / Vast) and connect it in Settings → Comfy → Nexus Cloud.
+          The connection is secured with your <Code>NEXUS_SECRET</Code>.
+        </P>
         <H3>Uncensored mode</H3>
         <P>
           When on, an adult-creator preamble is prepended to the system prompt for unrestricted creative/captioning output on capable
-          (typically local) models. Hosted providers still enforce their own policies.
+          models — typically local ones running in the managed ComfyUI.
         </P>
         <H3>Engineering notes</H3>
         <UL items={[
-          <>Model fetching is provider-aware in <Code>lib/providers.ts → fetchModels()</Code> (Ollama <Code>/api/tags</Code>, Google <Code>/v1beta/models</Code>, OpenAI-style <Code>/models</Code>, Pollinations model list).</>,
+          <>Model lists come from the backend's <Code>GET /v1/models</Code> via <Code>lib/nexus-cloud.ts → fetchModels()</Code>; the local catalog in <Code>lib/model-catalog.ts</Code> powers the UI.</>,
           <>Settings persist via a Zustand store with <Code>localStorage</Code> (<Code>nexus-settings</Code>).</>,
         ]} />
       </>
@@ -627,15 +614,15 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     ),
   },
   {
-    id: "comfy-settings", label: "ComfyUI Settings", group: "System Gears", icon: Server,
-    keywords: "comfyui settings providers custom nodes model mappings civitai huggingface hybrid run mode",
+    id: "comfy-settings", label: "Comfy Settings", group: "System Gears", icon: Server,
+    keywords: "comfyui settings runtime custom nodes model mappings civitai huggingface nexus cloud",
     body: (
       <>
-        <H2>ComfyUI API Settings</H2>
-        <Lede>Configure where and how ComfyUI workflows execute, plus the nodes and models they depend on.</Lede>
+        <H2>Comfy Settings</H2>
+        <Lede>Configure the local ComfyUI runtime, the Nexus Cloud connection, and the nodes and models the Gears depend on.</Lede>
         <H3>Sections</H3>
         <UL items={[
-          <><b>Execution &amp; Resource Mode</b> — choose local, hybrid, cloud, or the <b>Modal Serverless Backend</b> (<Code>comfyui-modal</Code>), and optionally lock the choice.</>,
+          <><b>Device &amp; Compute</b> — choose your local GPU type and toggle CLI startup arguments. The <b>Nexus Cloud</b> connect area deploys/connects the <Code>comfyui-nexus-cloud</Code> plugin backend for cloud GPU execution.</>,
           <><b>Hardware &amp; CLI Options</b> — configure GPU type and toggle <b>CLI Startup Arguments</b> like <Code>--highvram</Code>, <Code>--lowvram</Code>, and custom flags.</>,
           <><b>Extra Model Locations</b> — add absolute paths to external drives containing your models (e.g., <Code>D:\AI\Models</Code>) to be scanned on startup.</>,
           <><b>Dependency Reality Check</b> — snapshot and rollback your ComfyUI environment because individual venvs for custom nodes are technically impossible.</>,
@@ -667,11 +654,11 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           <Code>app/layout.tsx</Code> sets fonts and pre-applies the saved theme, then renders <Code>components/Shell.tsx</Code> — the
           persistent sidebar (the Gears) + scrollable main area. The library store is hydrated once on first mount.
         </P>
-        <H3>Provider abstraction</H3>
+        <H3>Compute layer (Nexus Cloud)</H3>
         <P>
-          All model I/O is funneled through <Code>lib/providers.ts</Code> so the UI never special-cases a vendor. <Code>chat()</Code> normalizes
-          Google, Anthropic, Pollinations and OpenAI-compatible APIs (including streaming); <Code>generateImage()</Code> covers the
-          Pollinations and OpenAI image paths; <Code>fetchModels()</Code> lists models per provider kind.
+          All model I/O is funneled through <Code>lib/nexus-cloud.ts</Code> to a single backend — <Code>chat()</Code> (OpenAI-compatible SSE),
+          <Code>generateImage()</Code>, and the video job API (<Code>generateVideo()</Code>, submit + poll), plus <Code>fetchModels()</Code> for the
+          backend's model catalog. <Code>lib/providers.ts</Code> remains as a thin compatibility shim so call sites keep working unchanged.
         </P>
       </>
     ),
@@ -692,7 +679,7 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
           ["Character + CharacterXRay", "Persona, attributes, NSFW set, LoRA fields, and the 5-layer X-Ray profile + metrics."],
           ["GenAsset", "A generated image/video: url, prompt, meta, optional characterId."],
           ["Conversation / ChatMessage", "Chat history with roles, content and inline images."],
-          ["Comfy* types", "ComfyProvider, ComfyModelMapping, ComfyWorkflow for the ComfyUI features."],
+          ["Comfy* types", "ComfyModelMapping, ComfyWorkflow for the ComfyUI features."],
         ]} />
         <H3>Persistence layers</H3>
         <UL items={[
@@ -711,25 +698,27 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
     ),
   },
   {
-    id: "providers-eng", label: "Provider & Generation Layer", group: "Engineering", icon: Cpu,
-    keywords: "providers chat stream image generation fal lora character prompt promptfill",
+    id: "providers-eng", label: "Generation Layer", group: "Engineering", icon: Cpu,
+    keywords: "nexus cloud chat stream image video generation character prompt promptfill",
     body: (
       <>
-        <H2>Provider &amp; Generation Layer</H2>
-        <Lede>The functional core that turns app state into model calls.</Lede>
+        <H2>Generation Layer (Nexus Cloud)</H2>
+        <Lede>The functional core that turns app state into model calls, routed through the Nexus Cloud backend.</Lede>
         <KV rows={[
-          [<Code>lib/providers.ts</Code>, <>Unified <Code>chat()</Code> (streaming for Google/Anthropic/Pollinations/OpenAI-style), <Code>generateImage()</Code>, and <Code>fetchModels()</Code>. Anthropic uses the browser-direct header; Google parses its streamed brace-delimited JSON.</>],
+          [<Code>lib/nexus-cloud.ts</Code>, <>The real client: <Code>chat()</Code> (OpenAI-compatible SSE via <Code>onChunk</Code>), <Code>generateImage()</Code>, <Code>generateVideo()</Code> (submit + poll the job API), and <Code>fetchModels()</Code>. Resolves the connected endpoint from <Code>GET /nexus-cloud/status</Code> and hard-fails with a clear "Connect a cloud account" message when none is configured.</>],
+          [<Code>lib/providers.ts</Code>, <>Thin compatibility shim — same call signatures, delegating to <Code>lib/nexus-cloud.ts</Code> so existing call sites keep working.</>],
           [<Code>lib/character.ts</Code>, <>Compiles a Character into an ordered prompt string, conditionally appending the NSFW attribute set.</>],
           [<Code>lib/promptfill.ts</Code>, <>Template tokenization and assembly for the Recipe builder (<Code>{"{{token: default}}"}</Code> grammar, bank lookups, pretty labels).</>],
           [<Code>lib/recipe.ts</Code>, <>Legacy recipe-slot assembly (ingredient slots → comma-joined or templated output).</>],
           [<Code>lib/data/comfyworkflows.ts</Code>, <>The built-in Comfy Hub workflow library (API-format node graphs).</>],
           [<Code>lib/data/promptbuilder.ts</Code>, <>Caption types / lengths / extras powering the System Prompt Builder.</>],
         ]} />
-        <H3>FAL.ai LoRA training</H3>
+        <H3>Nexus Cloud backend (comfyui-nexus-cloud)</H3>
         <P>
-          Implemented inline in the Character Gear: it zips reference images (<Code>jszip</Code>), submits to <Code>fal-ai/flux-lora-fast-training</Code>
-          via the FAL queue API, polls the status URL, streams logs, and on completion stores the <Code>diffusers_lora_file</Code> URL for download.
-          Jobs survive reloads by persisting the request/status/response URLs on the character.
+          The backend is a single deployed app per provider serving <Code>/prompt</Code> (ComfyUI), <Code>/v1/chat/completions</Code> (chat),
+          <Code>/generate/image</Code> and <Code>/generate/video</Code>, all behind the Bearer <Code>NEXUS_SECRET</Code>. The studio discovers it via
+          <Code>GET /nexus-cloud/status</Code> (local: <Code>http://localhost:8188</Code>; hosted: the deployed backend URL). The plugin's
+          deployables and adapters ship under <Code>comfyui-nexus-cloud/</Code>.
         </P>
       </>
     ),
@@ -778,7 +767,8 @@ npm run desktop:build   # bundles installers into src-tauri/target/release/bundl
 ├─ components/               # Shell, Page, ui, PromptPicker, PromptDirector, …
 ├─ lib/
 │  ├─ types.ts               # data model
-│  ├─ providers.ts           # chat / image / model APIs
+│  ├─ nexus-cloud.ts         # unified Nexus Cloud client (chat / image / video / models)
+│  ├─ providers.ts           # compat shim delegating to nexus-cloud
 │  ├─ character.ts  recipe.ts  promptfill.ts  utils.ts
 │  ├─ data/                  # seed.ts, promptbuilder.ts, comfyworkflows.ts
 │  └─ store/                 # settings, library, comfy (Zustand)

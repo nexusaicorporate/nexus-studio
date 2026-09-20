@@ -33,7 +33,6 @@
     "createUpdaterArtifacts": false,
     "resources": [
       "resources/comfyui/**/*",
-      "resources/modal/*.py",
       "resources/comfyui-mcp-server/**/*"
     ],
     "icon": [

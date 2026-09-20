@@ -22,8 +22,7 @@ function ModeTags({ modes }: { modes?: string[] }) {
 export default function ChatPage() {
   const mounted = useMounted();
   const settings = useSettings();
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId) || settings.providers[0];
-  const model = provider?.selectedModel || provider?.models?.[0] || "openai";
+  const model = "Nexus Cloud";
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState(""); 
   const [busy, setBusy] = useState(false);
@@ -34,7 +33,7 @@ export default function ChatPage() {
   const [promptQuery, setPromptQuery] = useState("");
 
   const prompts = useLibrary((s) => s.prompts);
-  const { taskPrompts, autoSystemPrompt, setTaskPrompt, setAutoSystemPrompt, setActiveProvider } = useSettings();
+  const { taskPrompts, autoSystemPrompt, setTaskPrompt, setAutoSystemPrompt } = useSettings();
   const selId = taskPrompts["chat"];
 
   const promptGroups = useMemo(() => {
@@ -77,7 +76,6 @@ export default function ChatPage() {
     let responseText = "";
     try {
       await chat({
-        provider,
         model,
         system: activeSystemPrompt,
         uncensored: settings.uncensored,
@@ -295,40 +293,17 @@ export default function ChatPage() {
                 </div>
               </div>
 
-              {/* Provider & Model Section */}
+              {/* Cloud Backend Section */}
               <div className="space-y-4 pt-4 border-t border-border/20">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <div className="text-xs font-semibold">API Provider</div>
+                    <div className="text-xs font-semibold">Backend</div>
                     <Link href="/settings" className="text-[10px] text-primary-light flex items-center gap-1 hover:underline">
-                      <Settings size={10} /> API Settings
+                      <Settings size={10} /> Cloud Settings
                     </Link>
                   </div>
-                  <select 
-                    className="w-full bg-surface/50 border border-border/50 rounded-lg px-3 py-2 text-xs text-text appearance-none outline-none focus:border-primary/50"
-                    value={settings.activeProviderId}
-                    onChange={(e) => setActiveProvider(e.target.value)}
-                  >
-                    {settings.providers.map((p) => (
-                      <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <div className="text-xs font-semibold mb-1.5">Select Model(s)</div>
-                  <button className="w-full bg-surface/80 hover:bg-surface border border-border/50 rounded-lg px-3 py-2 text-xs text-text flex items-center justify-center gap-1.5 transition-colors">
-                    <RefreshCw size={12} className="text-muted" /> Fetch Models
-                  </button>
-                  <div className="mt-2 space-y-1 pl-1">
-                     {provider?.models?.map(m => (
-                       <div key={m} className="flex items-center gap-2 text-xs">
-                         <div className="w-3.5 h-3.5 rounded bg-primary/20 flex items-center justify-center border border-primary/40 text-primary">
-                           {provider.selectedModel === m && <Check size={10} />}
-                         </div>
-                         <span className={provider.selectedModel === m ? "text-text" : "text-muted"}>{m}</span>
-                       </div>
-                     ))}
+                  <div className="w-full bg-surface/50 border border-border/50 rounded-lg px-3 py-2 text-xs text-text">
+                    Nexus Cloud — connects in Settings → Comfy gear.
                   </div>
                 </div>
               </div>

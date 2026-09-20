@@ -1,9 +1,4 @@
-# Nexus Cloud node — provider SDKs.
-# Modal is required for the working reference adapter. The others are optional
-# and only needed once their adapter is implemented; left commented so the base
-# install stays lean.
-modal
-# beam-client
-# cerebrium
-# runpod
-# vastai
+modal>=0.64
+beam-client>=2.0.0
+cryptography>=41.0.0
+aiohttp>=3.9

@@ -1,5 +1,4 @@
 export type ID = string;
-export interface ProviderConfig { id: string; name: string; kind: "openai" | "anthropic" | "google" | "ollama" | "pollinations" | "custom" | "modal"; baseUrl: string; apiKey?: string; models: string[]; selectedModel?: string; visible: boolean; builtIn: boolean; }
 export interface PromptItem { id: ID; title: string; category: string; subcategory?: string; modes?: string[]; body: string; tags: string[]; nsfw: boolean; mediaType: "image" | "video" | "audio" | "text"; cover?: string; createdAt: number; updatedAt: number; }
 export interface EnvironmentItem {
   id: ID;
@@ -119,14 +118,6 @@ export interface Template {
   selections: Record<string, string>;
   tags: string[]; nsfw: boolean; author?: string; bestModel?: string;
   createdAt: number; updatedAt: number;
-}
-
-export interface ComfyProvider {
-  id: string;
-  name: string;
-  url: string;
-  apiKey?: string;
-  enabled: boolean;
 }
 
 export interface ComfyModelMapping {

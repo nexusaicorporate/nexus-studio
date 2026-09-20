@@ -5,19 +5,18 @@ import { BookOpen, Sparkles, Import, AlertCircle, Cpu, ExternalLink, Globe, Code
 import { useRouter } from "next/navigation";
 import { useMounted } from "@/components/ui";
 import { useComfyStore } from "@/lib/store/comfy";
+import { useSettings } from "@/lib/store/settings";
 import { extractRequiredModels } from "@/lib/comfy-models";
-import ComfyEnvSelector, { ComfyEnvDropdown } from "@/components/ComfyEnvSelector";
 import { HUB_WORKFLOWS } from "@/lib/data/comfyworkflows";
 import { NEW_HUB_WORKFLOWS } from "@/lib/data/comfy-hub-data";
-import { useSettings } from "@/lib/store/settings";
 import Link from "next/link";
 
 export default function ComfyHubPage() {
   const mounted = useMounted();
   const router = useRouter();
   const comfy = useComfyStore();
-  const settings = useSettings();
   const [filterCat, setFilterCat] = useState<string>("All");
+  const settings = useSettings();
 
   function importWorkflow(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -65,53 +64,17 @@ export default function ComfyHubPage() {
   return (
     <Page
       title="Comfy Hub Gear"
-      subtitle="Provision execution environments, browse built-in workflow JSON configurations, and read API integrations."
+      subtitle="Browse built-in workflow JSON configurations and launch the managed ComfyUI canvas."
       actions={
         <div className="flex items-center gap-3">
-          <ComfyEnvDropdown />
           <label className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer">
             <Upload size={13} /> Import Workflow
             <input type="file" accept="application/json" hidden onChange={importWorkflow} />
           </label>
-          <button
-            type="button"
-            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5"
-            onClick={() => comfy.set("runModeLocked", false)}
-          >
-            <Layers size={13} /> Change Env
-          </button>
         </div>
       }
     >
-      {/* ComfyUI Startup Select Modal */}
-      <ComfyEnvSelector />
-
-      {/* Active Mode Notice */}
       <div className="space-y-6">
-          <div className="card p-4 bg-primary/5 border border-primary/20 flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex gap-3 items-start">
-              <AlertCircle className="text-primary-light flex-shrink-0 mt-0.5" size={18} />
-              <div>
-                <div className="font-semibold text-primary-light text-sm">
-                  Active Resource Mode: <span className="capitalize">{comfy.runMode}</span> Mode
-                </div>
-                <p className="text-xs text-muted leading-relaxed mt-0.5">
-                  Canvas running on {comfy.hybridConfig.remoteGpuUrl || "studio:8188"}.
-                  {comfy.runMode === "hybrid" && ` Generations on local server GPU.`}
-                  {comfy.runMode === "cloud" && ` Generations via ${comfy.cloudPlan || "cloud API"} (${comfy.cloudEnvironment}).`}
-                </p>
-              </div>
-            </div>
-            {comfy.runMode === "cloud" && !comfy.cloudPlan && (
-              <button
-                type="button"
-                className="btn-primary py-1.5 px-3 text-xs font-bold"
-                onClick={() => comfy.set("runModeLocked", false)}
-              >
-                Select Pricing Plan
-              </button>
-            )}
-          </div>
 
           {/* Your imported workflows */}
           {comfy.workflows.length > 0 && (

@@ -1,39 +1,57 @@
-# comfyui-nexus-cloud — Nexus AI Studio's own cloud-GPU node.
+# Nexus Cloud — multi-account GPU cloud backend for ComfyUI (Modal primary,
+# Beam backup, auto-failover). One custom node, one sidebar, one /prompt hook.
 #
-# One node, a provider dropdown (Modal, Beam, Cerebrium, RunPod, Vast). Pick a
-# provider, enter creds, set a GPU profile, Connect & Deploy — ComfyUI workflows
-# run on that provider's GPU with models on a persistent volume.
+# The router owns all accounts/order/lifecycle; server.py exposes the sidebar
+# routes; prompt_router.py intercepts /prompt so ANY ComfyUI client (web UI,
+# scripts, the platform) transparently runs on the active cloud provider while
+# outputs replay into the local instance as if local.
 #
-# ComfyUI loads this package and calls these module-level hooks:
-#   - WEB_DIRECTORY  -> serves web/js/* as front-end extensions (the sidebar)
-#   - the route registration runs at import via PromptServer.instance.app
-#
-# No graph NODE_CLASS_MAPPINGS are needed — this is a server/UI extension, but we
-# expose empty mappings so ComfyUI treats it as a valid custom node.
-from __future__ import annotations
+# No credentials are read from the environment or hardcoded anywhere — they live
+# encrypted at ~/.nexusai/nexus-cloud/accounts.enc (see accounts.py).
+import os
+import sys
+import threading
 
-NODE_CLASS_MAPPINGS: dict = {}
-NODE_DISPLAY_NAME_MAPPINGS: dict = {}
-WEB_DIRECTORY = "./web"
+_NODE_DIR = os.path.dirname(os.path.abspath(__file__))
+if _NODE_DIR not in sys.path:
+    sys.path.insert(0, _NODE_DIR)
 
-__all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]
+NODE_CLASS_MAPPINGS = {}
+NODE_DISPLAY_NAME_MAPPINGS = {}
+WEB_DIRECTORY = "web"
 
 
-def _bootstrap() -> None:
-    """Register HTTP routes + the /prompt router against ComfyUI's live server."""
+def _ensure_cryptography() -> None:
+    """credentials are stored encrypted; make sure the crypto dep exists."""
     try:
-        from server import PromptServer  # ComfyUI singleton
-    except Exception:
-        # Imported outside ComfyUI (e.g. a syntax/import check) — skip wiring.
+        import cryptography  # noqa: F401
         return
+    except ImportError:
+        pass
+    print("[nexus-cloud] 'cryptography' not found — installing...")
     try:
-        from .server import register, _install_prompt_router
-        app = PromptServer.instance.app
-        register(app)
-        _install_prompt_router()
-        print("[nexus-cloud] routes registered (/nexus-cloud/*) + prompt router installed")
-    except Exception as e:  # never crash ComfyUI on our account
-        print(f"[nexus-cloud] failed to register: {e}")
+        import subprocess
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "cryptography"],
+            check=True, capture_output=True, text=True, timeout=300,
+        )
+    except Exception:
+        print("[nexus-cloud] WARNING: could not install 'cryptography'. "
+              "Accounts will be stored in PLAINTEXT at ~/.nexusai/nexus-cloud/.")
 
 
-_bootstrap()
+def _init() -> None:
+    try:
+        import server as comfy_server
+        try:
+            _ensure_cryptography()
+        except Exception as e:
+            print(f"[nexus-cloud] cryptography check failed: {e}")
+        comfy_server.register()
+    except Exception as e:
+        print(f"[nexus-cloud] Failed to initialize server routes: {e}")
+
+
+# Defer until after ComfyUI's aiohttp server exists (imported in this module's
+# own namespace at file load; PromptServer is created lazily).
+_init()

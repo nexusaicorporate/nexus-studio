@@ -1,71 +1,91 @@
-# comfyui-nexus-cloud
+# Nexus Cloud (ComfyUI custom node)
 
-Nexus AI Studio's **own** cloud-GPU node for ComfyUI. One node, a **provider
-dropdown** in the sidebar — pick a provider, enter its credentials, choose a GPU
-profile, **Connect & Deploy**, and your workflows run on that provider's GPU with
-models on a **persistent volume** (download once, reuse). Toggle it OFF to run
-locally again.
+Runs **ComfyUI workflows on cloud GPUs** from inside ComfyUI: **Modal**
+(persistent-VM style web server) and **Beam** (serverless pods). Both are
+**general-purpose**: any workflow that runs locally runs on the active provider,
+and outputs replay into the local ComfyUI UI exactly as if they were local.
 
-This is ours (not a fork). It ships bundled in the Nexus desktop installer via
-`scripts/prepare-comfyui.ps1` (copied from `comfyui-nodes/comfyui-nexus-cloud`).
+Supports **multiple saved accounts per provider**, a **primary/backup order**,
+**manual failover**, and **auto-failover** on provider error. Providers never run
+simultaneously — exactly one endpoint is live at any moment.
 
-## Why one node for every provider
-Each provider is a small **adapter** behind a single interface (`adapters/base.py`).
-The sidebar UI and the `/prompt` router never know which provider is active — they
-only talk to `ProviderAdapter`. **Add a provider = add one file** in `adapters/`
-and register it in `adapters/__init__.py`.
+---
 
-Two internal families, same interface:
-- **SDK-deploy** (Modal, Beam, Cerebrium): deploy an app + persistent Volume + a
-  served ComfyUI via the provider's Python SDK.
-- **API-provision** (RunPod, Vast): launch a prebuilt ComfyUI worker image +
-  attach a Network Volume via the provider's REST/GraphQL.
+## Install
 
-## Status
-| Provider  | Family         | State | Persistent storage |
-|-----------|----------------|-------|--------------------|
-| Modal     | sdk-deploy     | **working reference** | Volume (1 TiB free) |
-| Beam      | sdk-deploy     | stub (declared)       | Volumes |
-| Cerebrium | sdk-deploy     | stub (declared)       | Volumes |
-| RunPod    | api-provision  | stub (declared)       | Network Volume ($0.07/GB/mo) |
-| Vast.ai   | api-provision  | stub (declared)       | ⚠ ephemeral — re-download risk |
+Copy this folder (`comfyui-nexus-cloud`) into ComfyUI's `custom_nodes/`:
 
-Stubs appear in the dropdown so the UX is complete, but `connect/deploy/run`
-return a clear "not wired up yet" until their adapter is implemented (each mirrors
-`adapters/modal.py`).
-
-## Files
 ```
-comfyui-nexus-cloud/
-  __init__.py            # ComfyUI entry: registers routes + serves web/, installs /prompt router
-  server.py              # /nexus-cloud/{providers,connect,deploy,status,toggle,models/download,stop}
-  nexus_modal_app.py     # the Modal App the Modal adapter deploys (ComfyUI + Volume on a Modal GPU)
-  adapters/
-    base.py              # the ProviderAdapter interface (+ CredField/GpuOption/ProviderSpec/DeploySpec)
-    __init__.py          # REGISTRY + list_specs()/get_adapter()
-    modal.py             # working reference
-    beam.py cerebrium.py runpod.py vast.py   # stubs
-  web/js/nexus-cloud.js  # the sidebar panel
-  requirements.txt       # provider SDKs (modal required; others optional)
+ComfyUI/custom_nodes/comfyui-nexus-cloud
 ```
 
-## HTTP API (local ComfyUI server)
-- `GET  /nexus-cloud/providers` → specs + active + enabled
-- `POST /nexus-cloud/connect` `{provider, creds}`
-- `POST /nexus-cloud/deploy`  `{gpu, gpu_count, cpu, ram_gb, volume_gb}`
-- `GET  /nexus-cloud/status`
-- `POST /nexus-cloud/toggle`  `{enabled}`  ← routes `/prompt` to the provider when true
-- `POST /nexus-cloud/models/download` `{url, folder}`
-- `POST /nexus-cloud/stop`
+Then run (once, from the system Python that ComfyUI uses):
 
-Credentials live only in the browser's localStorage and are sent to the **local**
-ComfyUI server, which forwards them to the provider you picked. Nothing is sent
-anywhere else.
+```bash
+pip install modal beam-client cryptography
+```
 
-## Implementing the next adapter
-1. Copy `adapters/modal.py` → `adapters/<id>.py`, set `SPEC` (id/label/family/
-   cred_fields/gpu_options) and `implemented=True`.
-2. Implement `connect/provision/status/run/stop` against that provider's SDK/REST.
-3. Mount a persistent volume at the ComfyUI `models/` path in `provision`.
-4. Register the class in `adapters/__init__.py`.
-That's it — the sidebar and router pick it up automatically.
+…and restart ComfyUI. A **Nexus Cloud** tab appears in the sidebar.
+
+## Data & security
+
+- Credentials are stored **encrypted** at `~/.nexusai/nexus-cloud/accounts.enc`
+  (Fernet, machine key at `~/.nexusai/nexus-cloud/nexus-cloud.key`, `0600`).
+- If `cryptography` is missing the store **degrades to plaintext JSON** and the
+  sidebar is warned — install `cryptography` to encrypt.
+- The browser is only ever shown masked credential values (`ak-…`).
+- No secrets are hardcoded anywhere in this node.
+
+Set `NEXUS_CLOUD_DATA_DIR` to relocate the store (e.g. a shared project dir).
+
+## Wiring the /prompt hook
+
+When the sidebar toggle *Route /prompt through Nexus Cloud* is **on**:
+
+1. any client POSTs workflow to `/prompt` (web UI, scripts, the platform),
+2. the node stages local input images, sends them to the active provider,
+3. cloud outputs are written to ComfyUI's local `output/` and replayed through
+   standard WS events (`execution_start → executing → executed →
+   execution_success`).
+
+With the toggle **off**, `/prompt` runs locally (no cloud). The primary/backup
+order and auto-failover still apply to manual runs via the sidebar.
+
+## Sidebar
+
+Per provider (Modal / Beam):
+
+| Control | Endpoint | What it does |
+|---|---|---|
+| Save account | `POST /nexus-cloud/accounts` | stores (encrypted) creds |
+| Delete account | `DELETE /nexus-cloud/accounts` | removes + drops from order |
+| Reorder (primary/backup) | `POST /nexus-cloud/order` | provider order for failover |
+| Connect | `POST /nexus-cloud/connect` | build+provision the live endpoint |
+| Deploy | `POST /nexus-cloud/deploy` | re-provision with hardware profile |
+| Toggle on/off | `POST /nexus-cloud/toggle` | enable /prompt interception |
+| Auto-failover on/off | `POST /nexus-cloud/failover` | failed→next, retried once |
+| Failover now | `POST /nexus-cloud/failover/now` | manual switch to next |
+| Status | `GET /nexus-cloud/status` | all accounts + order + live |
+| Providers catalog | `GET /nexus-cloud/providers` | rendered UI definitions |
+| Download model | `POST /nexus-cloud/models/download` | pull into the provider volume |
+| Stop | `POST /nexus-cloud/stop` | tear down the live endpoint |
+
+All routes are JSON. Provider SDKs are never imported by the UI layer.
+
+## Adding a provider
+
+1. `adapters/<provider>.py` implementing `base.ProviderAdapter`
+   (`connect / provision / run / status / download_model / stop / teardown`).
+2. Register it in `adapters/__init__.py`.
+3. The sidebar renders it automatically from its `ProviderSpec` (credential
+   fields, GPU catalog, defaults).
+
+## Notes
+
+- **Modal**: `nexus_modal_app.py` is the deployed app (ComfyUI web server on
+  Modal + a persistent Volume at `models/`). Uses Modal's web-server family —
+  cold starts in ~1-3 min, scales to zero, volume persists.
+- **Beam**: `nexus_beam_app.py` defines the Pod (comfy-cli image, volume at
+  `models/`, port 8000). Deploys via `Pod.create()`; URL is returned directly.
+- Deploys can take a few minutes and cost money while a GPU is warm; both
+  providers bill per-second and scale to zero during idle.

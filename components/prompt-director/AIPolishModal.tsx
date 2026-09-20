@@ -45,14 +45,7 @@ export function AIPolishModal({ open, onClose, initialPrompt, onApply }: AIPolis
     setResult("");
     
     try {
-      const provider = settings.providers.find((p) => p.id === settings.activeProviderId);
-      if (!provider) throw new Error("No active AI provider selected in Settings.");
-
-      const model = provider.selectedModel || provider.models[0] || "openai";
-      
       const out = await chat({
-        provider,
-        model,
         uncensored: settings.uncensored,
         system: ACE_HOLOFS_SYSTEM,
         messages: [

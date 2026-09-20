@@ -136,7 +136,6 @@ import type { Character, Ingredient } from "@/lib/types";
 
 function Editor({ template, banks, characters, ingredients, onSave, onSaveBanks, onUse, onDelete }: { template: Template; banks: Bank[]; characters: Character[]; ingredients: Ingredient[]; onSave: (t: Template) => void; onSaveBanks: (b: Bank[]) => void; onUse: (t: Template) => void; onDelete: (id: string) => void }) {
   const settings = useSettings();
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId)!;
   const [t, setT] = useState<Template>({ ...template, selections: { ...template.selections } });
   const [busy, setBusy] = useState(false);
   const [panel, setPanel] = useState<"vars" | "banks">("vars");
@@ -154,12 +153,9 @@ function Editor({ template, banks, characters, ingredients, onSave, onSaveBanks,
   function duplicate() { const copy2 = { ...t, id: newId(), name: t.name + " copy", createdAt: Date.now(), updatedAt: Date.now() }; onSave(copy2); }
   async function smartSplit() {
     if (!t.content.trim()) return;
-    if (!provider) { alert("No AI provider configured.\n\nGo to Settings → Providers and add an API key (e.g. OpenAI, Google, or Pollinations which is free with no key)."); return; }
-    const model = provider.selectedModel || provider.models?.[0] || "";
-    if (!model) { alert("No model selected. Go to Settings → Providers and select a model."); return; }
     setBusy(true);
     try {
-      const out = await chat({ provider, model, uncensored: settings.uncensored,
+      const out = await chat({ uncensored: settings.uncensored,
         system: "Rewrite the prompt into a reusable template by replacing each variable phrase with a {{snake_case_token: original phrase}} marker. Keep all other words. Output only the rewritten template.",
         messages: [{ id: "1", role: "user", content: t.content }] });
       if (out) update({ content: out.trim() });
@@ -169,7 +165,7 @@ function Editor({ template, banks, characters, ingredients, onSave, onSaveBanks,
   async function polish() {
     setBusy(true);
     try {
-      const out = await chat({ provider, model: provider.selectedModel || provider.models[0] || "openai", uncensored: settings.uncensored,
+      const out = await chat({ uncensored: settings.uncensored,
         system: "Polish this image/video generation prompt into a vivid, detailed version. Output only the prompt.",
         messages: [{ id: "1", role: "user", content: assembled }] });
       if (out) { copy(out.trim()); alert("Polished prompt copied to clipboard."); }

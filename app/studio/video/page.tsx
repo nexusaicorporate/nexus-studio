@@ -24,7 +24,6 @@ const MODE_LABEL: Record<Mode, string> = { t2v: "Text → Video", i2v: "Image �
 const RATIOS = ["16:9", "9:16", "1:1"]; const RES = ["720p", "1080p", "4K"];
 function VideoInner() {
   const mounted = useMounted(); const sp = useSearchParams(); const settings = useSettings(); const library = useLibrary();
-  const provider = settings.providers.find((p) => p.id === settings.activeVideoProviderId)!;
   const { plan } = useAuth();
   const [mode, setMode] = useState<Mode>("t2v"); const [op, setOp] = useState<"create" | "edit" | "extend">("create");
   const [prompt, setPrompt] = useState(""); const [ratio, setRatio] = useState("16:9"); const [res, setRes] = useState("1080p"); const [engine, setEngine] = useState("ltx-2.3");
@@ -43,9 +42,9 @@ function VideoInner() {
   useEffect(() => { const p = sp.get("prompt"); if (p) { setPrompt(p); setRecipe(null); } }, [sp]);
   useEffect(() => { if (charId) { const c = library.characters.find((x) => x.id === charId); if (c) setPrompt((prev) => prev || characterPrompt(c)); } }, [charId, library.characters]);
   useEffect(() => { if (catalogModels.length > 0 && !catalogModels.some((m) => m.id === engine)) setEngine(catalogModels[0].id); }, [catalogModels, engine]);
-  async function enhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ provider, model: provider.selectedModel || provider.models[0] || "openai", uncensored: settings.uncensored, system: taskSystem || `You are a cinematic ${MODE_LABEL[mode]} prompt writer. Rewrite the idea into a detailed prompt covering subject, camera movement, lighting, pacing and motion in ~80-100 words. Output only the prompt.`, messages: [{ id: "1", role: "user", content: activeP }] }); if (out) { setPrompt(out.trim()); setRecipe(null); } } catch (e: any) { alert("Enhance failed: " + e.message); } setBusy(false); }
-  async function jsonEnhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ provider, model: provider.selectedModel || provider.models[0] || "openai", uncensored: settings.uncensored, system: "Convert the idea into a structured JSON video spec with fields: subject, setting, camera_movement, lighting, color_palette, pacing, audio, master_prompt. Output only JSON.", messages: [{ id: "1", role: "user", content: activeP }] }); setJsonOut(out.trim()); } catch (e: any) { alert("Failed: " + e.message); } setBusy(false); }
-  function saveSpec() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; const spec = { mode, op, engine, ratio, res, prompt: activeP, startImg: !!startImg, endImg: !!endImg, refMedia: !!refMedia, refImages: refImages.length, audioMode, hasAudio: !!audioFile, json: jsonOut, recipe: recipe ? { id: recipe.id, selections: recipeSelections } : undefined }; library.set("assets", [{ id: newId(), kind: "video" as const, url: "", prompt: activeP, meta: spec, createdAt: Date.now() }, ...library.assets]); alert("Video spec saved to your generations. Connect a video provider (Veo/Kling/Seedance/Runway) key in Settings to render."); }
+  async function enhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ uncensored: settings.uncensored, system: taskSystem || `You are a cinematic ${MODE_LABEL[mode]} prompt writer. Rewrite the idea into a detailed prompt covering subject, camera movement, lighting, pacing and motion in ~80-100 words. Output only the prompt.`, messages: [{ id: "1", role: "user", content: activeP }] }); if (out) { setPrompt(out.trim()); setRecipe(null); } } catch (e: any) { alert("Enhance failed: " + e.message); } setBusy(false); }
+  async function jsonEnhance() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; if (!activeP.trim()) return; setBusy(true); try { const out = await chat({ uncensored: settings.uncensored, system: "Convert the idea into a structured JSON video spec with fields: subject, setting, camera_movement, lighting, color_palette, pacing, audio, master_prompt. Output only JSON.", messages: [{ id: "1", role: "user", content: activeP }] }); setJsonOut(out.trim()); } catch (e: any) { alert("Failed: " + e.message); } setBusy(false); }
+  function saveSpec() { const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt; const spec = { mode, op, engine, ratio, res, prompt: activeP, startImg: !!startImg, endImg: !!endImg, refMedia: !!refMedia, refImages: refImages.length, audioMode, hasAudio: !!audioFile, json: jsonOut, recipe: recipe ? { id: recipe.id, selections: recipeSelections } : undefined }; library.set("assets", [{ id: newId(), kind: "video" as const, url: "", prompt: activeP, meta: spec, createdAt: Date.now() }, ...library.assets]); alert("Video spec saved to your generations."); }
   async function render() {
     const activeP = recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : prompt;
     if (!activeP.trim()) return;
@@ -54,8 +53,8 @@ function VideoInner() {
       const c = charId ? library.characters.find((x) => x.id === charId) : null;
       const full = c ? `${characterPrompt(c)}, ${activeP}` : activeP;
       const url = await generateVideo({
-        provider, prompt: full, mode,
-        model: engine || provider.selectedModel || provider.models[0],
+        prompt: full, mode: mode === "r2v" ? "i2v" : mode,
+        model: engine,
         image: mode === "i2v" ? (startImg || undefined) : mode === "r2v" ? (refImages[0] || undefined) : undefined,
         endImage: mode === "i2v" ? (endImg || undefined) : undefined,
         quantize,
@@ -63,7 +62,7 @@ function VideoInner() {
         onProgress: (pct, status) => { setRenderPct(pct); setRenderStatus(status); },
       });
       setResultUrl(url);
-      library.set("assets", [{ id: newId(), kind: "video" as const, url, prompt: full, meta: { mode, op, engine: provider.selectedModel || engine, ratio, res }, characterId: charId || undefined, createdAt: Date.now() }, ...library.assets]);
+      library.set("assets", [{ id: newId(), kind: "video" as const, url, prompt: full, meta: { mode, op, engine, ratio, res }, characterId: charId || undefined, createdAt: Date.now() }, ...library.assets]);
     } catch (e: any) { alert("Render failed: " + e.message); }
     setRendering(false);
   }
@@ -143,7 +142,7 @@ function VideoInner() {
             )}
           </Field>
 
-          <div className="grid grid-cols-3 gap-2"><Field label="Model"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{provider?.models.map((m) => <option key={m} value={m}>{m}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
+          <div className="grid grid-cols-3 gap-2"><Field label="Model"><select className="input" value={engine} onChange={(e) => setEngine(e.target.value)}>{catalogModels.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}</select></Field><Field label="Aspect"><select className="input" value={ratio} onChange={(e) => setRatio(e.target.value)}>{RATIOS.map((x) => <option key={x}>{x}</option>)}</select></Field><Field label="Res"><select className="input" value={res} onChange={(e) => setRes(e.target.value)}>{RES.map((x) => <option key={x}>{x}</option>)}</select></Field></div>
           <div className="flex items-center gap-2 py-1 select-none">
             <input
               id="quantize-toggle"
@@ -156,14 +155,12 @@ function VideoInner() {
               FP8 Quantize (Low VRAM Mode / Faster Boot)
             </label>
           </div>
-          {!canUseModel(plan, provider?.selectedModel || engine) ? (
+          {!canUseModel(plan, engine) ? (
             <UpgradePrompt title="Pro Model Selected" message="This video model requires an active Pro subscription to render." planNeeded="Pro" inline />
-          ) : provider?.kind === "modal" ? (
-            <button className="btn-primary w-full" onClick={render} disabled={rendering || busy}>
-              {rendering ? <><Loader2 size={15} className="animate-spin" /> Rendering… {renderPct > 0 ? `${renderPct}%` : ""} {renderStatus}</> : <><Clapperboard size={15} /> Render Video ({provider.selectedModel || engine})</>}
-            </button>
           ) : (
-            <button className="btn-primary w-full" onClick={saveSpec} disabled={busy}><Clapperboard size={15} /> Build / save spec</button>
+            <button className="btn-primary w-full" onClick={render} disabled={rendering || busy}>
+              {rendering ? <><Loader2 size={15} className="animate-spin" /> Rendering… {renderPct > 0 ? `${renderPct}%` : ""} {renderStatus}</> : <><Clapperboard size={15} /> Render Video ({engine})</>}
+            </button>
           )}
           <button className="btn-ghost w-full text-xs" onClick={saveSpec} disabled={busy}>Save spec only</button>
         </div>
@@ -173,7 +170,7 @@ function VideoInner() {
               {rendering ? (
                 <div className="py-10 grid place-items-center text-center">
                   <Loader2 size={28} className="animate-spin text-primary-light mb-3" />
-                  <div className="text-sm font-medium">Rendering on {provider?.name}…</div>
+                  <div className="text-sm font-medium">Rendering on Nexus Cloud…</div>
                   <div className="text-xs text-muted mt-1">{renderStatus}{renderPct > 0 ? ` · ${renderPct}%` : ""} — cloud video renders can take a few minutes.</div>
                   {renderPct > 0 && <div className="mt-3 h-1.5 w-full max-w-xs rounded-full bg-surface2 overflow-hidden"><div className="h-full bg-primary-light transition-all" style={{ width: `${renderPct}%` }} /></div>}
                 </div>
@@ -189,7 +186,7 @@ function VideoInner() {
             </div>
           )}
           <div className="card p-4 min-h-[260px]"><div className="text-sm font-medium mb-2">Assembled spec</div><div className="text-xs text-muted mb-3">{engine} · {MODE_LABEL[mode]} · {op} · {ratio} · {res}</div><p className="text-sm whitespace-pre-wrap">{recipe ? assembleTemplate((recipe as any).content || (recipe as any).templateString || "", recipeSelections, library.banks) : (prompt || "Your prompt will appear here.")}</p>{jsonOut && (<div className="mt-4"><div className="flex items-center justify-between mb-1"><span className="label mb-0">JSON spec</span><button className="btn-ghost px-2 py-1 text-xs" onClick={() => copy(jsonOut)}><Copy size={13} /></button></div><pre className="text-xs bg-surface2 rounded-xl p-3 overflow-x-auto max-h-72">{jsonOut}</pre></div>)}</div>
-          <div className="card p-4 text-xs text-muted"><b className="text-text">Rendering:</b> Veo, Kling, Seedance, Runway and Wan require their own API keys. Add a custom provider in Settings, or use the saved spec with your renderer. Image-to-video uses the start frame; <i>extend</i> continues from the last frame of your uploaded clip.</div>
+          <div className="card p-4 text-xs text-muted"><b className="text-text">Rendering:</b> Videos render on your connected Nexus Cloud backend (Settings → Comfy gear → Cloud &amp; Compute). Image-to-video uses the start frame; <i>extend</i> continues from the last frame of your uploaded clip.</div>
         </div>
       </div>
     </Page>

@@ -1,338 +1,232 @@
-// Nexus Cloud — ComfyUI sidebar extension
-//
-// One panel, a provider dropdown. Pick a provider → its credential fields and
-// GPU options render dynamically → set a GPU profile → Connect & Deploy →
-// ON/OFF toggle → live status. Talks only to /nexus-cloud/* on the local server.
-//
-// Creds are kept in localStorage per provider (never sent anywhere but the
-// local ComfyUI server, which forwards to the provider you chose).
-import { app } from "../../scripts/app.js";
+# Nexus Cloud — ComfyUI sidebar
+#
+# Multi-account, primary/backup failover management for Modal + Beam.
+# Talks only to the /nexus-cloud/* routes of the same ComfyUI it runs in.
+(() => {
+    const NX_URL = '/nexus-cloud';
 
-const LS_KEY = "nexus-cloud.creds";        // { [providerId]: {field:value} }
-const LS_PROFILE = "nexus-cloud.profile";  // { provider, gpu, gpu_count, cpu, ram_gb, volume_gb }
-const LS_LOCKED = "nexus-cloud.locked";
-
-function loadJSON(key, fallback) {
-  try { return JSON.parse(localStorage.getItem(key)) || fallback; }
-  catch { return fallback; }
-}
-function saveJSON(key, val) { localStorage.setItem(key, JSON.stringify(val)); }
-
-async function api(path, method = "GET", body) {
-  const opt = { method, headers: { "Content-Type": "application/json" } };
-  if (body) opt.body = JSON.stringify(body);
-  const r = await fetch(path, opt);
-  return r.json();
-}
-
-function el(tag, props = {}, children = []) {
-  const e = document.createElement(tag);
-  Object.assign(e, props);
-  if (props.style) e.setAttribute("style", props.style);
-  for (const c of [].concat(children)) e.append(c);
-  return e;
-}
-
-class NexusCloudPanel {
-  constructor(root, onClose) {
-    this.root = root;
-    this.onClose = onClose;
-    this.specs = [];
-    this.creds = loadJSON(LS_KEY, {});
-    this.profile = loadJSON(LS_PROFILE, {});
-    this.active = this.profile.provider || "modal";
-    this.render();
-    this.refresh();
-  }
-
-  async refresh() {
-    const data = await api("/nexus-cloud/providers");
-    if (data.ok) {
-      this.specs = data.providers;
-      if (data.active) this.active = data.active;
-      this.render();
-      this.pollStatus();
-    }
-  }
-
-  spec() { return this.specs.find((s) => s.id === this.active); }
-
-  setActive(id) {
-    this.active = id;
-    this.profile.provider = id;
-    saveJSON(LS_PROFILE, this.profile);
-    this.render();
-  }
-
-  credFor(field) {
-    return (this.creds[this.active] || {})[field.key] || "";
-  }
-  setCred(field, value) {
-    this.creds[this.active] = this.creds[this.active] || {};
-    this.creds[this.active][field.key] = value;
-    saveJSON(LS_KEY, this.creds);
-  }
-
-  async connect() {
-    const sp = this.spec();
-    if (!sp) return;
-    if (!sp.implemented) {
-      this.setStatus(`${sp.label} isn't wired up yet — pick Modal for now.`, true);
-      return;
-    }
-    this.setStatus("Connecting…");
-    const res = await api("/nexus-cloud/connect", "POST", {
-      provider: this.active,
-      creds: this.creds[this.active] || {},
-    });
-    if (!res.ok) return this.setStatus(res.error, true);
-    this.setStatus("Connected. Deploying GPU…");
-    await this.deploy();
-  }
-
-  async deploy() {
-    const p = this.profile;
-    const res = await api("/nexus-cloud/deploy", "POST", {
-      gpu: p.gpu, gpu_count: p.gpu_count || 1, cpu: p.cpu,
-      ram_gb: p.ram_gb, volume_gb: p.volume_gb,
-    });
-    if (!res.ok) return this.setStatus(res.error, true);
-    this.setStatus(`Endpoint live: ${res.endpoint}`);
-    this.pollStatus();
-  }
-
-  async toggle(on) {
-    await api("/nexus-cloud/toggle", "POST", { enabled: on });
-    this.pollStatus();
-  }
-
-  async stop() {
-    await api("/nexus-cloud/stop", "POST", {});
-    this.setStatus("Stopped (scaled to zero). Volume kept.");
-  }
-
-  async pollStatus() {
-    const s = await api("/nexus-cloud/status");
-    if (s.ok && this.statusBox) {
-      const st = s.status || {};
-      const lines = [
-        st.running ? "● Running" : "○ Idle",
-        st.gpu ? `GPU: ${st.gpu}` : "",
-        st.uptime_s ? `Up: ${st.uptime_s}s` : "",
-        st.est_cost_usd != null ? `Est: $${st.est_cost_usd}` : "",
-        st.volume_used_gb != null ? `Vol: ${st.volume_used_gb} GB` : "",
-        st.message || "",
-      ].filter(Boolean);
-      this.statusBox.textContent = lines.join("   ");
-    }
-  }
-
-  setStatus(msg, isErr = false) {
-    if (this.msgBox) {
-      this.msgBox.textContent = msg;
-      this.msgBox.style.color = isErr ? "#ff6b6b" : "var(--fg-color, #ddd)";
-    }
-  }
-
-  render() {
-    const r = this.root;
-    r.innerHTML = "";
-    const sp = this.spec();
-
-    r.append(el("div", {
-      textContent: "Nexus Cloud",
-      style: "font-weight:700;font-size:14px;margin:8px 0;",
-    }));
-
-    // Provider dropdown
-    const sel = el("select", {
-      style: "width:100%;padding:6px;margin-bottom:8px;",
-      onchange: (e) => this.setActive(e.target.value),
-    });
-    for (const s of this.specs) {
-      sel.append(el("option", {
-        value: s.id,
-        textContent: s.implemented ? s.label : `${s.label} (soon)`,
-        selected: s.id === this.active,
-      }));
-    }
-    r.append(sel);
-
-    if (!sp) { r.append(el("div", { textContent: "Loading providers…" })); return; }
-
-    // Summary + storage warning
-    r.append(el("div", {
-      textContent: sp.summary,
-      style: "font-size:11px;opacity:.75;margin-bottom:6px;",
-    }));
-    if (!sp.persistent_storage) {
-      r.append(el("div", {
-        textContent: "⚠ Storage is ephemeral on this provider — models may need re-download.",
-        style: "font-size:11px;color:#ffb84d;margin-bottom:6px;",
-      }));
-    }
-
-    // Credential fields
-    for (const f of sp.cred_fields) {
-      r.append(el("label", {
-        textContent: f.label,
-        style: "display:block;font-size:11px;margin-top:6px;",
-      }));
-      const inp = el("input", {
-        type: f.secret ? "password" : "text",
-        value: this.credFor(f),
-        placeholder: f.placeholder || "",
-        style: "width:100%;padding:5px;",
-        oninput: (e) => this.setCred(f, e.target.value),
-      });
-      r.append(inp);
-      if (f.help) r.append(el("div", {
-        textContent: f.help, style: "font-size:10px;opacity:.6;",
-      }));
-    }
-
-    // GPU profile
-    r.append(el("label", { textContent: "GPU", style: "display:block;font-size:11px;margin-top:10px;" }));
-    const gpuSel = el("select", {
-      style: "width:100%;padding:6px;",
-      onchange: (e) => { this.profile.gpu = e.target.value; saveJSON(LS_PROFILE, this.profile); },
-    });
-    const curGpu = this.profile.gpu || sp.default_gpu;
-    for (const g of sp.gpu_options) {
-      const cost = g.usd_per_hr != null ? ` · ~$${g.usd_per_hr}/hr` : "";
-      gpuSel.append(el("option", {
-        value: g.id, textContent: `${g.label}${cost}`, selected: g.id === curGpu,
-      }));
-    }
-    this.profile.gpu = curGpu;
-    r.append(gpuSel);
-
-    // CPU / RAM / Volume
-    const grid = el("div", { style: "display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;" });
-    const num = (label, key, def) => {
-      const wrap = el("div");
-      wrap.append(el("label", { textContent: label, style: "font-size:10px;display:block;" }));
-      wrap.append(el("input", {
-        type: "number", value: this.profile[key] ?? def, style: "width:100%;padding:4px;",
-        oninput: (e) => { this.profile[key] = +e.target.value; saveJSON(LS_PROFILE, this.profile); },
-      }));
-      return wrap;
-    };
-    grid.append(num("CPU", "cpu", sp.default_cpu));
-    grid.append(num("RAM GB", "ram_gb", sp.default_ram_gb));
-    grid.append(num("Vol GB", "volume_gb", sp.default_volume_gb));
-    r.append(grid);
-
-    // Actions
-    const btnRow = el("div", { style: "display:flex;gap:6px;margin-top:10px;" });
-    btnRow.append(el("button", {
-      textContent: "Connect & Deploy",
-      style: "flex:1;padding:7px;cursor:pointer;",
-      disabled: !sp.implemented,
-      onclick: () => this.connect(),
-    }));
-    btnRow.append(el("button", {
-      textContent: "Stop", style: "padding:7px;cursor:pointer;",
-      onclick: () => this.stop(),
-    }));
-    r.append(btnRow);
-
-    // ON/OFF
-    const toggleRow = el("label", { style: "display:flex;align-items:center;gap:6px;margin-top:10px;font-size:12px;" });
-    const chk = el("input", { type: "checkbox", onchange: (e) => this.toggle(e.target.checked) });
-    toggleRow.append(chk);
-    toggleRow.append(el("span", { textContent: "Route workflows to this provider (ON/OFF)" }));
-    r.append(toggleRow);
-
-    // Status + message
-    this.statusBox = el("div", { style: "font-size:11px;margin-top:10px;opacity:.85;white-space:pre-wrap;" });
-    this.msgBox = el("div", { style: "font-size:11px;margin-top:6px;min-height:16px;" });
-    r.append(this.statusBox, this.msgBox);
-
-    if (sp.docs_url) r.append(el("a", {
-      textContent: "Provider docs ↗", href: sp.docs_url, target: "_blank",
-      style: "font-size:10px;opacity:.6;display:block;margin-top:8px;",
-    }));
-
-    // Setup Popup "Lock" Button (only relevant if shown as a popup)
-    if (this.onClose) {
-      r.append(el("hr", { style: "border:none;border-top:1px solid #444;margin:16px 0;" }));
-      const lockRow = el("div", { style: "display:flex;justify-content:space-between;align-items:center;" });
-      
-      const lbl = el("label", { style: "display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer;" });
-      const lkChk = el("input", { type: "checkbox", checked: loadJSON(LS_LOCKED, false), onchange: (e) => saveJSON(LS_LOCKED, e.target.checked) });
-      lbl.append(lkChk, el("span", { textContent: "Remember & Lock Config" }));
-      
-      const confirmBtn = el("button", {
-        textContent: "Confirm Setup",
-        style: "padding:8px 12px;background:#38f;color:#fff;border:none;border-radius:4px;cursor:pointer;font-weight:bold;",
-        onclick: () => {
-          saveJSON(LS_LOCKED, lkChk.checked);
-          this.onClose();
+    const el = (tag, attrs = {}, text = '') => {
+        const node = document.createElement(tag);
+        for (const [k, v] of Object.entries(attrs)) {
+            if (k === 'class') node.className = v;
+            else if (k === 'text') node.textContent = v;
+            else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+            else node.setAttribute(k, v);
         }
-      });
-      
-      lockRow.append(lbl, confirmBtn);
-      r.append(lockRow);
-    }
-  }
-}
-
-app.registerExtension({
-  name: "NexusCloud.Sidebar",
-  async setup() {
-    const isLocked = () => loadJSON(LS_LOCKED, false);
-
-    // 1. Setup the Side Panel (always present but only visible/useful if locked, or we can just always mount it)
-    const mountSidebar = () => {
-      const panel = el("div", {
-        style: "width:100%; max-height:40vh; overflow:auto; " +
-               "background:var(--comfy-menu-bg,#222); color:var(--fg-color,#ddd); " +
-               "border-top:1px solid #444; padding:10px; margin-top:10px;",
-      });
-      app.ui.menuContainer.append(panel);
-      new NexusCloudPanel(panel, null);
+        if (text) node.textContent = text;
+        return node;
     };
 
-    mountSidebar();
+    let providerDefs = {};
+    let state = { enabled: false, auto_failover: true, order: [], accounts: [] };
 
-    // 2. Auto-Popup Logic
-    const showPopup = () => {
-      const overlay = el("div", {
-        style: "position:fixed; top:0; left:0; width:100vw; height:100vh; " +
-               "background:rgba(0,0,0,0.8); z-index:99999; " +
-               "display:flex; justify-content:center; align-items:center;",
-      });
-      const modal = el("div", {
-        style: "width:400px; max-height:80vh; overflow:auto; " +
-               "background:var(--comfy-menu-bg,#222); color:var(--fg-color,#ddd); " +
-               "border:1px solid #444; border-radius:12px; padding:20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);",
-      });
-      
-      const title = el("h2", { textContent: "ComfyUI Cloud Setup", style: "margin-top:0;" });
-      const desc = el("p", { textContent: "Please configure your remote GPU environment. Lock this configuration to hide this popup in the future.", style: "font-size:12px; opacity:0.8;" });
-      
-      modal.append(title, desc);
-      overlay.append(modal);
-      document.body.append(overlay);
+    class NexusCloud {
+        constructor() {
+            this.ui = null;
+            this.rootEl = null;
+        }
 
-      new NexusCloudPanel(modal, () => overlay.remove());
-    };
+        async api(method, path, body) {
+            const opts = { method, headers: {} };
+            if (body !== undefined) {
+                opts.headers['Content-Type'] = 'application/json';
+                opts.body = JSON.stringify(body);
+            }
+            const res = await fetch(NX_URL + path, opts);
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok && data.status !== 'ok') throw new Error(data.message || res.statusText);
+            return data;
+        }
 
-    if (!isLocked()) {
-      showPopup();
+        async refresh() {
+            const [spec, status] = await Promise.all([
+                this.api('GET', '/providers'),
+                this.api('GET', '/status'),
+            ]);
+            providerDefs = spec.providers || {};
+            state = status;
+        }
+
+        get active() { return state.active; }
+        get enabled() { return state.enabled; }
+
+        open() {
+            if (this.ui) {
+                this.ui.style.display = this.ui.style.display === 'none' ? 'block' : 'none';
+                if (this.ui.style.display !== 'none') this.render();
+            }
+        }
+
+        async panel() {
+            await this.refresh();
+            if (!this.rootEl) this.rootEl = el('div', { class: 'nx-root', style: 'padding:10px 14px' });
+            this.rootEl.innerHTML = '';
+            this.rootEl.append(
+                this.header(),
+                this.status(),
+                this.toggleRow(),
+                this.baseCard(),
+                ...providerCards(),
+            );
+            if (!this.ui) {
+                this.ui = el('div', { style: 'display:block' });
+                this.ui.append(this.rootEl);
+                app.ui.sidebar.addElement(this.ui, 'Nexus Cloud', 'icon:cloud');
+            }
+            return this.ui;
+        }
+
+        header() {
+            const h = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:6px' });
+            const title = el('span', { text: 'Nexus Cloud' }, 'Nexus Cloud');
+            title.style.fontWeight = '600';
+            const refreshBtn = el('button', { onclick: () => this.render() }, 'Refresh');
+            refreshBtn.className = 'nx-btn';
+            h.append(title, refreshBtn);
+            return h;
+        }
+
+        status() {
+            const s = document.createElement('div');
+            s.className = 'nx-status';
+            const active = this.active ? `${this.active.provider}/${this.active.account}` : '—';
+            const running = state.accounts.find(a => a.active)?.running ? ' (live)' : '';
+            s.textContent = `Active: ${active}${running} · Auto-failover: ${state.auto_failover ? 'on' : 'off'}`;
+            return s;
+        }
+
+        toggleRow() {
+            const row = el('div', { style: 'display:flex;gap:10px;align-items:center;margin:8px 0' });
+            const label = el('label', { style: 'display:flex;align-items:center;gap:6px' },
+                             'Route /prompt through Nexus Cloud');
+            const on = el('input', { type: 'checkbox' });
+            on.checked = state.enabled;
+            on.onchange = async () => {
+                try { await this.api('POST', '/toggle', { enabled: on.checked }); this.render(); }
+                catch (e) { alert(e.message); }
+            };
+            label.prepend(on);
+            row.append(label);
+            return row;
+        }
+
+        baseCard() {
+            const card = el('div', { class: 'nx-card' });
+            const title = el('div', { class: 'nx-card-title' }, 'Providers');
+            card.append(title);
+            if (!Object.keys(providerDefs).length) {
+                card.append(el('div', { class: 'nx-muted', text: 'No providers configured.' }, 'No providers configured.'));
+                return card;
+            }
+            for (const [pid, def] of Object.entries(providerDefs)) {
+                card.append(providerCard(pid, def));
+            }
+            return card;
+        }
     }
 
-    // 3. Settings Hook
-    app.ui.settings.addSetting({
-      id: "NexusCloud.UnlockSetup",
-      name: "Unlock Nexus Cloud Setup",
-      type: "button",
-      label: "Open Setup Popup",
-      callback: () => {
-        saveJSON(LS_LOCKED, false);
-        showPopup();
-      }
-    });
-  },
-});
+    const providerCard = (pid, def) => {
+        const section = el('div', { class: 'nx-provider' });
+        const head = el('div', { class: 'nx-provider-head' });
+        const name = el('span', { text: def.label }, def.label);
+        name.style.fontWeight = '600';
+        const avail = def.available ? '✓' : '✗ no SDK';
+        const availTag = el('span', { class: 'nx-tag', text: avail }, avail);
+        availTag.title = def.summary;
+        head.append(name, availTag);
+        section.append(head);
+        const accounts = state.accounts.filter(a => a.provider === pid);
+        if (!accounts.length) {
+            section.append(el('div', { class: 'nx-muted', text: 'No accounts saved.' }, 'No accounts saved.'));
+        } else {
+            const list = el('div', { class: 'nx-accounts' });
+            for (const a of accounts) {
+                list.append(accountRow(pid, def, a));
+            }
+            section.append(list);
+        }
+        section.append(addAccountRow(pid, def));
+        return section;
+    };
+
+    const accountRow = (pid, def, a) => {
+        const row = el('div', { class: `nx-acct${a.active ? ' nx-active' : ''}` });
+        const badge = a.primary ? '⭐' : (a.active ? '●' : '');
+        const nameEl = el('span', { text: `${a.label || a.name} ${badge}`.trim() }, `${a.label || a.name} ${badge}`.trim());
+        nameEl.style.flex = '1';
+        const live = a.running ? el('span', { class: 'nx-tag', text: 'live' }, 'live') : null;
+        const connectBtn = el('button', { class: 'nx-btn', onclick: async () => { await connect(pid, a.name); } }, 'Connect');
+        const delBtn = el('button', { class: 'nx-btn nx-danger', onclick: async () => { await delAccount(pid, a.name); } }, '✕');
+        row.append(nameEl);
+        if (live) row.append(live);
+        row.append(connectBtn, delBtn);
+        return row;
+    };
+
+    const addAccountRow = (pid, def) => {
+        const form = el('div', { class: 'nx-add' });
+        const name = el('input', { type: 'text', placeholder: 'name e.g. "my-modal"' });
+        const fields = [];
+        for (const cf of def.cred_fields) {
+            const inp = el('input', { type: cf.secret ? 'password' : 'text', placeholder: cf.placeholder });
+            inp.dataset.key = cf.key;
+            fields.push({ label: cf.label, input: inp });
+        }
+        const saveBtn = el('button', { class: 'nx-btn nx-primary', onclick: async () => {
+            const creds = {};
+            for (const f of fields) creds[f.input.dataset.key] = f.input.value.trim();
+            try {
+                await this0.api('POST', '/accounts', { provider: pid, account: name.value.trim(), creds });
+                this0.render();
+            } catch (e) { alert(e.message); }
+        } }, 'Save account');
+
+        const inner = el('div', { style: 'display:flex;flex-direction:column;gap:6px' });
+        inner.append(name);
+        for (const f of fields) {
+            const wrap = el('div', { style: 'display:flex;flex-direction:column;gap:2px' });
+            wrap.append(el('label', { class: 'nx-muted', text: f.label }, f.label), f.input);
+            inner.append(wrap);
+        }
+        inner.append(saveBtn);
+        form.append(inner);
+        return form;
+    };
+
+    const connect = async (pid, acct) => {
+        try {
+            await this0.api('POST', '/connect', { provider: pid, account: acct });
+            this0.render();
+        } catch (e) { alert(e.message); }
+    };
+    const delAccount = async (pid, acct) => {
+        if (!confirm(`Delete account ${acct}?`)) return;
+        try {
+            await this0.api('DELETE', '/accounts', { provider: pid, account: acct });
+            this0.render();
+        } catch (e) { alert(e.message); }
+    };
+
+    let this0 = null;
+    const boot = async () => {
+        this0 = new NexusCloud();
+        window.nexusCloud = this0;
+        const hasSidebar = !!app.ui.sidebar;
+        if (!hasSidebar) {
+            console.warn('[nexus-cloud] ComfyUI sidebar not available yet; retrying.');
+            setTimeout(boot, 500);
+            return;
+        }
+        try {
+            await this0.panel();
+        } catch (e) {
+            console.error('[nexus-cloud] panel error', e);
+        }
+    };
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(boot, 300);
+    } else {
+        window.addEventListener('DOMContentLoaded', () => setTimeout(boot, 300));
+    }
+})();

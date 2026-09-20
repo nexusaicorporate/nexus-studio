@@ -155,7 +155,7 @@ if ($spec.tools) {
   }
 }
 
-# 4. Install any extra global pip packages (e.g. modal).
+# 4. Install any extra global pip packages.
 foreach ($pkg in $spec.pip) {
   Write-Host "==> pip install $pkg"
   & $python -m pip install --no-warn-script-location $pkg
@@ -176,18 +176,7 @@ if (Test-Path $configSrc) {
   }
 }
 
-# 6. Bundle the Modal backend scripts (for the one-click Deploy button) into
-#    resources/modal so they ship in the installer. Referenced by tauri.conf.json
-#    as "resources/modal/*.py" (no path traversal).
-$modalSrc = Join-Path $root "modal"
-$modalDest = Join-Path $resources "modal"
-if (Test-Path $modalSrc) {
-  New-Item -ItemType Directory -Force -Path $modalDest | Out-Null
-  Copy-Item -Path (Join-Path $modalSrc "*.py") -Destination $modalDest -Force
-  Write-Host "==> Copied Modal scripts into resources/modal"
-}
-
-# 7. Strip .git directories from the bundled resources. Tauri bundles + watches
+# 6. Strip .git directories from the bundled resources. Tauri bundles + watches
 #    every file under resources/, and the cloned repos' .git folders are huge and
 #    contain read-only pack files that make the build fail with "Access is denied".
 Write-Host "==> Stripping .git directories from bundled resources"

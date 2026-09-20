@@ -3,10 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import Page from "@/components/Page";
 import { Field, Toggle, useMounted } from "@/components/ui";
 import { useComfyStore } from "@/lib/store/comfy";
-import { useSettings } from "@/lib/store/settings";
-import { Upload, Play, Terminal, Image as ImageIcon, Sliders, CheckCircle2, AlertTriangle, FileJson, Sparkles, ExternalLink, Cpu, Cloud, Globe, Layers, Power, RotateCw, Loader2, Wrench } from "lucide-react";
+import { Upload, Play, Terminal, Image as ImageIcon, Sliders, CheckCircle2, AlertTriangle, FileJson, Sparkles, ExternalLink, Cpu, Power, RotateCw, Loader2, Wrench, AlertCircle } from "lucide-react";
 import { newId } from "@/lib/store/library";
-import ComfyEnvSelector, { ComfyEnvDropdown } from "@/components/ComfyEnvSelector";
 import { checkComfyReachable, launchComfy, isDesktop, comfyStatus, restoreComfyEnv, scanWorkflowModels } from "@/lib/comfy-runtime";
 import ComfyInstallHowto from "@/components/ComfyInstallHowto";
 
@@ -28,10 +26,14 @@ const BOOT_MSGS = [
   "First run installs a few dependencies — hang tight…",
 ];
 
+// Demo workflows for quick testing
+const demoT2I = { "3": { class_type: "KSampler", inputs: { seed: 12345, steps: 20, cfg: 7, sampler_name: "euler", scheduler: "normal", denoise: 1 } }, "4": { class_type: "CheckpointLoaderSimple", inputs: { ckpt_name: "sdxl_base.safetensors" } }, "6": { class_type: "CLIPTextEncode", inputs: { text: "beautiful landscape, masterpiece" } }, "7": { class_type: "CLIPTextEncode", inputs: { text: "ugly, deformed, noisy" } }, "8": { class_type: "VAEDecode", inputs: {} }, "9": { class_type: "SaveImage", inputs: { filename_prefix: "ComfyUI" } } };
+const demoI2I = { ...demoT2I, "10": { class_type: "LoadImage", inputs: { image: "" } }, "11": { class_type: "VAEEncode", inputs: {} } };
+const demoControlNet = { ...demoT2I, "12": { class_type: "LoadImage", inputs: { image: "" } }, "13": { class_type: "ControlNetApply", inputs: { strength: 1.0 } } };
+
 export default function WorkflowStudioPage() {
   const mounted = useMounted();
   const comfy = useComfyStore();
-  const settings = useSettings();
   const wsRef = useRef<WebSocket | null>(null);
 
   // Clean up WebSocket on component unmount
@@ -71,8 +73,7 @@ export default function WorkflowStudioPage() {
   const [launchPhase, setLaunchPhase] = useState<string>("");
   const [connecting, setConnecting] = useState(false); // web: waiting for an externally-started ComfyUI
 
-  const activeProvider = comfy.providers.find((p) => p.id === comfy.activeProviderId);
-  const localUrl = comfy.providers.find((p) => p.id === "local")?.url || "http://localhost:8188";
+  const localUrl = "http://localhost:8188";
 
   // Poll whether the managed ComfyUI is up; resolve its folder for display (desktop).
   useEffect(() => {
@@ -82,7 +83,7 @@ export default function WorkflowStudioPage() {
     const t = setInterval(ping, 5000);
     comfyStatus().then((s) => { if (s && alive) { setManagedDir(s.managedDir); setProvisioned(s.provisioned); } });
     return () => { alive = false; clearInterval(t); };
-  }, [localUrl]);
+  }, []);
 
   // When a workflow is loaded and ComfyUI is reachable, ask the bundled model
   // downloader node which models it needs and how many are missing.
@@ -93,7 +94,7 @@ export default function WorkflowStudioPage() {
       if (alive && s.ok) setModelScan({ total: s.summary.total, missing: s.summary.missing });
     });
     return () => { alive = false; };
-  }, [parsedNodes, serverOnline, localUrl]);
+  }, [parsedNodes, serverOnline]);
 
   // Optionally auto-launch the managed ComfyUI when the gear opens (desktop only).
   useEffect(() => {
@@ -296,15 +297,10 @@ export default function WorkflowStudioPage() {
       return;
     }
 
-    if (!activeProvider?.enabled) {
-      alert(`The selected ComfyUI provider (${activeProvider?.name}) is currently disabled. Enable it in Settings.`);
-      return;
-    }
-
     setExecStatus("queueing");
     setExecProgress(10);
     setOutputImage(null);
-    setExecLogs([`[Nexus] Initiating request to ${activeProvider.name}...`, `[Nexus] Endpoint: ${activeProvider.url}`]);
+    setExecLogs([`[Nexus] Initiating request to local ComfyUI...`, `[Nexus] Endpoint: ${localUrl}`]);
 
     // Construct executing API JSON payload with modified inputs
     const executionPayload = JSON.parse(JSON.stringify(parsedNodes));
@@ -383,218 +379,89 @@ export default function WorkflowStudioPage() {
       }, 6000);
     };
 
-    if (comfy.runMode === "local") {
-      try {
-        setExecLogs((prev) => [...prev, `[Local ComfyUI] Connection enqueuing to ${activeProvider.url}...`]);
-        
-        const clientId = "nexus_studio_" + Math.random().toString(36).substring(2, 9);
-        const wsUrl = activeProvider.url.replace(/^http/, "ws") + `/ws?clientId=${clientId}`;
-        
-        const ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
+    try {
+      setExecLogs((prev) => [...prev, `[Local ComfyUI] Connection enqueuing to ${localUrl}...`]);
+      
+      const clientId = "nexus_studio_" + Math.random().toString(36).substring(2, 9);
+      const wsUrl = localUrl.replace(/^http/, "ws") + `/ws?clientId=${clientId}`;
+      
+      const ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
 
-        ws.onopen = () => {
-          setExecLogs((prev) => [...prev, `[WebSocket] Connected to local ComfyUI stream.`]);
-        };
+      ws.onopen = () => {
+        setExecLogs((prev) => [...prev, `[WebSocket] Connected to local ComfyUI stream.`]);
+      };
 
-        ws.onmessage = (event) => {
-          try {
-            const msg = JSON.parse(event.data);
-            if (msg.type === "status") {
-              const queueRemaining = msg.data.status.exec_info.queue_remaining;
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Queue remaining: ${queueRemaining}`]);
-            } else if (msg.type === "execution_start") {
-              setExecStatus("running");
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution started: ${msg.data.prompt_id}`]);
-            } else if (msg.type === "executing") {
-              const node = msg.data.node;
-              if (node === null) {
-                setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution flow ended.`]);
-              } else {
-                setActiveNode(node);
-                setExecLogs((prev) => [...prev, `[Local ComfyUI] Executing Node ${node}`]);
-              }
-            } else if (msg.type === "progress") {
-              const { value, max } = msg.data;
-              setExecProgress(Math.round((value / max) * 100));
-            } else if (msg.type === "executed") {
-              const { node, output } = msg.data;
-              setExecLogs((prev) => [...prev, `[Local ComfyUI] Node ${node} completed.`]);
-              
-              if (output.images && output.images.length > 0) {
-                const img = output.images[0];
-                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(img.filename)}&subfolder=${encodeURIComponent(img.subfolder)}&type=${encodeURIComponent(img.type)}`;
-                setOutputImage(viewUrl);
-                setExecStatus("completed");
-                setExecProgress(100);
-                setActiveNode(null);
-                ws.close();
-              } else if (output.gifs && output.gifs.length > 0) {
-                const gif = output.gifs[0];
-                const viewUrl = `${activeProvider.url}/view?filename=${encodeURIComponent(gif.filename)}&subfolder=${encodeURIComponent(gif.subfolder)}&type=${encodeURIComponent(gif.type)}`;
-                setOutputImage(viewUrl);
-                setExecStatus("completed");
-                setExecProgress(100);
-                setActiveNode(null);
-                ws.close();
-              }
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.type === "status") {
+            const queueRemaining = msg.data.status.exec_info.queue_remaining;
+            setExecLogs((prev) => [...prev, `[Local ComfyUI] Queue remaining: ${queueRemaining}`]);
+          } else if (msg.type === "execution_start") {
+            setExecStatus("running");
+            setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution started: ${msg.data.prompt_id}`]);
+          } else if (msg.type === "executing") {
+            const node = msg.data.node;
+            if (node === null) {
+              setExecLogs((prev) => [...prev, `[Local ComfyUI] Execution flow ended.`]);
+            } else {
+              setActiveNode(node);
+              setExecLogs((prev) => [...prev, `[Local ComfyUI] Executing Node ${node}`]);
             }
-          } catch (err) {
-            console.error(err);
-          }
-        };
-
-        ws.onerror = () => {
-          setExecLogs((prev) => [...prev, `[WebSocket] Error connecting to local ComfyUI event stream.`]);
-        };
-
-        const res = await fetch(`${activeProvider.url}/prompt`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ client_id: clientId, prompt: executionPayload })
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-        }
-
-        const data = await res.json();
-        setExecLogs((prev) => [...prev, `[Local ComfyUI] Prompt enqueued successfully (Prompt ID: ${data.prompt_id})`]);
-      } catch (err: any) {
-        setExecLogs((prev) => [
-          ...prev,
-          `[Local API Error] Connect failed: ${err.message}`,
-          `[Nexus] Local ComfyUI is offline or CORS is not enabled. Running simulated prompt execution instead...`
-        ]);
-        runSimulatedExecution();
-      }
-    } else if (comfy.runMode === "hybrid") {
-      try {
-        setExecLogs((prev) => [
-          ...prev,
-          `[Hybrid Mode] Local node workspace loaded (localhost:8188).`,
-          `[Hybrid Mode] Dispatching task with remote GPU worker offloading via ${comfy.hybridConfig.customNodeRepo}...`,
-          `[Hybrid Mode] Remote GPU Server URL: ${comfy.hybridConfig.remoteGpuUrl || "http://localhost:8000 (Simulated)"}`
-        ]);
-
-        const remoteUrl = comfy.hybridConfig.remoteGpuUrl || "http://localhost:8000";
-        
-        // Execute request to remote GPU server via nathannlu/comfyui-cloud api offloading
-        const res = await fetch(`${remoteUrl}/prompt`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": comfy.hybridConfig.remoteGpuKey ? `Bearer ${comfy.hybridConfig.remoteGpuKey}` : ""
-          },
-          body: JSON.stringify({ prompt: executionPayload })
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-        }
-
-        const data = await res.json();
-        setExecLogs((prev) => [
-          ...prev,
-          `[Hybrid Mode] Offloaded successfully (Prompt ID: ${data.prompt_id || "hybrid_task_ok"})`,
-          `[Hybrid Mode] Running remote GPU task execution...`
-        ]);
-        
-        runSimulatedExecution();
-      } catch (err: any) {
-        setExecLogs((prev) => [
-          ...prev,
-          `[Hybrid Mode Error] Offloading failed: ${err.message}`,
-          `[Hybrid Mode] Could not connect to remote GPU. Running simulated local offloader instead...`
-        ]);
-        runSimulatedExecution();
-      }
-    } else if (comfy.runMode === "cloud") {
-      try {
-        const plan = comfy.cloudPlan;
-        if (!plan) {
-          throw new Error("No active pricing plan selected for ComfyUI Cloud. Please select a plan first.");
-        }
-        
-        setExecLogs((prev) => [
-          ...prev,
-          `[ComfyUI Cloud] Queueing prompt to Cloud API Location: ${comfy.cloudEnvironment}...`,
-          `[ComfyUI Cloud] Using Subscription Plan: ${plan.toUpperCase()}`
-        ]);
-        
-        const apiKey = activeProvider.apiKey || "";
-        const endpointUrl = activeProvider.id === "comfycloud" ? "https://cloud.comfy.org/api/prompt" : `${activeProvider.url}/prompt`;
-        
-        const res = await fetch(endpointUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-API-Key": apiKey
-          },
-          body: JSON.stringify({ prompt: executionPayload })
-        });
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${await res.text()}`);
-        }
-
-        const data = await res.json();
-        const promptId = data.prompt_id || data.id || "prompt_cloud";
-        setExecLogs((prev) => [
-          ...prev,
-          `[ComfyUI Cloud] Queue success (Job ID: ${promptId})`,
-          `[ComfyUI Cloud] Polling job execution status...`
-        ]);
-
-        let attempts = 0;
-        const interval = setInterval(async () => {
-          attempts++;
-          try {
-            const statusRes = await fetch(`https://cloud.comfy.org/api/prompt?id=${promptId}`, {
-              method: "GET",
-              headers: { "X-API-Key": apiKey }
-            });
-            if (statusRes.ok) {
-              const statusData = await statusRes.json();
-              setExecProgress(Math.min(90, 20 + attempts * 10));
-              
-              if (statusData.completed || statusData.status === "success" || statusData.output) {
-                clearInterval(interval);
-                setExecStatus("completed");
-                setExecProgress(100);
-                setExecLogs((prev) => [...prev, `[ComfyUI Cloud] Job completed.`]);
-                if (statusData.output?.images?.[0]?.url) {
-                  setOutputImage(statusData.output.images[0].url);
-                } else {
-                  const textInputs = extractedInputs.filter((i) => i.type === "text").map((i) => i.value).join(" ");
-                  const seed = extractedInputs.find((i) => i.inputKey === "seed")?.value || 42;
-                  setOutputImage(`https://image.pollinations.ai/p/${encodeURIComponent(textInputs || "beautiful abstract scenery")}?width=800&height=600&seed=${Math.abs(seed)%1000}`);
-                }
-              } else if (statusData.status === "failed") {
-                clearInterval(interval);
-                setExecStatus("failed");
-                setExecLogs((prev) => [...prev, `[ComfyUI Cloud] Job execution failed.`]);
-              }
+          } else if (msg.type === "progress") {
+            const { value, max } = msg.data;
+            setExecProgress(Math.round((value / max) * 100));
+          } else if (msg.type === "executed") {
+            const { node, output } = msg.data;
+            setExecLogs((prev) => [...prev, `[Local ComfyUI] Node ${node} completed.`]);
+            
+            if (output.images && output.images.length > 0) {
+              const img = output.images[0];
+              const viewUrl = `${localUrl}/view?filename=${encodeURIComponent(img.filename)}&subfolder=${encodeURIComponent(img.subfolder)}&type=${encodeURIComponent(img.type)}`;
+              setOutputImage(viewUrl);
+              setExecStatus("completed");
+              setExecProgress(100);
+              setActiveNode(null);
+              ws.close();
+            } else if (output.gifs && output.gifs.length > 0) {
+              const gif = output.gifs[0];
+              const viewUrl = `${localUrl}/view?filename=${encodeURIComponent(gif.filename)}&subfolder=${encodeURIComponent(gif.subfolder)}&type=${encodeURIComponent(gif.type)}`;
+              setOutputImage(viewUrl);
+              setExecStatus("completed");
+              setExecProgress(100);
+              setActiveNode(null);
+              ws.close();
             }
-          } catch (e) {
-            console.error("Cloud status poll error:", e);
           }
+        } catch (err) {
+          console.error(err);
+        }
+      };
 
-          if (attempts > 30) {
-            clearInterval(interval);
-            setExecStatus("failed");
-            setExecLogs((prev) => [...prev, `[ComfyUI Cloud] Timeout polling job status.`]);
-          }
-        }, 3000);
+      ws.onerror = () => {
+        setExecLogs((prev) => [...prev, `[WebSocket] Error connecting to local ComfyUI event stream.`]);
+      };
 
-      } catch (err: any) {
-        setExecLogs((prev) => [
-          ...prev,
-          `[Cloud API Error] Queue failed: ${err.message}`,
-          `[Nexus] Running simulated cloud execution...`
-        ]);
-        runSimulatedExecution();
+      const res = await fetch(`${localUrl}/prompt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ client_id: clientId, prompt: executionPayload })
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${await res.text()}`);
       }
+
+      const data = await res.json();
+      setExecLogs((prev) => [...prev, `[Local ComfyUI] Prompt enqueued successfully (Prompt ID: ${data.prompt_id})`]);
+    } catch (err: any) {
+      setExecLogs((prev) => [
+        ...prev,
+        `[Local API Error] Connect failed: ${err.message}`,
+        `[Nexus] Local ComfyUI is offline or CORS is not enabled. Running simulated prompt execution instead...`
+      ]);
+      runSimulatedExecution();
     }
   }
 
@@ -611,76 +478,33 @@ export default function WorkflowStudioPage() {
     alert("Workflow saved to local repository.");
   }
 
-  const localProvider = comfy.providers.find((p) => p.id === "local") || { url: "http://localhost:8188" };
-  const iframeUrl = localProvider.url;
-
   return (
     <Page
       title="ComfyUI Gear"
-      subtitle="Local ComfyUI instance with cloud-GPU offloading capabilities."
+      subtitle="Local ComfyUI workspace with managed instance lifecycle and WebSocket execution."
       actions={
         <div className="flex gap-2 items-center">
-          <ComfyEnvDropdown />
-          <button
-            type="button"
-            className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px]"
-            onClick={() => comfy.set("runModeLocked", false)}
-          >
-            <Layers size={13} /> Change Env
-          </button>
-          
-          <button
-            type="button"
-            className={`btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 h-[34px] ${showApiPanel ? "bg-primary/10 border-primary text-primary-light" : ""}`}
-            onClick={() => setShowApiPanel(!showApiPanel)}
-            title="Toggle API Prompt Panel"
-          >
-            <Sliders size={13} /> API Panel
-          </button>
-
-          {comfy.runMode === "cloud" && !comfy.cloudPlan ? (
-            <button
-              type="button"
-              className="btn-primary bg-amber-600 hover:bg-amber-500 border-amber-500/30 text-white text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1 shadow-glow"
-              onClick={() => comfy.set("showPlansModal", true)}
-            >
-              <Cloud size={14} /> Subscribe
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="btn-primary text-xs py-1.5 px-3 h-[34px] font-bold flex items-center gap-1.5"
-              disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
-              onClick={handleExecute}
-            >
-              {comfy.runMode === "local" ? <Play size={13} fill="currentColor" /> : <Cloud size={13} />}
-              {comfy.runMode === "local" ? "Queue Comfy Prompt" : "Generate with Cloud GPU"}
-            </button>
-          )}
+          <label className="btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 cursor-pointer">
+            <Upload size={13} /> Import Workflow
+            <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
+          </label>
         </div>
       }
     >
-      <ComfyEnvSelector />
-
       <div className="flex flex-col lg:flex-row gap-5 h-[calc(100vh-165px)] min-h-[600px] overflow-hidden">
         {/* Main Workspace Iframe */}
         <div className="flex-1 flex flex-col border border-border rounded-xl bg-black/40 shadow-xl overflow-hidden h-full">
           <div className="bg-surface2/50 border-b border-border/40 px-4 py-2 flex items-center justify-between text-xs text-muted-more shrink-0">
             <div className="flex items-center gap-2">
-              <span className={`w-2 h-2 rounded-full ${comfy.runMode === "local" ? "bg-emerald-400" : comfy.runMode === "hybrid" ? "bg-cyan-400" : "bg-primary-light"} animate-pulse`} />
-              <span>Live Workspace: <strong>{iframeUrl}</strong></span>
-              <span className="chip text-[10px] uppercase font-bold capitalize bg-primary/10 text-primary-light border-primary/20">
-                {comfy.runMode} Mode
+              <span className={`w-2 h-2 rounded-full ${serverOnline ? "bg-emerald-400" : serverOnline === null ? "bg-amber-400 animate-pulse" : "bg-rose-400"} ${(serverOnline || launching || connecting) ? "animate-pulse" : ""}`} />
+              <span>Live Workspace: <strong>{localUrl}</strong></span>
+              <span className="chip text-[10px] uppercase font-bold capitalize bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
+                Local Mode
               </span>
             </div>
             <div className="flex items-center gap-2.5">
-              {comfy.runMode === "hybrid" && (
-                <span className="text-xs text-primary-light font-bold flex items-center gap-1.5 bg-primary/5 px-2 py-0.5 rounded border border-primary/20">
-                  <Cloud size={12} /> Cloud GPU Active
-                </span>
-              )}
               <a 
-                href={iframeUrl} 
+                href={localUrl} 
                 target="_blank" 
                 rel="noreferrer" 
                 className="btn-outline px-2.5 py-1 text-[11px] flex items-center gap-1 hover:text-primary-light"
@@ -738,7 +562,7 @@ export default function WorkflowStudioPage() {
                     <div className="w-14 h-14 rounded-2xl bg-primary/10 border border-primary/20 grid place-items-center mx-auto mb-4">
                       <Cpu size={26} className="text-primary-light" />
                     </div>
-                    <div className="text-lg font-bold mb-1">{launchError ? "ComfyUI didn’t start" : "ComfyUI isn’t running yet"}</div>
+                    <div className="text-lg font-bold mb-1">{launchError ? "ComfyUI didn't start" : "ComfyUI isn't running yet"}</div>
                     {launchError && (
                       <div className="bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 mb-3 text-left text-[11px] text-rose-200 flex gap-2">
                         <AlertTriangle size={14} className="text-rose-400 shrink-0 mt-0.5" />
@@ -746,9 +570,8 @@ export default function WorkflowStudioPage() {
                       </div>
                     )}
                     <p className="text-xs text-muted leading-relaxed mb-4">
-                      The app-managed ComfyUI lives in <strong>{managedDir || "the app’s ComfyUI subfolder"}</strong>.
-                      It starts in <strong>{comfy.deviceMode === "cpu" ? "CPU-only" : "GPU"}</strong> mode so it always boots —
-                      cloud generation runs on Modal GPUs via the <strong>Modal GPU</strong> tab inside the canvas.
+                      The app-managed ComfyUI lives in <strong>{managedDir || "the app's ComfyUI subfolder"}</strong>.
+                      It starts in <strong>{comfy.deviceMode === "cpu" ? "CPU-only" : "GPU"}</strong> mode so it always boots.
                       {provisioned === false && <><br /><span className="text-amber-300/90">First start copies the bundled ComfyUI into place — this can take a minute.</span></>}
                     </p>
 
@@ -825,7 +648,7 @@ export default function WorkflowStudioPage() {
             </div>
           ) : (
             <iframe
-              src={iframeUrl}
+              src={localUrl}
               className="flex-1 w-full border-0 bg-white"
               title="ComfyUI Node Workspace"
               sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
@@ -859,77 +682,69 @@ export default function WorkflowStudioPage() {
                       <input type="file" accept="application/json" hidden onChange={handleFileUpload} />
                     </label>
                   </div>
-                  <div className="space-y-2">
-                    <Field label="Workflow Name">
-                      <input className="input text-xs py-1 px-2.5 h-8" value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} />
-                    </Field>
-                    <Field label="Description">
-                      <input className="input text-xs py-1 px-2.5 h-8" value={workflowDesc} onChange={(e) => setWorkflowDesc(e.target.value)} />
-                    </Field>
+                  <div className="flex gap-2">
+                    <input className="input text-xs flex-1" value={workflowName} onChange={(e) => setWorkflowName(e.target.value)} placeholder="Workflow name" />
+                    <button className="btn-primary px-3 text-xs flex items-center gap-1" onClick={handleSaveWorkflow}><CheckCircle2 size={13} /> Save</button>
                   </div>
-                  <textarea
-                    className={`input font-mono text-[10px] min-h-[120px] ${jsonError ? "border-rose-500/80" : ""}`}
-                    placeholder="Paste ComfyUI API JSON code here..."
-                    value={rawJson}
-                    onChange={(e) => {
-                      setRawJson(e.target.value);
-                      handleParseJson(e.target.value);
-                    }}
+                  <textarea 
+                    className="input font-mono text-[11px] min-h-[200px] bg-black/30 border-border/40 text-white" 
+                    value={rawJson} 
+                    onChange={(e) => { setRawJson(e.target.value); handleParseJson(e.target.value); }} 
+                    placeholder="Paste or upload a ComfyUI API JSON workflow..."
                   />
-                  {jsonError && <p className="text-rose-400 text-[10px] mt-1 font-semibold">{jsonError}</p>}
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="chip text-[9px] font-semibold bg-surface2/60 border-border/40">
-                      Nodes: {Object.keys(parsedNodes).length}
-                    </span>
-                    <button type="button" className="btn-outline text-[11px] py-1 px-2.5 h-7 font-bold" onClick={handleSaveWorkflow}>
-                      Save to Library
-                    </button>
-                  </div>
+                  {jsonError && <div className="text-rose-400 text-[10px] flex items-center gap-1.5"><AlertTriangle size={12} /> {jsonError}</div>}
                 </div>
 
-                {/* 2. Tweakable parameters */}
+                {/* 2. Dynamic Input Controls */}
                 {extractedInputs.length > 0 && (
                   <div className="card p-4 space-y-3">
-                    <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center gap-1.5">
-                      <Sliders size={14} /> Tweak Parameters
+                    <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center justify-between">
+                      <span className="flex items-center gap-1.5"><Sliders size={14} /> Input Controls ({extractedInputs.length})</span>
                     </div>
-                    <div className="space-y-3.5">
-                      {extractedInputs.map((inp) => (
-                        <div key={`${inp.nodeId}-${inp.inputKey}`} className="bg-surface2/30 border border-border/40 p-3 rounded-xl">
-                          <div className="flex justify-between items-center mb-1.5">
-                            <span className="text-xs font-semibold text-text truncate max-w-[180px]">{inp.nodeTitle}</span>
-                            <span className="chip text-[9px] uppercase tracking-wider bg-surface1 text-muted-more border-border/50 font-bold">
-                              Node {inp.nodeId} · {inp.inputKey}
-                            </span>
+                    <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
+                      {extractedInputs.map((inp, idx) => (
+                        <div key={idx} className="space-y-1 p-2 bg-surface2/40 border border-border/30 rounded-lg">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-mono text-muted">{inp.nodeId}</span>
+                            <span className="text-primary-light font-medium">{inp.nodeTitle}</span>
                           </div>
-                          {inp.type === "text" ? (
-                            <textarea
-                              className="input text-xs min-h-[50px] py-1.5 px-2.5 leading-normal"
-                              value={inp.value}
-                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
+                          <div className="flex items-center gap-2 text-[11px] text-muted">
+                            <span className="chip text-[9px] uppercase">{inp.inputKey}</span>
+                            <span className="chip text-[9px] uppercase">{inp.type}</span>
+                          </div>
+                          {inp.type === "text" && (
+                            <textarea 
+                              className="input text-xs min-h-[60px] w-full mt-1" 
+                              value={inp.value} 
+                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)} 
+                              placeholder="Enter prompt text..."
                             />
-                          ) : inp.type === "number" ? (
-                            <input
-                              type="number"
-                              className="input text-xs py-1 px-2.5 h-8"
-                              value={inp.value}
-                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, parseFloat(e.target.value) || 0)}
+                          )}
+                          {inp.type === "number" && (
+                            <input 
+                              className="input text-xs w-32 mt-1" 
+                              type="number" 
+                              value={inp.value} 
+                              onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, Number(e.target.value))} 
                             />
-                          ) : (
-                            <div className="flex gap-2">
-                              <input
-                                className="input text-xs flex-1 py-1 px-2.5 h-8"
-                                placeholder="Select image filename..."
-                                value={inp.value}
-                                onChange={(e) => updateInputValue(inp.nodeId, inp.inputKey, e.target.value)}
-                              />
-                              <label className="btn-outline px-2.5 h-8 flex items-center justify-center text-[11px] font-bold cursor-pointer shrink-0">
-                                Upload
+                          )}
+                          {inp.type === "image" && (
+                            <div className="mt-1">
+                              <label className="btn-outline cursor-pointer w-full justify-start text-xs">
+                                <ImageIcon size={13} /> Load Image
                                 <input type="file" accept="image/*" hidden onChange={(e) => {
                                   const file = e.target.files?.[0];
-                                  if (file) updateInputValue(inp.nodeId, inp.inputKey, file.name);
+                                  if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = () => updateInputValue(inp.nodeId, inp.inputKey, reader.result as string);
+                                  reader.readAsDataURL(file);
                                 }} />
                               </label>
+                              {inp.value && (
+                                <div className="mt-2 aspect-video bg-black/30 rounded-lg overflow-hidden">
+                                  <img src={inp.value} className="w-full h-full object-cover" alt="Reference image" />
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
@@ -938,106 +753,69 @@ export default function WorkflowStudioPage() {
                   </div>
                 )}
 
-                {/* 3. ComfyUI Endpoint Settings */}
-                <div className="card p-4 space-y-2.5">
-                  <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 flex items-center gap-1.5">
-                    <Layers size={14} /> API Endpoint Settings
+                {/* 3. Execute Section */}
+                <div className="card p-4 space-y-3">
+                  <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2">
+                    <span className="flex items-center gap-1.5"><Play size={14} fill="currentColor" /> Execute</span>
                   </div>
-                  <Field label="Active Cloud API / Local Host">
-                    <select
-                      className="input text-xs py-1 px-2.5 h-8"
-                      value={comfy.activeProviderId}
-                      onChange={(e) => comfy.set("activeProviderId", e.target.value)}
-                    >
-                      {comfy.providers.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} {p.enabled ? "" : "(Disabled)"}
-                        </option>
-                      ))}
-                    </select>
-                  </Field>
-                  {activeProvider && (
-                    <div className="text-[11px] text-muted-more bg-surface2/40 border border-border/30 rounded-xl p-2.5 leading-relaxed">
-                      <div className="flex items-center gap-1.5 text-text font-semibold mb-1">
-                        Endpoint status: {activeProvider.enabled ? (
-                          <span className="text-emerald-400">Connected</span>
-                        ) : (
-                          <span className="text-rose-400">Disabled</span>
-                        )}
-                      </div>
-                      Url: <span className="font-mono text-muted truncate block">{activeProvider.url}</span>
-                      {activeProvider.apiKey ? (
-                        <div className="mt-0.5">API Key: <span className="font-mono text-muted">••••••••••••</span></div>
-                      ) : (
-                        <div className="mt-0.5 text-amber-300/80 flex items-center gap-1"><AlertTriangle size={11} /> No API Key set. Enter in Settings if needed.</div>
-                      )}
+                  
+                  {execStatus === "queueing" && (
+                    <div className="bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg text-center text-xs text-amber-200 animate-pulse">
+                      Queuing prompt…
                     </div>
                   )}
+                  {execStatus === "running" && (
+                    <div className="space-y-2">
+                      <div className="w-full bg-surface2 h-1.5 rounded-full overflow-hidden border border-border/40">
+                        <div className="h-full bg-primary transition-all duration-300" style={{ width: `${execProgress}%` }} />
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-muted">{activeNode ? `Executing Node: ${activeNode}` : "Running…"}</span>
+                        <span className="font-mono text-primary">{execProgress}%</span>
+                      </div>
+                    </div>
+                  )}
+                  {execStatus === "completed" && outputImage && (
+                    <div className="space-y-2">
+                      <div className="aspect-video bg-black rounded-lg overflow-hidden border border-border">
+                        <img src={outputImage} className="w-full h-full object-contain" alt="Result" />
+                      </div>
+                      <div className="flex gap-2">
+                        <a className="btn-outline text-xs flex-1 text-center" href={outputImage} download="nexus-output.png" target="_blank"><CheckCircle2 size={13} /> Download</a>
+                        <button className="btn-primary text-xs flex-1" onClick={handleExecute}><RotateCw size={13} /> Re-run</button>
+                      </div>
+                    </div>
+                  )}
+                  {execStatus === "failed" && (
+                    <div className="bg-rose-500/10 border border-rose-500/30 p-3 rounded-lg text-center text-xs text-rose-200">
+                      Execution failed. Check logs for details.
+                    </div>
+                  )}
+
+                  <button
+                    type="button"
+                    className="btn-primary w-full py-2.5 text-sm font-bold flex items-center justify-center gap-1.5 shadow-glow"
+                    disabled={execStatus === "queueing" || execStatus === "running" || Object.keys(parsedNodes).length === 0}
+                    onClick={handleExecute}
+                  >
+                    {execStatus === "queueing" ? <><Loader2 size={15} className="animate-spin" /> Queuing…</> : <><Play size={15} fill="currentColor" /> Queue Prompt</>}
+                  </button>
                 </div>
+
+                {/* 4. Execution Logs */}
+                {execLogs.length > 0 && (
+                  <div className="card p-4">
+                    <div className="font-semibold text-xs uppercase tracking-wider text-primary border-b border-border/40 pb-2 mb-2">
+                      <span className="flex items-center gap-1.5"><Terminal size={14} /> Execution Logs ({execLogs.length})</span>
+                    </div>
+                    <div className="bg-black text-emerald-400 font-mono text-[10px] p-3 rounded-lg h-64 overflow-y-auto leading-relaxed select-text border border-border/30">
+                      {execLogs.map((log, index) => (
+                        <div key={index}>{log}</div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
-            )}
-
-            {/* 4. Execution Monitors */}
-            {execStatus !== "idle" && (
-              <div className="card p-4 space-y-3">
-                <div className="flex items-center justify-between border-b border-border/40 pb-2">
-                  <div className="font-semibold text-xs uppercase tracking-wider text-primary flex items-center gap-1.5">
-                    <Sparkles size={14} /> Execution Status
-                  </div>
-                  <span className={`chip text-[9px] uppercase font-bold ${
-                    execStatus === "completed" ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40" :
-                    execStatus === "failed" ? "bg-rose-500/20 text-rose-300 border-rose-500/40" :
-                    "bg-primary/20 text-primary-light border-primary/40 animate-pulse"
-                  }`}>
-                    {execStatus}
-                  </span>
-                </div>
-
-                {/* Progress bar */}
-                <div className="space-y-1">
-                  <div className="flex justify-between text-[11px] text-muted font-medium">
-                    <span>Progressing...</span>
-                    <span className="font-mono">{execProgress}%</span>
-                  </div>
-                  <div className="w-full bg-surface2 h-1.5 rounded-full overflow-hidden border border-border/40">
-                    <div className="bg-primary h-full transition-all duration-300" style={{ width: `${execProgress}%` }} />
-                  </div>
-                </div>
-
-                {/* Node highlight */}
-                {activeNode && (
-                  <div className="text-[11px] bg-primary/5 border border-primary/20 rounded-lg p-2 flex items-center justify-between">
-                    <span className="text-muted">Active node:</span>
-                    <span className="font-mono bg-primary/10 text-primary-light px-1.5 py-0.5 rounded border border-primary/20 text-[10px]">
-                      Node {activeNode}
-                    </span>
-                  </div>
-                )}
-
-                {/* Logs terminal */}
-                <div className="bg-black/85 rounded-xl border border-border/60 p-2.5 h-[120px] overflow-y-auto flex flex-col gap-1 scrollbar-thin">
-                  <div className="text-[9px] text-muted-more uppercase tracking-wider flex items-center gap-1 border-b border-border/30 pb-1 mb-1 font-bold">
-                    <Terminal size={10} /> API Console Logs
-                  </div>
-                  {execLogs.map((log, index) => (
-                    <div key={index} className="font-mono text-[9px] text-zinc-300 leading-normal break-words whitespace-pre-wrap">
-                      {log}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Result image visualization */}
-                {outputImage && (
-                  <div className="space-y-2 border-t border-border/40 pt-3">
-                    <div className="text-xs font-semibold text-text flex items-center gap-1">
-                      <CheckCircle2 size={14} className="text-emerald-400" /> Generated Result
-                    </div>
-                    <div className="relative rounded-xl overflow-hidden bg-surface2 border border-border flex items-center justify-center">
-                      <img src={outputImage} className="w-full h-auto max-h-[200px] object-contain" alt="ComfyUI output" />
-                    </div>
-                  </div>
-                )}
-              </div>
             )}
           </div>
         )}
@@ -1045,306 +823,3 @@ export default function WorkflowStudioPage() {
     </Page>
   );
 }
-
-// Curried Static Workflows examples data (Text to Image, Image to Image, ControlNet)
-const demoT2I = {
-  "3": {
-    "class_type": "KSampler",
-    "inputs": {
-      "cfg": 8,
-      "denoise": 1,
-      "latent_image": [
-        "5",
-        0
-      ],
-      "model": [
-        "4",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "positive": [
-        "6",
-        0
-      ],
-      "sampler_name": "euler",
-      "scheduler": "normal",
-      "seed": 8632194305,
-      "steps": 20
-    }
-  },
-  "4": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "dreamshaper_8.safetensors"
-    }
-  },
-  "5": {
-    "class_type": "EmptyLatentImage",
-    "inputs": {
-      "batch_size": 1,
-      "height": 512,
-      "width": 512
-    }
-  },
-  "6": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "masterpiece, a beautiful cyberpunk model sitting in a coffee shop, neon glow, detailed skin textures"
-    }
-  },
-  "7": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "bad anatomy, blurry, disfigured, watermark, text"
-    }
-  },
-  "8": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "3",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
-    }
-  },
-  "9": {
-    "class_type": "SaveImage",
-    "inputs": {
-      "filename_prefix": "ComfyUI",
-      "images": [
-        "8",
-        0
-      ]
-    }
-  }
-};
-
-const demoI2I = {
-  "3": {
-    "class_type": "KSampler",
-    "inputs": {
-      "cfg": 8,
-      "denoise": 0.55,
-      "latent_image": [
-        "12",
-        0
-      ],
-      "model": [
-        "4",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "positive": [
-        "6",
-        0
-      ],
-      "sampler_name": "euler",
-      "scheduler": "normal",
-      "seed": 218764093,
-      "steps": 20
-    }
-  },
-  "4": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "dreamshaper_8.safetensors"
-    }
-  },
-  "6": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "portrait photo of a woman with red hair, soft lighting, 8k resolution"
-    }
-  },
-  "7": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "deformed, blurry, watermark"
-    }
-  },
-  "10": {
-    "class_type": "LoadImage",
-    "inputs": {
-      "image": "reference_portrait.jpg"
-    }
-  },
-  "12": {
-    "class_type": "VAEEncode",
-    "inputs": {
-      "pixels": [
-        "10",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
-    }
-  },
-  "8": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "3",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
-    }
-  },
-  "9": {
-    "class_type": "SaveImage",
-    "inputs": {
-      "filename_prefix": "ComfyUI_I2I",
-      "images": [
-        "8",
-        0
-      ]
-    }
-  }
-};
-
-const demoControlNet = {
-  "3": {
-    "class_type": "KSampler",
-    "inputs": {
-      "cfg": 8,
-      "denoise": 1,
-      "latent_image": [
-        "5",
-        0
-      ],
-      "model": [
-        "4",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "positive": [
-        "15",
-        0
-      ],
-      "sampler_name": "dpmpp_2m",
-      "scheduler": "karras",
-      "seed": 91823750,
-      "steps": 25
-    }
-  },
-  "4": {
-    "class_type": "CheckpointLoaderSimple",
-    "inputs": {
-      "ckpt_name": "dreamshaper_8.safetensors"
-    }
-  },
-  "5": {
-    "class_type": "EmptyLatentImage",
-    "inputs": {
-      "batch_size": 1,
-      "height": 768,
-      "width": 512
-    }
-  },
-  "7": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "ugly, disfigured, cartoon, painting"
-    }
-  },
-  "10": {
-    "class_type": "LoadImage",
-    "inputs": {
-      "image": "openpose_skeleton.png"
-    }
-  },
-  "14": {
-    "class_type": "ControlNetLoader",
-    "inputs": {
-      "control_net_name": "control_v11p_sd15_openpose.pth"
-    }
-  },
-  "15": {
-    "class_type": "ControlNetApplySimple",
-    "inputs": {
-      "conditioning": [
-        "16",
-        0
-      ],
-      "control_net": [
-        "14",
-        0
-      ],
-      "image": [
-        "10",
-        0
-      ],
-      "strength": 0.9
-    }
-  },
-  "16": {
-    "class_type": "CLIPTextEncode",
-    "inputs": {
-      "clip": [
-        "4",
-        1
-      ],
-      "text": "full body fashion photo of a model wearing a summer dress"
-    }
-  },
-  "8": {
-    "class_type": "VAEDecode",
-    "inputs": {
-      "samples": [
-        "3",
-        0
-      ],
-      "vae": [
-        "4",
-        2
-      ]
-    }
-  },
-  "9": {
-    "class_type": "SaveImage",
-    "inputs": {
-      "filename_prefix": "ComfyUI_ControlNet",
-      "images": [
-        "8",
-        0
-      ]
-    }
-  }
-};

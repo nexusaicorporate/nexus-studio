@@ -91,10 +91,8 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     }] : [])
   ];
 
-  const { mode, setMode, palette, activeImageProviderId, activeVideoProviderId, providers, loadFromDb } = useSettings();
+  const { mode, setMode, palette, loadFromDb } = useSettings();
   const load = useLibrary((s) => s.load); const loaded = useLibrary((s) => s.loaded);
-  const activeImg = providers.find((p) => p.id === activeImageProviderId);
-  const activeVid = providers.find((p) => p.id === activeVideoProviderId);
 
   useEffect(() => { loadFromDb(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (!loaded) load(); }, [loaded, load]);
@@ -172,8 +170,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <div className="transition-opacity duration-200">
               <div className="flex items-center justify-between mb-2 px-1">
                 <div className="flex flex-col">
-                  <span className="text-[10px] text-muted truncate">Img: <span className="text-text">{activeImg?.name || "—"}</span></span>
-                  <span className="text-[10px] text-muted truncate">Vid: <span className="text-text">{activeVid?.name || "—"}</span></span>
+                  <span className="text-[10px] text-muted truncate">Cloud: <span className="text-text">Nexus Cloud</span></span>
                 </div>
                 <button onClick={() => setMode(mode === "dark" ? "light" : "dark")} className="btn-ghost px-2 py-1" title="Toggle theme">{mode === "dark" ? <Sun size={15} /> : <Moon size={15} />}</button>
               </div>

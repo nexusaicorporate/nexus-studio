@@ -1,15 +1,15 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Page from "@/components/Page";
 import { Modal, Field, Toggle, useMounted, copy } from "@/components/ui";
 import { useLibrary, newId } from "@/lib/store/library";
 import type { Character, CharacterXRay } from "@/lib/types";
 import { 
   Plus, Pencil, Trash2, Copy, User, Send, ImagePlus, Sparkles, 
-  Palette, Scissors, Activity, Flame, Heart, EyeOff, Smile, 
-  Feather, ShieldAlert, CircleDot, Brush, HelpCircle, Check, BookOpen, Calendar,
+  Palette, Scissors, Activity, Flame, Heart, Smile, 
+  Feather, ShieldAlert, CircleDot, Brush, Check, BookOpen, Calendar,
   Lock, Eye, Ruler, Dumbbell, Droplet, Download, Layers, Bone, Brain, RotateCw,
-  Zap, AlertCircle, Loader2, AlertTriangle, Play, CheckCircle2, XCircle
+  Zap, AlertCircle, Loader2, AlertTriangle
 } from "lucide-react";
 import { generateImage } from "@/lib/providers";
 import { characterPrompt } from "@/lib/character";
@@ -19,7 +19,6 @@ import UpgradePrompt from "@/components/UpgradePrompt";
 import { useRouter } from "next/navigation";
 import { useSettings } from "@/lib/store/settings";
 import { chat } from "@/lib/providers";
-import JSZip from "jszip";
 
 const blank = (): Character => ({ 
   id: newId(), 
@@ -1261,467 +1260,33 @@ function Form({ item, onSave }: { item: Character; onSave: (c: Character) => voi
   );
 }
 
-async function createImagesZip(images: string[]): Promise<Blob> {
-  const zip = new JSZip();
-  for (let i = 0; i < images.length; i++) {
-    const dataUrl = images[i];
-    const matches = dataUrl.match(/^data:image\/([a-zA-Z0-9+]+);base64,(.+)$/);
-    if (!matches) continue;
-    const ext = matches[1];
-    const base64Data = matches[2];
-    zip.file(`image_${i + 1}.${ext}`, base64Data, { base64: true });
-  }
-  return await zip.generateAsync({ type: "blob" });
-}
-
-async function uploadZipToFal(blob: Blob, falKey: string): Promise<string> {
-  const formData = new FormData();
-  formData.append("file", blob, "dataset.zip");
-
-  const res = await fetch("https://queue.fal.run/files/upload", {
-    method: "POST",
-    headers: {
-      "Authorization": `Key ${falKey}`
-    },
-    body: formData
-  });
-
-  if (!res.ok) {
-    const fallbackData = new FormData();
-    fallbackData.append("file_upload", blob, "dataset.zip");
-    const fallbackRes = await fetch("https://queue.fal.run/files/upload", {
-      method: "POST",
-      headers: {
-        "Authorization": `Key ${falKey}`
-      },
-      body: fallbackData
-    });
-    if (!fallbackRes.ok) {
-      throw new Error(`Upload to fal CDN failed: ${await fallbackRes.text()}`);
-    }
-    const data = await fallbackRes.json();
-    return data.url;
-  }
-
-  const data = await res.json();
-  return data.url;
-}
-
-async function startFalTraining(zipUrl: string, triggerWord: string, steps: number, isStyle: boolean, falKey: string) {
-  const res = await fetch("https://queue.fal.run/fal-ai/flux-lora-fast-training", {
-    method: "POST",
-    headers: {
-      "Authorization": `Key ${falKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      images_data_url: zipUrl,
-      trigger_word: triggerWord,
-      steps: steps,
-      is_style: isStyle
-    })
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to initiate training: ${await res.text()}`);
-  }
-
-  return await res.json();
-}
-
-async function pollFalTraining(statusUrl: string, falKey: string) {
-  const res = await fetch(statusUrl, {
-    headers: {
-      "Authorization": `Key ${falKey}`
-    }
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to poll status: ${await res.text()}`);
-  }
-
-  return await res.json();
-}
+// FAL.ai LoRA training removed — all compute routes through the Nexus Cloud
+// plugin (comfyui-nexus-cloud). Reference images are used directly by the
+// Image/Video gears for character-consistent generation.
 
 function LoraTrainer({ item, onClose }: { item: Character; onClose: () => void }) {
-  const settings = useSettings();
-  const setKey = useLibrary((s) => s.set);
-  const characters = useLibrary((s) => s.characters);
-  
-  const [triggerWord, setTriggerWord] = useState(item.triggerWord || item.name.toLowerCase().replace(/\s+/g, "_"));
-  const [steps, setSteps] = useState(1000);
-  const [isStyle, setIsStyle] = useState(false);
-  
-  const [localFalKey, setLocalFalKey] = useState(settings.falKey || "");
-  const [status, setStatus] = useState<'idle' | 'zip' | 'upload' | 'init' | 'training' | 'completed' | 'failed'>(
-    item.loraStatus === "training" ? "training" : "idle"
-  );
-  const [error, setError] = useState("");
-  const [logs, setLogs] = useState<string[]>([]);
-  const [downloadUrl, setDownloadUrl] = useState(item.loraUrl || "");
-  const [requestId, setRequestId] = useState(item.loraRequestId || "");
-
-  const logEndRef = useRef<HTMLDivElement>(null);
-
-  // Auto scroll logs console
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [logs]);
-
-  // If already training, resume polling on mount
-  useEffect(() => {
-    let active = true;
-    let pollInterval: NodeJS.Timeout;
-
-    async function resumePolling() {
-      if (item.loraStatus === "training" && item.loraStatusUrl) {
-        setStatus("training");
-        setLogs(["Resuming connection to fal.ai training job...", "Streaming logs..."]);
-        try {
-          const checkStatus = async () => {
-            const currentKey = localFalKey.trim() || settings.falKey.trim();
-            if (!currentKey) return;
-            
-            const data = await pollFalTraining(item.loraStatusUrl!, currentKey);
-            if (!active) return;
-            
-            if (data.logs && data.logs.length > 0) {
-              setLogs(["Resuming connection to fal.ai training job...", "Streaming logs...", ...data.logs.map((l: any) => l.message)]);
-            }
-            
-            if (data.status === "COMPLETED") {
-              const responseData = await fetch(item.loraResponseUrl!, {
-                headers: { "Authorization": `Key ${currentKey}` }
-              }).then(r => r.json());
-              
-              const loraUrl = responseData.diffusers_lora_file?.url || "";
-              const configUrl = responseData.config_file?.url || "";
-              
-              const updated = {
-                ...item,
-                loraStatus: "completed" as const,
-                loraUrl,
-                loraConfigUrl: configUrl
-              };
-              setKey("characters", characters.map(x => x.id === item.id ? updated : x));
-              setDownloadUrl(loraUrl);
-              setStatus("completed");
-              clearInterval(pollInterval);
-            } else if (data.status === "FAILED") {
-              const updated = {
-                ...item,
-                loraStatus: "failed" as const
-              };
-              setKey("characters", characters.map(x => x.id === item.id ? updated : x));
-              setStatus("failed");
-              setError("LoRA training failed on fal.ai runner.");
-              clearInterval(pollInterval);
-            }
-          };
-
-          await checkStatus();
-          pollInterval = setInterval(checkStatus, 5000);
-        } catch (e: any) {
-          console.error("Polling failed", e);
-        }
-      }
-    }
-
-    resumePolling();
-    return () => {
-      active = false;
-      if (pollInterval) clearInterval(pollInterval);
-    };
-  }, [item.id]);
-
-  async function handleTrain() {
-    const keyToUse = localFalKey.trim() || settings.falKey.trim();
-    if (!keyToUse) {
-      setError("Please provide a FAL.ai API Key to start training.");
-      return;
-    }
-    
-    if (localFalKey && localFalKey !== settings.falKey) {
-      settings.setFalKey(localFalKey);
-    }
-
-    if (item.refImages.length < 4) {
-      setError("At least 4 reference images are required to train a character model (recommended: 6 to 12).");
-      return;
-    }
-
-    setError("");
-    setLogs([]);
-    setStatus("zip");
-
-    try {
-      setLogs(["Constructing training dataset zip from character reference images..."]);
-      const zipBlob = await createImagesZip(item.refImages);
-      setLogs(prev => [...prev, "Dataset zip file constructed successfully! Size: " + (zipBlob.size / 1024 / 1024).toFixed(2) + " MB"]);
-      
-      setStatus("upload");
-      setLogs(prev => [...prev, "Uploading ZIP dataset to fal.ai CDN storage..."]);
-      const cdnUrl = await uploadZipToFal(zipBlob, keyToUse);
-      setLogs(prev => [...prev, "ZIP dataset uploaded successfully! CDN URL: " + cdnUrl]);
-      
-      setStatus("init");
-      setLogs(prev => [...prev, "Submitting LoRA training job to fal-ai/flux-lora-fast-training..."]);
-      const job = await startFalTraining(cdnUrl, triggerWord, steps, isStyle, keyToUse);
-      setRequestId(job.request_id);
-      
-      const updated = {
-        ...item,
-        loraStatus: "training" as const,
-        loraRequestId: job.request_id,
-        loraStatusUrl: job.status_url,
-        loraResponseUrl: job.response_url
-      };
-      setKey("characters", characters.map(x => x.id === item.id ? updated : x));
-      
-      setStatus("training");
-      setLogs(prev => [
-        "Dataset zip file constructed successfully! Size: " + (zipBlob.size / 1024 / 1024).toFixed(2) + " MB",
-        "ZIP dataset uploaded successfully! CDN URL: " + cdnUrl,
-        "Training job accepted! Request ID: " + job.request_id,
-        "Streaming logs from trainer..."
-      ]);
-      
-      const checkStatus = async () => {
-        try {
-          const data = await pollFalTraining(job.status_url, keyToUse);
-          if (data.logs) {
-            setLogs([
-              "Dataset zip file constructed successfully! Size: " + (zipBlob.size / 1024 / 1024).toFixed(2) + " MB",
-              "ZIP dataset uploaded successfully! CDN URL: " + cdnUrl,
-              "Training job accepted! Request ID: " + job.request_id,
-              "Streaming logs from trainer...",
-              ...data.logs.map((l: any) => l.message)
-            ]);
-          }
-          
-          if (data.status === "COMPLETED") {
-            const responseData = await fetch(job.response_url, {
-              headers: { "Authorization": `Key ${keyToUse}` }
-            }).then(r => r.json());
-            
-            const loraUrl = responseData.diffusers_lora_file?.url || "";
-            const configUrl = responseData.config_file?.url || "";
-            
-            const completedChar = {
-              ...item,
-              loraStatus: "completed" as const,
-              loraUrl,
-              loraConfigUrl: configUrl
-            };
-            setKey("characters", characters.map(x => x.id === item.id ? completedChar : x));
-            setDownloadUrl(loraUrl);
-            setStatus("completed");
-            clearInterval(pollInterval);
-          } else if (data.status === "FAILED") {
-            const failedChar = {
-              ...item,
-              loraStatus: "failed" as const
-            };
-            setKey("characters", characters.map(x => x.id === item.id ? failedChar : x));
-            setStatus("failed");
-            setError("LoRA training failed on fal.ai runner.");
-            clearInterval(pollInterval);
-          }
-        } catch (err: any) {
-          console.error("Polling error:", err);
-        }
-      };
-
-      const pollInterval = setInterval(checkStatus, 5000);
-    } catch (e: any) {
-      setError(e.message || "An unexpected error occurred during training setup.");
-      setStatus("failed");
-    }
-  }
-
-  function handleReset() {
-    const updated = {
-      ...item,
-      loraStatus: "none" as const,
-      loraUrl: undefined,
-      loraConfigUrl: undefined,
-      loraRequestId: undefined,
-      loraStatusUrl: undefined,
-      loraResponseUrl: undefined
-    };
-    setKey("characters", characters.map(x => x.id === item.id ? updated : x));
-    setDownloadUrl("");
-    setRequestId("");
-    setLogs([]);
-    setStatus("idle");
-    setError("");
-  }
-
-  const isBusy = ['zip', 'upload', 'init', 'training'].includes(status);
+  const [status, setStatus] = useState<'idle' | 'not_available'>('not_available');
 
   return (
     <div className="space-y-4 max-w-lg">
       <div className="bg-surface2/30 border border-border/40 p-4 rounded-xl space-y-2.5">
         <div className="flex justify-between items-start">
           <div>
-            <h3 className="font-bold text-sm text-text">Training Dataset Summary</h3>
+            <h3 className="font-bold text-sm text-text">LoRA Training</h3>
             <p className="text-[10px] text-muted mt-0.5">Character: {item.name || "Unnamed"}</p>
           </div>
-          <span className={`text-[10px] font-semibold px-2 py-0.5 rounded ${
-            item.refImages.length >= 6 ? 'bg-emerald-400/10 text-emerald-400' : 'bg-amber-400/10 text-amber-400'
-          }`}>
-            {item.refImages.length} reference images
-          </span>
         </div>
-        
-        {item.refImages.length < 4 && (
-          <div className="p-3 bg-rose-500/5 border border-rose-500/10 rounded-lg flex gap-2 text-rose-400 text-xs">
-            <AlertTriangle size={16} className="shrink-0" />
-            <span>FAL.ai requires at least 4 reference images to train a custom character LoRA. Please edit your character and add more images.</span>
-          </div>
-        )}
+        <div className="p-3 bg-amber-500/5 border border-amber-500/10 rounded-lg flex gap-2 text-amber-400 text-xs">
+          <AlertTriangle size={16} className="shrink-0" />
+          <span>Standalone LoRA training is not available in this build. Character consistency is handled by the Nexus Cloud backend — use the reference images in the Image/Video gears for on-model generations.</span>
+        </div>
       </div>
-
-      {!settings.falKey && !localFalKey && (
-        <div className="bg-amber-500/5 border border-amber-500/10 p-3.5 rounded-xl space-y-2">
-          <div className="flex gap-2 text-amber-400 text-xs font-semibold">
-            <AlertTriangle size={15} />
-            <span>FAL.ai API Key Required</span>
-          </div>
-          <p className="text-[10px] text-muted leading-relaxed">
-            You must enter a FAL.ai API key to launch LoRA training runs. The key will be stored securely in your settings.
-          </p>
-          <input 
-            className="input text-xs w-full py-1.5"
-            type="password"
-            placeholder="Enter fal_..."
-            value={localFalKey}
-            onChange={(e) => setLocalFalKey(e.target.value)}
-          />
-        </div>
-      )}
-
-      {status === "idle" && item.refImages.length >= 4 && (
-        <div className="bg-surface2/30 border border-border/40 p-4 rounded-xl space-y-3">
-          <h3 className="font-bold text-sm text-text">Configure Training Parameters</h3>
-          
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Trigger Word">
-              <input 
-                className="input text-xs" 
-                value={triggerWord} 
-                onChange={(e) => setTriggerWord(e.target.value)} 
-                placeholder="e.g. miakvn"
-              />
-            </Field>
-            <Field label="Training Steps">
-              <select className="input text-xs" value={steps} onChange={(e) => setSteps(Number(e.target.value))}>
-                <option value={500}>500 (Fastest)</option>
-                <option value={1000}>1000 (Recommended)</option>
-                <option value={1500}>1500 (High Quality)</option>
-                <option value={2000}>2000 (Max Detail)</option>
-              </select>
-            </Field>
-          </div>
-
-          <div className="flex items-center justify-between border-t border-border/30 pt-3">
-            <div>
-              <div className="text-xs font-medium text-text">Train as Style</div>
-              <p className="text-[9px] text-muted-more mt-0.5">Disables auto-captioning (use for aesthetic styles instead of faces).</p>
-            </div>
-            <Toggle checked={isStyle} onChange={setIsStyle} />
-          </div>
-        </div>
-      )}
-
-      {/* Loading States */}
-      {isBusy && (
-        <div className="bg-surface2/30 border border-border/40 p-4 rounded-xl space-y-3 text-center py-6">
-          <Loader2 className="animate-spin text-primary-light mx-auto" size={30} />
-          <div>
-            <h4 className="font-semibold text-xs capitalize text-text">
-              {status === 'zip' && "Packaging reference dataset..."}
-              {status === 'upload' && "Uploading dataset to fal storage CDN..."}
-              {status === 'init' && "Submitting job to GPU cluster..."}
-              {status === 'training' && "Training LoRA Model..."}
-            </h4>
-            <p className="text-[10px] text-muted mt-1 leading-relaxed max-w-xs mx-auto">
-              {status === 'training' 
-                ? "Fast training is actively running on fal.ai. This takes ~3-7 minutes. You can safely close this modal; progress continues in the background."
-                : "Setting up training environment..."
-              }
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Completed State */}
-      {status === "completed" && (
-        <div className="bg-emerald-500/5 border border-emerald-500/10 p-5 rounded-xl text-center space-y-3">
-          <CheckCircle2 className="text-emerald-400 mx-auto" size={36} />
-          <div>
-            <h3 className="font-bold text-sm text-text">LoRA Training Completed!</h3>
-            <p className="text-[10px] text-muted mt-0.5">Your FLUX LoRA weights are ready to download and use.</p>
-          </div>
-          <div className="flex justify-center gap-2 pt-2">
-            <a 
-              href={downloadUrl} 
-              download={`${item.name || 'character'}_lora.safetensors`}
-              className="btn-primary flex items-center gap-1.5 text-xs font-bold px-4"
-            >
-              <Download size={14} /> Download Safetensors
-            </a>
-            <button className="btn-outline text-xs px-3" onClick={handleReset}>
-              Train New Version
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Failed / Error State */}
-      {(status === "failed" || error) && (
-        <div className="bg-rose-500/5 border border-rose-500/10 p-4 rounded-xl text-center space-y-3">
-          <XCircle className="text-rose-400 mx-auto" size={30} />
-          <div>
-            <h3 className="font-bold text-sm text-text">LoRA Training Failed</h3>
-            <p className="text-[10px] text-rose-400/80 mt-1 max-w-sm mx-auto leading-relaxed">{error || "An error occurred during training."}</p>
-          </div>
-          <button className="btn-outline text-xs" onClick={handleReset}>
-            Retry Configuration
-          </button>
-        </div>
-      )}
-
-      {/* Live Console Logs */}
-      {logs.length > 0 && (
-        <div className="space-y-1.5">
-          <div className="text-[10px] uppercase font-bold tracking-wider text-muted-more flex items-center justify-between">
-            <span>Training Console Output</span>
-            {status === "training" && <span className="text-amber-400 animate-pulse">● Live streaming</span>}
-          </div>
-          <div className="bg-black text-emerald-400 font-mono text-[10px] p-3 rounded-lg h-44 overflow-y-auto leading-relaxed select-text border border-border/30">
-            {logs.map((log, index) => (
-              <div key={index}>{log}</div>
-            ))}
-            <div ref={logEndRef} />
-          </div>
-        </div>
-      )}
-
       <div className="flex justify-end gap-2 border-t border-border/40 pt-3 mt-4">
-        <button className="btn-outline text-xs px-4" onClick={onClose}>
-          {status === "training" ? "Close & Run in Background" : "Close"}
-        </button>
-        {status === "idle" && item.refImages.length >= 4 && (
-          <button className="btn-primary flex items-center gap-1 text-xs font-bold px-5" onClick={handleTrain}>
-            <Play size={12} /> Start LoRA Training
-          </button>
-        )}
+        <button className="btn-outline text-xs px-4" onClick={onClose}>Close</button>
       </div>
     </div>
   );
 }
-
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(" ");
 }
@@ -1771,10 +1336,6 @@ function CharacterXRayTool({ character, onClose }: CharacterXRayToolProps) {
     setLoadingStep(0);
     setError(null);
     try {
-      const provider = settings.providers.find((p) => p.id === settings.activeProviderId);
-      if (!provider) throw new Error("No active AI provider configured in settings.");
-      const model = provider.selectedModel || provider.models[0] || "default";
-
       const prompt = `Conduct a deep, artistic psychological X-Ray analysis on the character "${currentCharacter.name}".
 Here is their background and profile details:
 Age: ${currentCharacter.age}
@@ -1812,8 +1373,6 @@ Your output MUST be a valid JSON object matching this schema. Do not write any c
 }`;
 
       const out = await chat({
-        provider,
-        model,
         uncensored: settings.uncensored,
         system: "You are an elite, highly insightful character development coach and critique analyst. You dissect writing characters down to their core structural levels of external veneer and psychological raw nerves.",
         messages: [{ id: newId(), role: "user", content: prompt }]
@@ -1862,10 +1421,6 @@ Your output MUST be a valid JSON object matching this schema. Do not write any c
     { id: 'heart', label: 'The Heart', icon: Heart, color: 'text-red-400 border-red-500/20' },
     { id: 'nervousSystem', label: 'Nervous System', icon: Brain, color: 'text-emerald-400 border-emerald-500/20' }
   ] as const;
-
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId);
-  const activeModelName = provider ? (provider.selectedModel || provider.models[0] || "default") : "";
-  const activeProviderName = provider ? provider.name : "";
 
   if (generating) {
     return (
@@ -1954,11 +1509,6 @@ Your output MUST be a valid JSON object matching this schema. Do not write any c
           >
             <Sparkles className="w-4 h-4" /> Scan Vessel (Generate X-Ray)
           </button>
-          {activeProviderName && (
-            <span className="text-[9px] text-muted-more font-mono mt-4 block">
-              Active Scanner: {activeProviderName} ({activeModelName})
-            </span>
-          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -2187,8 +1737,6 @@ function CharacterSheetGenerator({ character, onClose }: CharacterSheetGenerator
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(character.characterSheetUrl || null);
 
-  const provider = settings.providers.find((p) => p.id === settings.activeImageProviderId)!;
-
   async function generate() {
     setBusy(true);
     setResult(null);
@@ -2202,14 +1750,11 @@ function CharacterSheetGenerator({ character, onClose }: CharacterSheetGenerator
 
       const prompt = `A detailed character sheet of a consistent character: ${character.name}, ${appearance}. ${styleDesc}. Showing the character in multiple panel layout views: front view, side profile view, and back view. Clean solid white background, model sheet, turnaround, visual concept art keyframe. ${customPrompt}`;
 
-      // Use the active provider with the fallback mechanism
       const url = await generateImage({
-        provider,
         prompt,
         width: 1280,
         height: 720,
-        model: provider.selectedModel || provider.models[0] || "flux",
-        image: character.refImages[0] || undefined // Use first ref image if available as reference anchor
+        image: character.refImages[0] || undefined
       });
       
       setResult(url);

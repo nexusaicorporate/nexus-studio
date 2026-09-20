@@ -21,7 +21,6 @@ function readDataUrl(f: File): Promise<string> {
 export default function BulkAnalyzePage() {
   const mounted = useMounted();
   const settings = useSettings();
-  const provider = settings.providers.find((p) => p.id === settings.activeProviderId)!;
   const taskSystem = useTaskSystemPrompt("bulk", "I2T");
   const [rows, setRows] = useState<Row[]>([]);
   const [saveTxt, setSaveTxt] = useState(true);
@@ -39,14 +38,14 @@ export default function BulkAnalyzePage() {
   async function analyzeAll() {
     if (!rows.length) return;
     setBusy(true); setProgress(0);
-    const model = provider.selectedModel || provider.models[0] || "openai";
+    const model = "Nexus Cloud";
     const updated = [...rows];
     for (let i = 0; i < updated.length; i++) {
       const row = updated[i];
       updated[i] = { ...row, status: "running" }; setRows([...updated]);
       try {
         const dataUrl = row.dataUrl || (await readDataUrl(row.file));
-        const out = await chat({ provider, model, system: taskSystem, uncensored: settings.uncensored,
+        const out = await chat({ model, system: taskSystem, uncensored: settings.uncensored,
           messages: [{ id: "1", role: "user", content: "Analyze this and write a prompt/caption.", images: [dataUrl] }] });
         updated[i] = { ...row, dataUrl, result: out, status: "done" };
         if (saveTxt && out) downloadText(baseName(row.name) + ".txt", out);
@@ -85,7 +84,7 @@ export default function BulkAnalyzePage() {
         <button className="btn-primary w-full" onClick={analyzeAll} disabled={busy || rows.length === 0}>
           {busy ? <><RefreshCw size={16} className="animate-spin" /> Analyzing… {progress}%</> : <><Sparkles size={16} /> Analyze All ({rows.length})</>}
         </button>
-        {rows.length > 0 && <div className="text-xs text-muted text-center">{done}/{rows.length} done · provider: {provider?.name}</div>}
+        {rows.length > 0 && <div className="text-xs text-muted text-center">{done}/{rows.length} done · backend: Nexus Cloud</div>}
       </div>
 
       <div className="space-y-3">
@@ -112,7 +111,7 @@ export default function BulkAnalyzePage() {
         ))}
       </div>
 
-      <p className="text-xs text-muted mt-4">Note: videos analyze only on video-capable providers (e.g. Google Gemini). In the desktop build, a future update can write the .txt directly into the source folder; the web build downloads them.</p>
+      <p className="text-xs text-muted mt-4">Note: videos analyze only on vision-capable backends. In the desktop build, a future update can write the .txt directly into the source folder; the web build downloads them.</p>
     </Page>
   );
 }

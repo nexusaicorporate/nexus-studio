@@ -27,7 +27,6 @@ function UGCStudioInner() {
   const sp = useSearchParams();
   const settings = useSettings();
   const library = useLibrary();
-  const provider = settings.providers.find((p) => p.id === settings.activeVideoProviderId)!;
   const { plan } = useAuth();
 
   const [prompt, setPrompt] = useState("");
@@ -74,8 +73,6 @@ function UGCStudioInner() {
     setBusy(true);
     try {
       const out = await chat({
-        provider: settings.providers.find((p) => p.id === settings.activeProviderId)!,
-        model: settings.providers.find((p) => p.id === settings.activeProviderId)?.selectedModel || "default",
         uncensored: settings.uncensored,
         system: "You are an elite marketing copywriter and video director. Rewrite the user's ad script into a high-impact, visual-heavy UGC video prompt (~80 words) focusing on dynamic product showcase, text overlays, and hook-based staging. Output only the prompt.",
         messages: [{ id: "1", role: "user", content: activeP }],
@@ -98,8 +95,6 @@ function UGCStudioInner() {
     setBusy(true);
     try {
       const out = await chat({
-        provider: settings.providers.find((p) => p.id === settings.activeProviderId)!,
-        model: settings.providers.find((p) => p.id === settings.activeProviderId)?.selectedModel || "default",
         uncensored: settings.uncensored,
         system: "Convert the ad concept into a structured UGC video campaign JSON. Include fields: ad_hook (first 3s), visual_pacing, product_placement, overlay_text, call_to_action, final_prompt. Output only clean JSON.",
         messages: [{ id: "1", role: "user", content: activeP }],
@@ -136,7 +131,7 @@ function UGCStudioInner() {
       },
       ...library.assets,
     ]);
-    alert("UGC Ad spec saved. Connect a Video provider (e.g. Modal) in Settings to render this video.");
+    alert("UGC Ad spec saved. Reconnect your Nexus Cloud backend (Settings → Comfy gear) to render this video.");
   }
 
   async function render() {
@@ -150,10 +145,9 @@ function UGCStudioInner() {
     setRenderStatus("submitting");
     try {
       const url = await generateVideo({
-        provider,
         prompt: activeP,
         mode: "i2v",
-        model: engine || provider.selectedModel || provider.models[0],
+        model: engine,
         image: refImages[0] || undefined,
         frames: duration * 24, // Estimate frames from duration
         onProgress: (pct, status) => {
@@ -215,7 +209,7 @@ function UGCStudioInner() {
   }
 
   return (
-    <Page title="UGC Ads Studio" subtitle="Write ad scripts, lock reference images, and render vertical social media ads. Built-in workflow routes locally via Modal with no external MUAPI endpoints.">
+    <Page title="UGC Ads Studio" subtitle="Write ad scripts, lock reference images, and render vertical social media ads. Rendered on your connected Nexus Cloud backend (Settings → Comfy gear).">
       <div className="grid lg:grid-cols-[420px_1fr] gap-5">
         <div className="card p-4 space-y-3 h-max">
           <div className="flex items-center justify-between">
@@ -261,9 +255,9 @@ function UGCStudioInner() {
           <div className="grid grid-cols-3 gap-2">
             <Field label="Model">
               <select className="input text-xs" value={engine} onChange={(e) => setEngine(e.target.value)}>
-                {provider?.models.map((m) => (
-                  <option key={m} value={m}>
-                    {m}
+                {catalogModels.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.label}
                   </option>
                 ))}
               </select>
@@ -280,9 +274,9 @@ function UGCStudioInner() {
             </Field>
           </div>
 
-          {!canUseModel(plan ?? "free", provider?.selectedModel || engine) ? (
+          {!canUseModel(plan ?? "free", engine) ? (
             <UpgradePrompt title="Upgrade Tier Required" message="The selected video model is locked. Please upgrade to render." planNeeded="Pro" inline />
-          ) : provider?.kind === "modal" ? (
+          ) : (
             <button className="btn-primary w-full" onClick={render} disabled={rendering || busy}>
               {rendering ? (
                 <><Loader2 size={15} className="animate-spin mr-1.5" /> Rendering... {renderPct > 0 ? `${renderPct}%` : ""}</>
@@ -290,8 +284,6 @@ function UGCStudioInner() {
                 <><Clapperboard size={15} className="mr-1.5" /> Render Ad Video</>
               )}
             </button>
-          ) : (
-            <button className="btn-primary w-full" onClick={saveSpec} disabled={busy}><Clapperboard size={15} className="mr-1.5" /> Save Ad Spec</button>
           )}
         </div>
 
